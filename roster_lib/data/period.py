@@ -23,7 +23,11 @@ PREPROC_DATA_PATH = Path("/home/admin/code/arnaud-odet/7_PhD/Roster/preproc_data
 
 class Period:
     
-    def __init__(self, start:int, end:int, non_dependence_k:int = 5):
+    def __init__(self, 
+                 start:int, 
+                 end:int, 
+                 non_dependence_k:int = 5):
+        
         self.period = range(start, end +1)
         self.lineups_path = PREPROC_DATA_PATH / 'period' / f'{start}_{end}_consolidated_lineups.csv'
         self.success_path = PREPROC_DATA_PATH / 'period' / f'{start}_{end}_consolidated_success.csv'
@@ -145,14 +149,24 @@ class Period:
         self.data['use_id'] = [txt[-3:] for txt in self.data['id']]
         self.data['use_id'] = self.data['use_id'].astype(int)
    
-    def _add_diversity_index(self): #A REVOIR 
-        _df = self.data[['team','year','id','time','relative_time']].copy()
-        _tmp = pd.concat([_df[_df['relative_time'] > i/100].groupby(['team','year']).count()[['id']].rename(columns ={'id':i})  for i in range(1,10)], axis=1)
-        self.success['diversity_index'] = 0
-        for (tm,yr), row in _tmp.iterrows():
-            _ = (row >= _tmp.columns).astype(int) * _tmp.columns
-            diversity_index = np.argmax(_) +1
-            self.success.loc[(tm,yr),'diversity_index'] = diversity_index
+    def _add_diversity_index(self, target_cumsum:float = 0.9):
+        _df = self.data.copy()
+        _df['tm_yr'] = [f"{tm}_{yr}" for tm,yr in zip(_df['team'],_df['year'])]
+        success = self.success.copy()
+        success.index = [f"{tm}_{yr}" for tm,yr in success.index]
+        
+        _relative_time =  {ind : _df[_df['tm_yr']==ind]['relative_time'].reset_index(drop=True) for ind in _df['tm_yr'].unique()}
+        _cumsum = {k : np.cumsum(v) for k,v in _relative_time.items()}
+
+        lu_count = pd.Series({k : v.shape[0] for k,v in _relative_time.items()}, name = 'lineups_count')
+        lu_target_count = pd.Series({k : np.argmax([i if cs < target_cumsum else 0 for i, cs in enumerate(v)])+1 for k,v in _cumsum.items()}, name = 'lineups_target_count')
+        lu_ratio_hmean = pd.Series({k : hmean(v[1:].values / v[:-1].values) for k,v in _relative_time.items()}, name = 'lineups_ratio_hmean')
+        lu_hmean = pd.Series({k : hmean(v) for k,v in _relative_time.items()}, name = 'lineups_share_hmean')
+        lu_target_ratio_hmean = pd.Series({ k : hmean(v[:lu_target_count[k]][1:].values / v[:lu_target_count[k]][:-1].values) for k,v in _relative_time.items()}, name = f"lineups_target_ratio_hmean")
+        
+        _diversity_success_df = pd.concat([lu_count,lu_target_count,lu_ratio_hmean,lu_hmean,lu_target_ratio_hmean], axis = 1).merge(success, left_index=True, right_index= True)
+        _diversity_success_df.index = self.success.index
+        self.success = _diversity_success_df
   
     def _add_non_dependence_score(self, top_k:int = 5):
         _ndpd = [self.top_players_lineups_rate(top_k = i+1, exclude = True).rename(columns = {'time_share':f'wo_{i+1}'}) for i in range(top_k)]
