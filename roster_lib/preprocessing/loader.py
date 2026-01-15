@@ -1,22 +1,19 @@
 import pandas as pd
 import numpy as np
-import sys
 import os
 from pathlib import Path
-import warnings
 import copy
 
-from constants import RAW_DATA_PATH, PREPROC_DATA_PATH
-from id_dict import pid2name, name2pid, pid2pos_bref
+from roster_lib.constants import RAW_DATA_PATH, PREPROC_DATA_PATH
+from roster_lib.id_dict import pid2pos_bref
 
 POSITION_MAPPING = {'PG':1, 'SG':2, 'SF':3, 'PF':4, 'C':5}
 
 class Loader :
     
-    def __init__(self, add_positions:bool = True):
+    def __init__(self):
         self.raw_data_path = RAW_DATA_PATH / 'muniz_data'
         self.preproc_data_filepath = PREPROC_DATA_PATH / 'clustering' / 'concatenated_data.csv'
-        self.add_positions = add_positions
         
         if os.path.exists(self.preproc_data_filepath):
             self._load_preproc_data()
@@ -34,7 +31,7 @@ class Loader :
         self.df.to_csv(self.preproc_data_filepath)
     
     def _load_raw_data(self):   
-        self.raw_data = {f[6:-4] : pd.read_csv(self.raw_data_path / f, index_col=0).set_index('pidSzn') for f in os.listdir(RAW_DATA_PATH) if 'Clutch' not in f and f[-3:]=='csv'}
+        self.raw_data = {f[6:-4] : pd.read_csv(self.raw_data_path / f, index_col=0).set_index('pidSzn') for f in os.listdir(self.raw_data_path) if 'Clutch' not in f and f[-3:]=='csv'}
         
     def _handle_duplicated(self):
         rest_data = copy.deepcopy(self.raw_data)
@@ -58,9 +55,9 @@ class Loader :
         # Columns with most NA is FG3_PCT as some player do not shoot 3s. Filling with 0s
         df['FG3_PCT'] = df['FG3_PCT'].fillna(0)
         df['FG2_PCT'] = df['FG2_PCT'].fillna(0)
-        if self.add_positions :
-            df['position'] = df.index.map(pid2pos_bref).map(POSITION_MAPPING)
+        df['position'] = df.index.map(pid2pos_bref).map(POSITION_MAPPING)
         # 32 players are partly missing, none of them playing more than 10 minutes in any dataset, droping them
         df = df.dropna()
+        return df
         
     

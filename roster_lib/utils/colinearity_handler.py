@@ -5,7 +5,7 @@ from pathlib import Path
 import copy
 from statsmodels.stats.outliers_influence import variance_inflation_factor as vif
 
-from preprocessing.loader import Loader
+from roster_lib.preprocessing.loader import Loader
 
 MANUAL_DROP_COLS = {'Score': ['TS_PCT'],
              'Misc': ['DIST_MILES', 'AVG_SPEED', 'LOOSE_BALLS_RECOVERED'],
@@ -103,13 +103,16 @@ MANUAL_INCLUSION_COLS = {
 
 class ColinearityHandler :
     
-    def __init__(self, verbose :bool = True):
+    def __init__(self, use_positions:bool=True, verbose :bool = True):
         loader = Loader()
+        self.verbose = verbose
         if not hasattr(loader, 'preproc_data'):            
             loader._load_raw_data()
             loader._handle_duplicated()
         self.df = loader.df
-        auto_drop_cols = {k : self.auto_excl_vif( v.drop(columns = ['MIN','GP','Season']).dropna() , verbose= verbose) for k, v in loader.preproc_data.items()}
+        if not use_positions:
+            self.df.drop(columns = use_positions, inplace=True)
+        auto_drop_cols = {k : self.auto_excl_vif( v.drop(columns = ['MIN','GP','Season']).dropna()) for k, v in loader.preproc_data.items()}
         self.autoexcl = []
         for v in auto_drop_cols.values():
             self.autoexcl += v
@@ -123,8 +126,7 @@ class ColinearityHandler :
     def get_data(self, feature_selection:str):
         return self.df[self.incl] if feature_selection == 'incl' else self.df.drop(columns = self.excl if feature_selection =='excl' else self.autoexcl)
     
-    @staticmethod
-    def auto_excl_vif(df, threshold:float=10, verbose :bool = True):
+    def auto_excl_vif(self, df, threshold:float=10):
         _df = df.copy()
         if 'FG3_PCT' in _df.columns :
             _df['FG3_PCT'] = _df['FG3_PCT'].fillna(0)
@@ -132,7 +134,8 @@ class ColinearityHandler :
             _df['FG2_PCT'] = _df['FG2_PCT'].fillna(0)
         keep_iterating = True
         drop_cols = []
-        print(f"Initial number of features : {_df.shape[1]}")
+        if self.verbose:
+            print(f"Initial number of features : {_df.shape[1]}")
         while keep_iterating :
             vif_df = pd.DataFrame()
             vif_df["feature"] = _df.columns
@@ -148,8 +151,16 @@ class ColinearityHandler :
             else :
                 keep_iterating = False
                 msg += f" - stopping features exclusion with {_df.shape[1]} feature retained"
-            if verbose: 
+            if self.verbose: 
                 print(msg)
             
         return drop_cols    
-        
+    
+    def compute_vifs(self):
+        self.vifs = {}
+        for fs in ['incl', 'excl', 'autoexcl']:
+            df = self.get_data(feature_selection=fs)
+            vif_df = pd.DataFrame()
+            vif_df["features"] = df.columns
+            vif_df["vif_index"] = [vif(df.values, i) for i in range(df.shape[1])]
+            self.vifs[fs] = vif_df.sort_values(by="vif_index", ascending=False)
