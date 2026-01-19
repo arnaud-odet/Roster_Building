@@ -32,19 +32,25 @@ METHODS = ['kmeans',
 SCALINGS = ['standard', 'robust', 'minmax']
 FEATURES_SELECTIONS = ['incl', 'excl', 'autoexcl']
 
+DEFAULT_ALPHA = 1
+
 
 class Clusterer :
     
-    def __init__(self, use_positions:bool=True):
+    def __init__(self, use_positions:bool=True, alpha:float = DEFAULT_ALPHA):
         self.preproc_path = PREPROC_DATA_PATH / 'clustering'
         self.last_version = max([int(f.split('_')[-1][1:-4]) for f in os.listdir(self.preproc_path) if 'clustering' in f])
         self.use_positions = use_positions
+        self.alpha = alpha
+        self.rdf = self.load_results()
         
     def load_results(self, version:int = None):
         if version is None :
             version = self.last_version
         fp = self.preproc_path / f"ARO_clustering_v{version}.csv"
-        return pd.read_csv(fp, index_col = 0)
+        df = pd.read_csv(fp, index_col = 0)
+        df['entropy_silhouette'] = df['silhouette_score'] * df['entropy'] ** self.alpha
+        return df
 
     def run_comparison(self,
                        features_selections: list = FEATURES_SELECTIONS,
@@ -86,7 +92,7 @@ class Clusterer :
                             db = davies_bouldin_score(_X_proj, labels)
                             ch = calinski_harabasz_score(_X_proj, labels)
                             pop_std = self._pop_std(labels)
-                            entropy_score = self._normalized_entropy(labels)
+                            entropy_score = self.normalized_entropy(labels)
                             results.append({'feature_selection':fs,
                                             'method': method, 
                                             'scaling': scaling_method, 
@@ -100,7 +106,7 @@ class Clusterer :
                                             'population_std': pop_std})
                             counter = m* n_exps_per_fs + i * n_exps_per_scaler + j * n_exps_per_evr + k * n_exps_per_method + l
                             best_score = max(best_score, silhouette)
-                            best_entropy_weighted_score = max(best_entropy_weighted_score, entropy_score * silhouette)
+                            best_entropy_weighted_score = max(best_entropy_weighted_score, silhouette * entropy_score ** self.alpha)
                             best_penalized_score = max(best_penalized_score, silhouette - pop_std * PENALTY_RATE)
                             
                             msg = f"Processing experiment n° {counter+1:>4} of {n_exps} | "
@@ -143,10 +149,62 @@ class Clusterer :
         db = davies_bouldin_score(X_proj, labels)
         ch = calinski_harabasz_score(X_proj, labels)
         pop_std = self._pop_std(labels)
-        entropy_score = self._normalized_entropy(labels)
+        entropy_score = self.normalized_entropy(labels)
+        entropy_silhouette = silhouette * entropy_score ** self.alpha
         if verbose :
-            print(f"Silhouette: {silhouette:.3f} | Davies-Bouldin: {db:.3f} | Calinski-Harabasz: {ch:.3f} | Normalized Entropy : {entropy_score:.3f} | Population STD: {pop_std:.3f}")
-        return X_proj, labels          
+            print(f"Silhouette: {silhouette:.3f} | Davies-Bouldin: {db:.3f} | Calinski-Harabasz: {ch:.3f} | Normalized Entropy : {entropy_score:.3f} | Population STD: {pop_std:.3f} | Entropy-weighted Silhouette: {entropy_silhouette:.3f}")
+        return X_proj, labels  
+    
+    def plot_clustering(self,
+                        axs = None, 
+                        evr:float = 1.0,
+                        n_clust:int = 2,
+                        method:str = 'kmeans',
+                        scaling:str = 'standard',
+                        feature_selection:str = 'incl',
+                        verbose:bool = True):  
+            X_proj, labels = self.customized_clustering(evr, n_clust, method, scaling, feature_selection, verbose)
+            if axs == None :
+                fig, axs = plt.subplots(1,3,figsize = (18,5));
+            sns.scatterplot(x = X_proj[:,0], y = X_proj[:,1], hue = labels, alpha = 0.5, palette='bright', ax=axs[0], legend=False);
+            axs[0].set_xlabel("PC1");
+            axs[0].set_ylabel("PC2");
+            axs[0].set_title("Visual inspection of clustering along 2 first PCs");
+            _, counts = np.unique(labels, return_counts= True)
+            counts[::-1].sort()
+            sns.barplot(data = counts, ax = axs[1]);
+            axs[1].set_title("Cluster population histogram");
+            axs[1].set_xlabel("Cluster");
+            axs[1].set_ylabel("Count");
+            silhouette = silhouette_score(X_proj, labels)
+            entropy = self.normalized_entropy(labels)
+            entropy_silhouette = silhouette * entropy ** self.alpha
+            _metrics = pd.DataFrame([[silhouette, entropy, entropy_silhouette]], columns = ['Silhouette','Weighted Entropy', 'EW Silhouette'])
+            sns.barplot(data = _metrics, ax = axs[2]);
+            axs[2].set_title("Metrics score")
+            
+
+    def plot_data(self, scalings:list = ['minmax','standard','robust'], feature_selections:list = ['incl','excl','autoexcl']):
+
+        if hasattr(self, 'colinearity_handler'):
+            colinearity_handler = self.colinearity_handler
+        else : 
+            colinearity_handler = ColinearityHandler(verbose = False, use_positions =self.use_positions)
+            self.colinearity_handler = colinearity_handler
+
+        fig, axs = plt.subplots(len(feature_selections), len(scalings), figsize = (4* len(scalings), 4* len(feature_selections)))
+        
+        for i, fs in enumerate(feature_selections):
+            _df = colinearity_handler.get_data(fs)
+            for j, sc in enumerate(scalings):      
+                scaler = SCALERS[sc]()
+                _df_scaled = scaler.fit_transform(_df)
+                _X_proj = PCA().fit_transform(_df_scaled)
+                _X_proj = pd.DataFrame(_X_proj, columns = [f"PC_{i+1}" for i in range(_X_proj.shape[1])])
+                sns.scatterplot(data = _X_proj, x = 'PC_1', y = 'PC_2', alpha = 0.5, ax = axs[i,j]);
+                axs[i,j].set_title(f"{sc} scaling, feature selection : {fs}");
+                     
+    
          
     @staticmethod    
     def clusterize(X_proj, n_clust:int, method:str):
@@ -162,7 +220,7 @@ class Clusterer :
         return (counts / counts.sum()).std() 
     
     @staticmethod       
-    def _normalized_entropy(labels:np.array):
+    def normalized_entropy(labels:np.array):
         unique, counts = np.unique(labels, return_counts= True)
         freq = counts / counts.sum()
         return entropy(freq) / np.log(unique.shape[0])
