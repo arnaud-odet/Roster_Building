@@ -61,11 +61,8 @@ class Clusterer :
         
         version = self.last_version +1 
         fp = self.preproc_path / f"ARO_clustering_v{version}.csv"
-        if hasattr(self, 'colinearity_handler'):
-            colinearity_handler = self.colinearity_handler
-        else : 
-            colinearity_handler = ColinearityHandler(verbose = False, use_positions =self.use_positions)
-            self.colinearity_handler = colinearity_handler
+
+        colinearity_handler = self._manage_colinearity_handler()
         
         n_exps = len (features_selections) * len(scaling_methods) * len(evr_targets) * len(n_clusts) * len(methods)
         n_exps_per_fs = len(scaling_methods) * len(evr_targets) * len(n_clusts) * len(methods)
@@ -126,11 +123,7 @@ class Clusterer :
                             feature_selection:str = 'incl',
                             verbose:bool = True):
         
-        if hasattr(self, 'colinearity_handler'):
-            colinearity_handler = self.colinearity_handler
-        else : 
-            colinearity_handler = ColinearityHandler(verbose = False, use_positions =self.use_positions)
-            self.colinearity_handler = colinearity_handler
+        colinearity_handler = self._manage_colinearity_handler()
             
         selected_df = colinearity_handler.get_data(feature_selection=feature_selection)
         if scaling is not None:
@@ -162,7 +155,8 @@ class Clusterer :
                         method:str = 'kmeans',
                         scaling:str = 'standard',
                         feature_selection:str = 'incl',
-                        verbose:bool = True):  
+                        verbose:bool = True, 
+                        return_data:bool = False):  
             X_proj, labels = self.customized_clustering(evr, n_clust, method, scaling, feature_selection, verbose)
             if axs == None :
                 fig, axs = plt.subplots(1,3,figsize = (18,5));
@@ -182,17 +176,14 @@ class Clusterer :
             _metrics = pd.DataFrame([[silhouette, entropy, entropy_silhouette]], columns = ['Silhouette','Weighted Entropy', 'EW Silhouette'])
             sns.barplot(data = _metrics, ax = axs[2]);
             axs[2].set_title("Metrics score")
+            if return_data:
+                return X_proj, labels
             
 
     def plot_data(self, scalings:list = ['minmax','standard','robust'], feature_selections:list = ['incl','excl','autoexcl']):
 
-        if hasattr(self, 'colinearity_handler'):
-            colinearity_handler = self.colinearity_handler
-        else : 
-            colinearity_handler = ColinearityHandler(verbose = False, use_positions =self.use_positions)
-            self.colinearity_handler = colinearity_handler
-
-        fig, axs = plt.subplots(len(feature_selections), len(scalings), figsize = (4* len(scalings), 4* len(feature_selections)))
+        colinearity_handler = self._manage_colinearity_handler()
+        fig, axs = plt.subplots(len(feature_selections), len(scalings), figsize = (5* len(scalings), 5* len(feature_selections)))
         
         for i, fs in enumerate(feature_selections):
             _df = colinearity_handler.get_data(fs)
@@ -204,7 +195,28 @@ class Clusterer :
                 sns.scatterplot(data = _X_proj, x = 'PC_1', y = 'PC_2', alpha = 0.5, ax = axs[i,j]);
                 axs[i,j].set_title(f"{sc} scaling, feature selection : {fs}");
                      
+    def get_scaled_data(self, scaling:str = 'robust', feature_selection:str= 'incl', retrieve_name:bool=True):
+        
+        colinearity_handler = self._manage_colinearity_handler()
+        _df = colinearity_handler.get_data(feature_selection)
+        sc = SCALERS[scaling]()
+        _df_scaled = sc.fit_transform(_df)
+        _X_proj = PCA().fit_transform(_df_scaled)
+        _X_proj = pd.DataFrame(_X_proj, columns = [f"PC_{i+1}" for i in range(_X_proj.shape[1])], index = _df.index)
+        if retrieve_name:
+            _X_proj.index = [pid2name[int(x.split("_")[0])] + "_" +  x.split("_")[1] for x in _X_proj.index]
+        
+        return _X_proj
+
     
+    
+    def _manage_colinearity_handler(self):
+        if hasattr(self, 'colinearity_handler'):
+            colinearity_handler = self.colinearity_handler
+        else : 
+            colinearity_handler = ColinearityHandler(verbose = False, use_positions =self.use_positions)
+            self.colinearity_handler = colinearity_handler
+        return colinearity_handler        
          
     @staticmethod    
     def clusterize(X_proj, n_clust:int, method:str):
