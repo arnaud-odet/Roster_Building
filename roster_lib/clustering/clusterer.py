@@ -33,7 +33,11 @@ SCALINGS = ['standard', 'robust', 'minmax']
 FEATURES_SELECTIONS = ['incl', 'excl', 'autoexcl']
 
 DEFAULT_ALPHA = 1
-
+METRICS_ASC = {'silhouette_score': False,
+               'davies_bouldin': True,
+               'calinski_harabasz':False,	
+               'entropy': False,
+               'population_std': True}
 
 class Clusterer :
     
@@ -179,7 +183,6 @@ class Clusterer :
             if return_data:
                 return X_proj, labels
             
-
     def plot_data(self, scalings:list = ['minmax','standard','robust'], feature_selections:list = ['incl','excl','autoexcl']):
 
         colinearity_handler = self._manage_colinearity_handler()
@@ -207,9 +210,7 @@ class Clusterer :
             _X_proj.index = [pid2name[int(x.split("_")[0])] + "_" +  x.split("_")[1] for x in _X_proj.index]
         
         return _X_proj
-
-    
-    
+   
     def _manage_colinearity_handler(self):
         if hasattr(self, 'colinearity_handler'):
             colinearity_handler = self.colinearity_handler
@@ -240,4 +241,4 @@ class Clusterer :
     
     
 if __name__ == '__main__' :
-    Clusterer().run_comparison()
+    Clusterer(use_positions=False).run_comparison()

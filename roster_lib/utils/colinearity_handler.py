@@ -111,7 +111,7 @@ class ColinearityHandler :
             loader._handle_duplicated()
         self.df = loader.df
         if not use_positions:
-            self.df.drop(columns = use_positions, inplace=True)
+            self.df.drop(columns = 'position', inplace=True)
         auto_drop_cols = {k : self.auto_excl_vif( v.drop(columns = ['MIN','GP','Season']).dropna()) for k, v in loader.preproc_data.items()}
         self.autoexcl = []
         for v in auto_drop_cols.values():
