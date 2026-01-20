@@ -14,45 +14,54 @@ MANUAL_DROP_COLS = {'Score': ['TS_PCT'],
              'Rebound': ['BOX_OUTS']}
 
 MANUAL_INCLUSION_COLS = {
-    'Score': ['EFG_PCT',
+    'Score': [
+        'EFG_PCT',
         'USG_PCT',
-        'PTS_OFF_TOV',
+        # 'PTS_OFF_TOV',
         'PTS_2ND_CHANCE',
-        'PTS_FB',
+        # 'PTS_FB',
         'PTS_PAINT',
         'DRIVE_PTS',
-        'DRIVE_FG_PCT',
-        'CATCH_SHOOT_PTS',
-        'CATCH_SHOOT_FG_PCT',
-        'PULL_UP_PTS',
-        'PULL_UP_FG_PCT',
+        # 'DRIVE_FG_PCT',
+        # 'CATCH_SHOOT_PTS',
+        # 'CATCH_SHOOT_FG_PCT',
+        # 'PULL_UP_PTS',
+        # 'PULL_UP_FG_PCT',
         # 'PAINT_TOUCH_PTS',
         # 'PAINT_TOUCH_FG_PCT',
         # 'POST_TOUCH_PTS',
         # 'POST_TOUCH_FG_PCT',
         # 'ELBOW_TOUCH_PTS',
         # 'ELBOW_TOUCH_FG_PCT',
+        'FG2A',
+        'FG2_PCT'
         'FG3A',
-        'FG3_PCT'],
-    'Misc': ['OFF_LOOSE_BALLS_RECOVERED',
+        'FG3_PCT',
+        ],
+    'Misc': [
+        'OFF_LOOSE_BALLS_RECOVERED',
         'DEF_LOOSE_BALLS_RECOVERED',
         'PFD',
-        'DRIVE_PF'],
-    'Defense': ['STL',
+        # 'DRIVE_PF',
+        ],
+    'Defense': [
+        'STL',
         'BLK',
-        'DEF_RIM_FGA',
-        'DEF_RIM_FG_PCT',
-        'D_FGA',
-        'D_FG_PCT',
+        # 'DEF_RIM_FGA',
+        # 'DEF_RIM_FG_PCT',
+        # 'D_FGA',
+        # 'D_FG_PCT',
         'PCT_PLUSMINUS',
-        'OPP_PTS_2ND_CHANCE',
-        'OPP_PTS_FB',
-        'OPP_PTS_PAINT',
+        # 'OPP_PTS_2ND_CHANCE',
+        # 'OPP_PTS_FB',
+        # 'OPP_PTS_PAINT',
         'DEFLECTIONS',
         'CHARGES_DRAWN',
-        'CONTESTED_SHOTS_2PT',
-        'CONTESTED_SHOTS_3PT'],
-    'Pass': ['SCREEN_ASSISTS',
+        # 'CONTESTED_SHOTS_2PT',
+        # 'CONTESTED_SHOTS_3PT',
+        ],
+    'Pass': [
+        'SCREEN_ASSISTS',
         # 'PAINT_TOUCH_PASSES',
         # 'PAINT_TOUCH_AST',
         # 'PAINT_TOUCH_TOV',
@@ -65,40 +74,43 @@ MANUAL_INCLUSION_COLS = {
         # 'ELBOW_TOUCH_AST',
         # 'ELBOW_TOUCH_TOV',
         # 'ELBOW_TOUCHES',
-        'FT_AST',
-        'SECONDARY_AST',
-        'POTENTIAL_AST',
-        'AST_TO_PASS_PCT',
-        'DRIVE_PASSES',
-        'DRIVE_AST',
-        'DRIVE_TOV',
-        'FRONT_CT_TOUCHES',
+        # 'FT_AST',
+        # 'SECONDARY_AST',
+        # 'POTENTIAL_AST',
+        # 'AST_TO_PASS_PCT',
+        # 'DRIVE_PASSES',
+        # 'DRIVE_AST',
+        # 'DRIVE_TOV',
+        # 'FRONT_CT_TOUCHES',
         'TIME_OF_POSS',
-        'AVG_SEC_PER_TOUCH',
+        # 'AVG_SEC_PER_TOUCH',
         'AVG_DRIB_PER_TOUCH',
         'AST_PCT',
         'AST_TO',
-        'AST_RATIO'],
-    'Rebound': ['OREB_UNCONTEST',
-        'OREB_CONTEST_PCT',
-        'OREB_CHANCES',
-        'OREB_CHANCE_PCT',
-        'OREB_CHANCE_DEFER',
+        'AST_RATIO'
+        ],
+    'Rebound': [
+        'OREB_UNCONTEST',
+        # 'OREB_CONTEST_PCT',
+        # 'OREB_CHANCES',
+        # 'OREB_CHANCE_PCT',
+        # 'OREB_CHANCE_DEFER',
         'DREB_CONTEST',
         'DREB_UNCONTEST',
-        'DREB_CHANCES',
-        'DREB_CHANCE_PCT',
-        'DREB_CHANCE_DEFER',
-        'AVG_OREB_DIST',
-        'AVG_DREB_DIST',
+        # 'DREB_CHANCES',
+        # 'DREB_CHANCE_PCT',
+        # 'DREB_CHANCE_DEFER',
+        # 'AVG_OREB_DIST',
+        # 'AVG_DREB_DIST',
         'OFF_BOXOUTS',
         'DEF_BOXOUTS',
-        'BOX_OUT_PLAYER_TEAM_REBS',
-        'BOX_OUT_PLAYER_REBS',
-        'PCT_BOX_OUTS_OFF',
-        'PCT_BOX_OUTS_DEF',
-        'PCT_BOX_OUTS_TEAM_REB',
-        'PCT_BOX_OUTS_REB']
+        # 'BOX_OUT_PLAYER_TEAM_REBS',
+        # 'BOX_OUT_PLAYER_REBS',
+        # 'PCT_BOX_OUTS_OFF',
+        # 'PCT_BOX_OUTS_DEF',
+        # 'PCT_BOX_OUTS_TEAM_REB',
+        # 'PCT_BOX_OUTS_REB'
+        ]
     }
 
 class ColinearityHandler :
@@ -113,15 +125,19 @@ class ColinearityHandler :
         if not use_positions:
             self.df.drop(columns = 'position', inplace=True)
         auto_drop_cols = {k : self.auto_excl_vif( v.drop(columns = ['MIN','GP','Season']).dropna()) for k, v in loader.preproc_data.items()}
+        self.autoexcl_dict = auto_drop_cols
         self.autoexcl = []
         for v in auto_drop_cols.values():
             self.autoexcl += v
+        self.excl_dict = MANUAL_DROP_COLS
         self.excl = []
         for v in MANUAL_DROP_COLS.values():
             self.excl += v
+        self.incl_dict = MANUAL_INCLUSION_COLS
         self.incl = []
         for v in MANUAL_INCLUSION_COLS.values():
             self.incl += v
+        
         
     def get_data(self, feature_selection:str):
         return self.df[self.incl] if feature_selection == 'incl' else self.df.drop(columns = self.excl if feature_selection =='excl' else self.autoexcl)

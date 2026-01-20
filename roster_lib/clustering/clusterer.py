@@ -5,7 +5,7 @@ import seaborn as sns
 import os
 from pathlib import Path
 import sys
-sys.path.insert(0, str(Path(__file__).parent.parent))
+import json
 
 from sklearn.preprocessing import MinMaxScaler, RobustScaler, StandardScaler
 from sklearn.decomposition import PCA
@@ -16,7 +16,7 @@ from scipy.stats import entropy
 from roster_lib.utils.colinearity_handler import ColinearityHandler
 from roster_lib.clustering.pca import find_n_PC
 from roster_lib.constants import PREPROC_DATA_PATH
-from id_dict import pid2name, name2pid, pid2pos_bref
+from roster_lib.id_dict import pid2name, name2pid, pid2pos_bref
 
 SCALERS = {'minmax' : MinMaxScaler, 'robust': RobustScaler, 'standard': StandardScaler}
 PENALTY_RATE = 1
@@ -67,6 +67,7 @@ class Clusterer :
         fp = self.preproc_path / f"ARO_clustering_v{version}.csv"
 
         colinearity_handler = self._manage_colinearity_handler()
+        self._record_features(version=version)
         
         n_exps = len (features_selections) * len(scaling_methods) * len(evr_targets) * len(n_clusts) * len(methods)
         n_exps_per_fs = len(scaling_methods) * len(evr_targets) * len(n_clusts) * len(methods)
@@ -162,14 +163,16 @@ class Clusterer :
                         verbose:bool = True, 
                         return_data:bool = False):  
             X_proj, labels = self.customized_clustering(evr, n_clust, method, scaling, feature_selection, verbose)
+            _, counts = np.unique(labels, return_counts= True)
+            counts[::-1].sort()
+            _alpha = 0.1 + ((counts.sum() - counts[0]) / counts.sum() ) * 0.5
+
             if axs == None :
                 fig, axs = plt.subplots(1,3,figsize = (18,5));
-            sns.scatterplot(x = X_proj[:,0], y = X_proj[:,1], hue = labels, alpha = 0.5, palette='bright', ax=axs[0], legend=False);
+            sns.scatterplot(x = X_proj[:,0], y = X_proj[:,1], hue = labels, alpha = _alpha, palette='bright', ax=axs[0], legend=False);
             axs[0].set_xlabel("PC1");
             axs[0].set_ylabel("PC2");
             axs[0].set_title("Visual inspection of clustering along 2 first PCs");
-            _, counts = np.unique(labels, return_counts= True)
-            counts[::-1].sort()
             sns.barplot(data = counts, ax = axs[1]);
             axs[1].set_title("Cluster population histogram");
             axs[1].set_xlabel("Cluster");
@@ -210,7 +213,8 @@ class Clusterer :
             _X_proj.index = [pid2name[int(x.split("_")[0])] + "_" +  x.split("_")[1] for x in _X_proj.index]
         
         return _X_proj
-   
+
+    # Features handling
     def _manage_colinearity_handler(self):
         if hasattr(self, 'colinearity_handler'):
             colinearity_handler = self.colinearity_handler
@@ -218,7 +222,28 @@ class Clusterer :
             colinearity_handler = ColinearityHandler(verbose = False, use_positions =self.use_positions)
             self.colinearity_handler = colinearity_handler
         return colinearity_handler        
-         
+
+    def _record_features(self, version:int = None):
+        colinearity_handler = self._manage_colinearity_handler()
+        features = {
+            "incl": colinearity_handler.incl_dict,
+            "excl": colinearity_handler.excl_dict,
+            "autoexcl": colinearity_handler.autoexcl_dict
+        }
+        if version == None :
+            version = self.last_version
+        filepath = self.preproc_path / f'features_v{version}.json'
+        with open(filepath, "w") as f:
+            json.dump(features, f, indent= 4)
+    
+    def load_features(self, version:int = None):
+        if version == None :
+            version = self.last_version
+        filepath = self.preproc_path / f'features_v{version}.json'
+        with open(filepath, "r") as f:
+            data = json.load(f)
+        return data        
+    
     @staticmethod    
     def clusterize(X_proj, n_clust:int, method:str):
         if '_' in method :
