@@ -34,7 +34,7 @@ MANUAL_INCLUSION_COLS = {
         # 'ELBOW_TOUCH_PTS',
         # 'ELBOW_TOUCH_FG_PCT',
         'FG2A',
-        'FG2_PCT'
+        'FG2_PCT',
         'FG3A',
         'FG3_PCT',
         ],

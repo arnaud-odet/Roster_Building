@@ -32,7 +32,7 @@ METHODS = ['kmeans',
 SCALINGS = ['standard', 'robust', 'minmax']
 FEATURES_SELECTIONS = ['incl', 'excl', 'autoexcl']
 
-DEFAULT_ALPHA = 1
+DEFAULT_ALPHA, DEFAULT_BETA = 1, 1
 METRICS_ASC = {'silhouette_score': False,
                'davies_bouldin': True,
                'calinski_harabasz':False,	
@@ -41,11 +41,12 @@ METRICS_ASC = {'silhouette_score': False,
 
 class Clusterer :
     
-    def __init__(self, use_positions:bool=True, alpha:float = DEFAULT_ALPHA):
+    def __init__(self, use_positions:bool=True, alpha:float = DEFAULT_ALPHA, beta:float = DEFAULT_BETA):
         self.preproc_path = PREPROC_DATA_PATH / 'clustering'
         self.last_version = max([int(f.split('_')[-1][1:-4]) for f in os.listdir(self.preproc_path) if 'clustering' in f])
         self.use_positions = use_positions
         self.alpha = alpha
+        self.beta = beta
         self.rdf = self.load_results()
         
     def load_results(self, version:int = None):
@@ -54,6 +55,7 @@ class Clusterer :
         fp = self.preproc_path / f"ARO_clustering_v{version}.csv"
         df = pd.read_csv(fp, index_col = 0)
         df['entropy_silhouette'] = df['silhouette_score'] * df['entropy'] ** self.alpha
+        df['evr_e_w_silhouette'] = df['entropy_silhouette'] * df['evr'] ** self.beta
         return df
 
     def run_comparison(self,
@@ -75,7 +77,7 @@ class Clusterer :
         n_exps_per_evr = len(n_clusts) * len(methods)
         n_exps_per_method = len(n_clusts)
         results = []
-        best_score, best_penalized_score, best_entropy_weighted_score = 0, 0, 0
+        best_score, best_evr_ew_ss, best_entropy_weighted_score = 0, 0, 0
         for m, fs in enumerate(features_selections):
             for i, scaling_method in enumerate(scaling_methods) :
                 scaler = SCALERS[scaling_method]()
@@ -109,13 +111,12 @@ class Clusterer :
                             counter = m* n_exps_per_fs + i * n_exps_per_scaler + j * n_exps_per_evr + k * n_exps_per_method + l
                             best_score = max(best_score, silhouette)
                             best_entropy_weighted_score = max(best_entropy_weighted_score, silhouette * entropy_score ** self.alpha)
-                            best_penalized_score = max(best_penalized_score, silhouette - pop_std * PENALTY_RATE)
-                            
+                            best_evr_ew_ss = max(best_evr_ew_ss, silhouette * evr * entropy_score ** self.alpha)
                             msg = f"Processing experiment n° {counter+1:>4} of {n_exps} | "
                             msg += f"Best Silhouette Score = {best_score:.3f} | "
-                            msg += f"Best Entropy-weighted Silhouette Score = {best_entropy_weighted_score:.3f} | "
-                            msg += f"Best Penalized Score = {best_penalized_score:.3f}"
-                            print (msg, end = '\r')
+                            msg += f"Best Entropy-weighted Silhouette Score = {best_entropy_weighted_score:.3f} "
+                            msg += f", considering EVR = {best_evr_ew_ss:.3f} | "
+                            print (msg, end = '\r' if counter+1 < n_exps else '\n')
         df = pd.DataFrame(results)
         df.to_csv(fp)
         return df       
@@ -169,6 +170,7 @@ class Clusterer :
 
             if axs == None :
                 fig, axs = plt.subplots(1,3,figsize = (18,5));
+            # print(X_proj.shape)
             sns.scatterplot(x = X_proj[:,0], y = X_proj[:,1], hue = labels, alpha = _alpha, palette='bright', ax=axs[0], legend=False);
             axs[0].set_xlabel("PC1");
             axs[0].set_ylabel("PC2");
@@ -266,4 +268,4 @@ class Clusterer :
     
     
 if __name__ == '__main__' :
-    Clusterer(use_positions=False).run_comparison()
+    Clusterer(use_positions=False, alpha=0.5, beta = 1).run_comparison()
