@@ -59,6 +59,7 @@ class Clusterer :
         return df
 
     def run_comparison(self,
+                       n_runs:int = 5,
                        features_selections: list = FEATURES_SELECTIONS,
                        scaling_methods: list = SCALINGS,
                        evr_targets: list = EVRS,
@@ -67,15 +68,18 @@ class Clusterer :
         
         version = self.last_version +1 
         fp = self.preproc_path / f"ARO_clustering_v{version}.csv"
-
-        colinearity_handler = self._manage_colinearity_handler()
-        self._record_features(version=version)
-        
         n_exps = len (features_selections) * len(scaling_methods) * len(evr_targets) * len(n_clusts) * len(methods)
         n_exps_per_fs = len(scaling_methods) * len(evr_targets) * len(n_clusts) * len(methods)
         n_exps_per_scaler = len(evr_targets) * len(n_clusts) * len(methods)
         n_exps_per_evr = len(n_clusts) * len(methods)
         n_exps_per_method = len(n_clusts)
+
+        print(f"Running clustering comparison : {n_exps} experiments consisting in {n_runs} runs each.")
+        print(f"Processing FeatureHandler ...", end = '\r')
+        colinearity_handler = self._manage_colinearity_handler()
+        print(f"Processing FeatureHandler COMPLETED")
+        self._record_features(version=version)
+        
         results = []
         best_score, best_evr_ew_ss, best_entropy_weighted_score = 0, 0, 0
         for m, fs in enumerate(features_selections):
@@ -91,30 +95,32 @@ class Clusterer :
                     _X_proj = _PCA.transform(df_scaled) 
                     for k, method in enumerate(methods):
                         for l, n_clust in enumerate(n_clusts):
-                            labels = self.clusterize(X_proj= _X_proj, n_clust= n_clust, method=method)
-                            silhouette = silhouette_score(_X_proj, labels) 
-                            db = davies_bouldin_score(_X_proj, labels)
-                            ch = calinski_harabasz_score(_X_proj, labels)
-                            pop_std = self._pop_std(labels)
-                            entropy_score = self.normalized_entropy(labels)
+                            silhouette, db, ch, pop_std, entropy_score = [], [], [], [], []
+                            for _ in range(n_runs):
+                                labels = self.clusterize(X_proj= _X_proj, n_clust= n_clust, method=method)
+                                silhouette.append(silhouette_score(_X_proj, labels)) 
+                                db.append(davies_bouldin_score(_X_proj, labels))
+                                ch.append(calinski_harabasz_score(_X_proj, labels))
+                                pop_std.append(self._pop_std(labels))
+                                entropy_score.append(self.normalized_entropy(labels))
                             results.append({'feature_selection':fs,
                                             'method': method, 
                                             'scaling': scaling_method, 
                                             'evr': evr, 
                                             'n_PC': n_PCA , 
                                             'n_clust': n_clust, 
-                                            'silhouette_score': silhouette,
-                                            'davies_bouldin': db,
-                                            'calinski_harabasz' : ch,
-                                            'entropy': entropy_score,
-                                            'population_std': pop_std})
+                                            'silhouette_score': np.mean(silhouette),
+                                            'davies_bouldin': np.mean(db),
+                                            'calinski_harabasz' : np.mean(ch),
+                                            'entropy': np.mean(entropy_score),
+                                            'population_std': np.mean(pop_std)})
                             counter = m* n_exps_per_fs + i * n_exps_per_scaler + j * n_exps_per_evr + k * n_exps_per_method + l
-                            best_score = max(best_score, silhouette)
-                            best_entropy_weighted_score = max(best_entropy_weighted_score, silhouette * entropy_score ** self.alpha)
-                            best_evr_ew_ss = max(best_evr_ew_ss, silhouette * evr * entropy_score ** self.alpha)
+                            best_score = max(best_score, np.mean(silhouette))
+                            best_entropy_weighted_score = max(best_entropy_weighted_score, np.mean(silhouette) * np.mean(entropy_score) ** self.alpha)
+                            best_evr_ew_ss = max(best_evr_ew_ss, np.mean(silhouette) * evr ** self.beta * np.mean(entropy_score) ** self.alpha)
                             msg = f"Processing experiment n° {counter+1:>4} of {n_exps} | "
                             msg += f"Best Silhouette Score = {best_score:.3f} | "
-                            msg += f"Best Entropy-weighted Silhouette Score = {best_entropy_weighted_score:.3f} "
+                            msg += f"Best Entropy-weighted Silhouette Score = {best_entropy_weighted_score:.3f}"
                             msg += f", considering EVR = {best_evr_ew_ss:.3f} | "
                             print (msg, end = '\r' if counter+1 < n_exps else '\n')
         df = pd.DataFrame(results)
@@ -166,12 +172,11 @@ class Clusterer :
             X_proj, labels = self.customized_clustering(evr, n_clust, method, scaling, feature_selection, verbose)
             _, counts = np.unique(labels, return_counts= True)
             counts[::-1].sort()
-            _alpha = 0.1 + ((counts.sum() - counts[0]) / counts.sum() ) * 0.5
 
             if axs == None :
                 fig, axs = plt.subplots(1,3,figsize = (18,5));
             # print(X_proj.shape)
-            sns.scatterplot(x = X_proj[:,0], y = X_proj[:,1], hue = labels, alpha = _alpha, palette='bright', ax=axs[0], legend=False);
+            sns.scatterplot(x = X_proj[:,0], y = X_proj[:,1], hue = labels, alpha = 0.4, palette='bright', ax=axs[0], legend=False);
             axs[0].set_xlabel("PC1");
             axs[0].set_ylabel("PC2");
             axs[0].set_title("Visual inspection of clustering along 2 first PCs");

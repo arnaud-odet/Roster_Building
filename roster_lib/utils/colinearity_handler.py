@@ -2,10 +2,11 @@ import pandas as pd
 import numpy as np
 import os
 from pathlib import Path
-import copy
+import json
 from statsmodels.stats.outliers_influence import variance_inflation_factor as vif
 
 from roster_lib.preprocessing.loader import Loader
+from roster_lib.constants import PREPROC_DATA_PATH
 
 MANUAL_DROP_COLS = {'Score': ['TS_PCT'],
              'Misc': ['DIST_MILES', 'AVG_SPEED', 'LOOSE_BALLS_RECOVERED'],
@@ -115,30 +116,43 @@ MANUAL_INCLUSION_COLS = {
 
 class ColinearityHandler :
     
-    def __init__(self, use_positions:bool=True, verbose :bool = True):
+    def __init__(self, use_positions:bool=True, feature_version:int = None, verbose :bool = True):
         loader = Loader()
         self.verbose = verbose
         if not hasattr(loader, 'preproc_data'):            
             loader._load_raw_data()
             loader._handle_duplicated()
+        self.loader = loader
         self.df = loader.df
         if not use_positions:
             self.df.drop(columns = 'position', inplace=True)
-        auto_drop_cols = {k : self.auto_excl_vif( v.drop(columns = ['MIN','GP','Season']).dropna()) for k, v in loader.preproc_data.items()}
-        self.autoexcl_dict = auto_drop_cols
+        self.feature_version = feature_version
+        self._create_features_dict()
+        
+    def _create_features_dict(self):
+        if self.feature_version == None :
+            auto_drop_cols = {k : self.auto_excl_vif( v.drop(columns = ['MIN','GP','Season']).dropna()) for k, v in self.loader.preproc_data.items()}
+            self.autoexcl_dict = auto_drop_cols
+            self.excl_dict = MANUAL_DROP_COLS
+            self.incl_dict = MANUAL_INCLUSION_COLS
+        else :
+            feature_filepath = PREPROC_DATA_PATH / 'clustering' / f'feature_v{self.feature_version}.json'
+            with open(feature_filepath, "r") as f:
+                features = json.load(f)
+            self.autoexcl_dict = features['autoexcl']
+            self.excl_dict = features['excl']
+            self.incl_dict = features['incl']
+    
         self.autoexcl = []
         for v in auto_drop_cols.values():
             self.autoexcl += v
-        self.excl_dict = MANUAL_DROP_COLS
         self.excl = []
         for v in MANUAL_DROP_COLS.values():
             self.excl += v
-        self.incl_dict = MANUAL_INCLUSION_COLS
         self.incl = []
         for v in MANUAL_INCLUSION_COLS.values():
             self.incl += v
-        
-        
+
     def get_data(self, feature_selection:str):
         return self.df[self.incl] if feature_selection == 'incl' else self.df.drop(columns = self.excl if feature_selection =='excl' else self.autoexcl)
     
