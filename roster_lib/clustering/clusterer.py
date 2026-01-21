@@ -38,13 +38,21 @@ METRICS_ASC = {'silhouette_score': False,
                'calinski_harabasz':False,	
                'entropy': False,
                'population_std': True}
+METRICS_LEVELS = {
+    'Silhouette': [0.25, 0.5],
+    'W Entropy': [0.5, 0.8],
+    'EW Silhouette': [0.3, 0.4],
+    'EVR-EW Silhouette': [0.2, 0.3] 
+}
+COLORS = ['darkred', 'darkorange', 'seagreen']
 
 class Clusterer :
     
-    def __init__(self, use_positions:bool=True, alpha:float = DEFAULT_ALPHA, beta:float = DEFAULT_BETA):
+    def __init__(self, use_positions:bool=True, load_feature_version:int = None, alpha:float = DEFAULT_ALPHA, beta:float = DEFAULT_BETA):
         self.preproc_path = PREPROC_DATA_PATH / 'clustering'
         self.last_version = max([int(f.split('_')[-1][1:-4]) for f in os.listdir(self.preproc_path) if 'clustering' in f])
         self.use_positions = use_positions
+        self.load_feature_version = load_feature_version
         self.alpha = alpha
         self.beta = beta
         self.rdf = self.load_results()
@@ -174,7 +182,7 @@ class Clusterer :
             counts[::-1].sort()
 
             if axs == None :
-                fig, axs = plt.subplots(1,3,figsize = (18,5));
+                fig, axs = plt.subplots(1,3,figsize = (20,5));
             # print(X_proj.shape)
             sns.scatterplot(x = X_proj[:,0], y = X_proj[:,1], hue = labels, alpha = 0.4, palette='bright', ax=axs[0], legend=False);
             axs[0].set_xlabel("PC1");
@@ -184,12 +192,18 @@ class Clusterer :
             axs[1].set_title("Cluster population histogram");
             axs[1].set_xlabel("Cluster");
             axs[1].set_ylabel("Count");
+
             silhouette = silhouette_score(X_proj, labels)
             entropy = self.normalized_entropy(labels)
             entropy_silhouette = silhouette * entropy ** self.alpha
-            _metrics = pd.DataFrame([[silhouette, entropy, entropy_silhouette]], columns = ['Silhouette','Weighted Entropy', 'EW Silhouette'])
-            sns.barplot(data = _metrics, ax = axs[2]);
-            axs[2].set_title("Metrics score")
+            evr_ew_silhouette = entropy_silhouette * evr ** self.beta
+            metrics = ['Silhouette', 'W Entropy', 'EW Silhouette', 'EVR-EW Silhouette']
+            scores = [silhouette, entropy, entropy_silhouette, evr_ew_silhouette]
+            colors = [COLORS[sum([score > threshold for threshold in METRICS_LEVELS[k]])] for score, k in zip(scores, metrics)]
+            bar_container = axs[2].bar(metrics, scores, color = colors)
+            axs[2].set(ylabel='Metric value', title='Clustering metrics', ylim=(0, 1))
+            axs[2].bar_label(bar_container, fmt='{:,.3f}')
+            
             if return_data:
                 return X_proj, labels
             
@@ -226,7 +240,7 @@ class Clusterer :
         if hasattr(self, 'colinearity_handler'):
             colinearity_handler = self.colinearity_handler
         else : 
-            colinearity_handler = ColinearityHandler(verbose = False, use_positions =self.use_positions)
+            colinearity_handler = ColinearityHandler(verbose = False, use_positions =self.use_positions, feature_version= self.load_feature_version)
             self.colinearity_handler = colinearity_handler
         return colinearity_handler        
 
@@ -273,4 +287,4 @@ class Clusterer :
     
     
 if __name__ == '__main__' :
-    Clusterer(use_positions=False, alpha=0.5, beta = 1).run_comparison()
+    Clusterer(use_positions=True, load_feature_version= 1, alpha=0.5, beta = 1).run_comparison()
