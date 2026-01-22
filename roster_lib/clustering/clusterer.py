@@ -10,7 +10,7 @@ import json
 from sklearn.preprocessing import MinMaxScaler, RobustScaler, StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans, AgglomerativeClustering
-from sklearn.metrics import silhouette_score, davies_bouldin_score, calinski_harabasz_score
+from sklearn.metrics import silhouette_score, davies_bouldin_score, calinski_harabasz_score, silhouette_samples
 from scipy.stats import entropy
 
 from roster_lib.utils.colinearity_handler import ColinearityHandler
@@ -21,13 +21,13 @@ from roster_lib.id_dict import pid2name, name2pid, pid2pos_bref
 SCALERS = {'minmax' : MinMaxScaler, 'robust': RobustScaler, 'standard': StandardScaler}
 PENALTY_RATE = 1
 
-EVRS = [0.4, 0.5, 0.6, 0.7, 0.8, 0.85, 0.9, 0.95, 0.98]
-N_CLUSTS = range(2,15)
+EVRS = [0.6, 0.7, 0.8, 0.85, 0.9, 0.95, 0.98]
+N_CLUSTS = range(2,16)
 METHODS = ['kmeans',
             'agg_ward',
             'agg_average',
             'agg_complete',
-            # 'agg_single'
+            'agg_single'
             ]
 SCALINGS = ['standard', 'robust', 'minmax']
 FEATURES_SELECTIONS = ['incl', 'excl', 'autoexcl']
@@ -40,10 +40,12 @@ METRICS_ASC = {'silhouette_score': False,
                'population_std': True}
 METRICS_LEVELS = {
     'Silhouette': [0.25, 0.5],
-    'W Entropy': [0.5, 0.8],
-    'EW Silhouette': [0.3, 0.4],
-    'EVR-EW Silhouette': [0.2, 0.3] 
+    'SilhouetteW': [0.25, 0.5],
+    'Entropy': [0.5, 0.8],
+    'EW Silh.': [0.3, 0.4],
+    'EVR-EW Silh.': [0.2, 0.3] 
 }
+
 COLORS = ['darkred', 'darkorange', 'seagreen']
 
 class Clusterer :
@@ -56,14 +58,21 @@ class Clusterer :
         self.alpha = alpha
         self.beta = beta
         self.rdf = self.load_results()
+        self.metrics = {
+            'silhouette': {'function': silhouette_score, 'ascending' : False},
+            'silhouetteW': {'function': self._silhouetteW, 'ascending' : False},
+            'davies_bouldin': {'function': davies_bouldin_score, 'ascending' : True},
+            'calinski_harabasz': {'function': calinski_harabasz_score, 'ascending' : False},
+            'ball_hall': {'function': self._ball_hall, 'ascending' : True},
+        }
         
     def load_results(self, version:int = None):
         if version is None :
             version = self.last_version
         fp = self.preproc_path / f"ARO_clustering_v{version}.csv"
         df = pd.read_csv(fp, index_col = 0)
-        df['entropy_silhouette'] = df['silhouette_score'] * df['entropy'] ** self.alpha
-        df['evr_e_w_silhouette'] = df['entropy_silhouette'] * df['evr'] ** self.beta
+        df['e_w_silhouette'] = df['silhouette'] * df['entropy'] ** self.alpha
+        df['evr_e_w_silhouette'] = df['e_w_silhouette'] * df['evr'] ** self.beta
         return df
 
     def run_comparison(self,
@@ -82,14 +91,14 @@ class Clusterer :
         n_exps_per_evr = len(n_clusts) * len(methods)
         n_exps_per_method = len(n_clusts)
 
-        print(f"Running clustering comparison : {n_exps} experiments consisting in {n_runs} runs each.")
-        print(f"Processing FeatureHandler ...", end = '\r')
+        print(f"Running clustering comparison version {version}: {n_exps} experiments consisting in {n_runs} runs each.")
+        print(f"Data extraction in progress ...", end = '\r')
         colinearity_handler = self._manage_colinearity_handler()
-        print(f"Processing FeatureHandler COMPLETED")
+        print(f"Data extraction COMPLETED.     ")
         self._record_features(version=version)
         
         results = []
-        best_score, best_evr_ew_ss, best_entropy_weighted_score = 0, 0, 0
+        best_si, best_evr_ew_si, best_ew_si, best_sw = 0, 0, 0, 0
         for m, fs in enumerate(features_selections):
             for i, scaling_method in enumerate(scaling_methods) :
                 scaler = SCALERS[scaling_method]()
@@ -103,33 +112,33 @@ class Clusterer :
                     _X_proj = _PCA.transform(df_scaled) 
                     for k, method in enumerate(methods):
                         for l, n_clust in enumerate(n_clusts):
-                            silhouette, db, ch, pop_std, entropy_score = [], [], [], [], []
+                            _metrics_lists = {key : [] for key in self.metrics.keys()}
+                            _metrics_lists.update({'entropy': []})
                             for _ in range(n_runs):
                                 labels = self.clusterize(X_proj= _X_proj, n_clust= n_clust, method=method)
-                                silhouette.append(silhouette_score(_X_proj, labels)) 
-                                db.append(davies_bouldin_score(_X_proj, labels))
-                                ch.append(calinski_harabasz_score(_X_proj, labels))
-                                pop_std.append(self._pop_std(labels))
-                                entropy_score.append(self.normalized_entropy(labels))
-                            results.append({'feature_selection':fs,
+                                _metrics = self._compute_metrics(_X_proj, labels)
+                                for key,val in _metrics_lists.items():
+                                    val.append(_metrics[key])
+                            _exp_metrics = {key: np.mean(val) for key,val in _metrics_lists.items()}
+                            _exp_params = {'feature_selection':fs,
                                             'method': method, 
                                             'scaling': scaling_method, 
                                             'evr': evr, 
                                             'n_PC': n_PCA , 
-                                            'n_clust': n_clust, 
-                                            'silhouette_score': np.mean(silhouette),
-                                            'davies_bouldin': np.mean(db),
-                                            'calinski_harabasz' : np.mean(ch),
-                                            'entropy': np.mean(entropy_score),
-                                            'population_std': np.mean(pop_std)})
+                                            'n_clust': n_clust,
+                                            }
+                            _exp_params.update(_exp_metrics)
+                            results.append(_exp_params)
                             counter = m* n_exps_per_fs + i * n_exps_per_scaler + j * n_exps_per_evr + k * n_exps_per_method + l
-                            best_score = max(best_score, np.mean(silhouette))
-                            best_entropy_weighted_score = max(best_entropy_weighted_score, np.mean(silhouette) * np.mean(entropy_score) ** self.alpha)
-                            best_evr_ew_ss = max(best_evr_ew_ss, np.mean(silhouette) * evr ** self.beta * np.mean(entropy_score) ** self.alpha)
-                            msg = f"Processing experiment n° {counter+1:>4} of {n_exps} | "
-                            msg += f"Best Silhouette Score = {best_score:.3f} | "
-                            msg += f"Best Entropy-weighted Silhouette Score = {best_entropy_weighted_score:.3f}"
-                            msg += f", considering EVR = {best_evr_ew_ss:.3f} | "
+                            best_si = max(best_si, _exp_metrics['silhouette'])
+                            best_sw = max(best_sw, _exp_metrics['silhouetteW'])
+                            best_ew_si = max(best_ew_si, _exp_metrics['silhouette'] * _exp_metrics['entropy'] ** self.alpha)
+                            best_evr_ew_si = max(best_evr_ew_si, _exp_metrics['silhouette'] * evr ** self.beta * _exp_metrics['entropy'] ** self.alpha)
+                            msg = f"Processing experiment n° {counter+1:>4} of {n_exps}. Best scores: "
+                            msg += f"Silhouette Index = {best_si:.3f} | "
+                            msg += f"SilhouetteW = {best_sw:.3f} | "
+                            msg += f"Entropy-weighted Silhouette = {best_ew_si:.3f} | "
+                            msg += f"EVR-EW Silhouette = {best_evr_ew_si:.3f} | "
                             print (msg, end = '\r' if counter+1 < n_exps else '\n')
         df = pd.DataFrame(results)
         df.to_csv(fp)
@@ -158,14 +167,9 @@ class Clusterer :
         pca.fit(df_scaled)
         X_proj = pca.transform(df_scaled) 
         labels = self.clusterize(X_proj, n_clust, method)
-        silhouette = silhouette_score(X_proj, labels)
-        db = davies_bouldin_score(X_proj, labels)
-        ch = calinski_harabasz_score(X_proj, labels)
-        pop_std = self._pop_std(labels)
-        entropy_score = self.normalized_entropy(labels)
-        entropy_silhouette = silhouette * entropy_score ** self.alpha
+        _metrics = self._compute_metrics(X_proj, labels)
         if verbose :
-            print(f"Silhouette: {silhouette:.3f} | Davies-Bouldin: {db:.3f} | Calinski-Harabasz: {ch:.3f} | Normalized Entropy : {entropy_score:.3f} | Population STD: {pop_std:.3f} | Entropy-weighted Silhouette: {entropy_silhouette:.3f}")
+            print(f"Silhouette: {_metrics['silhouette']:.3f} | SilhouetteW: {_metrics['silhouetteW']:.3f} | Davies-Bouldin: {_metrics['davies_bouldin']:.3f} | Calinski-Harabasz: {_metrics['calinski_harabasz']:.3f} | Ball-Hall: {_metrics['ball_hall']:.3f} | Normalized Entropy : {_metrics['entropy']:.3f}")
         return X_proj, labels  
     
     def plot_clustering(self,
@@ -180,29 +184,46 @@ class Clusterer :
             X_proj, labels = self.customized_clustering(evr, n_clust, method, scaling, feature_selection, verbose)
             _, counts = np.unique(labels, return_counts= True)
             counts[::-1].sort()
+            cluster_ids = [int(i+1) for i in range(counts.shape[0])]
 
             if axs == None :
-                fig, axs = plt.subplots(1,3,figsize = (20,5));
+                fig, axs = plt.subplots(1,4,figsize = (24,5));
             # print(X_proj.shape)
             sns.scatterplot(x = X_proj[:,0], y = X_proj[:,1], hue = labels, alpha = 0.4, palette='bright', ax=axs[0], legend=False);
             axs[0].set_xlabel("PC1");
             axs[0].set_ylabel("PC2");
             axs[0].set_title("Visual inspection of clustering along 2 first PCs");
+            
             sns.barplot(data = counts, ax = axs[1]);
             axs[1].set_title("Cluster population histogram");
             axs[1].set_xlabel("Cluster");
+            axs[1].set_xticks(range(len(cluster_ids)))
+            axs[1].set_xticklabels(cluster_ids);
             axs[1].set_ylabel("Count");
 
-            silhouette = silhouette_score(X_proj, labels)
-            entropy = self.normalized_entropy(labels)
+            _metrics = self._compute_metrics(X_proj, labels)
+            silhouette = _metrics['silhouette']
+            silhouetteW = _metrics['silhouetteW']
+            entropy = _metrics['entropy']
             entropy_silhouette = silhouette * entropy ** self.alpha
             evr_ew_silhouette = entropy_silhouette * evr ** self.beta
-            metrics = ['Silhouette', 'W Entropy', 'EW Silhouette', 'EVR-EW Silhouette']
-            scores = [silhouette, entropy, entropy_silhouette, evr_ew_silhouette]
+            metrics = ['Silhouette', 'SilhouetteW' ,'Entropy', 'EW Silh.', 'EVR-EW Silh.']
+            scores = [silhouette, silhouetteW, entropy, entropy_silhouette, evr_ew_silhouette]
             colors = [COLORS[sum([score > threshold for threshold in METRICS_LEVELS[k]])] for score, k in zip(scores, metrics)]
             bar_container = axs[2].bar(metrics, scores, color = colors)
             axs[2].set(ylabel='Metric value', title='Clustering metrics', ylim=(0, 1))
             axs[2].bar_label(bar_container, fmt='{:,.3f}')
+            
+            cluster_df = self.colinearity_handler.df.copy()
+            cluster_df['id'] = [int(x.split('_')[0]) for x in cluster_df.index]
+            cluster_df['name'] = cluster_df['id'].map(pid2name)
+            cluster_df['Position'] = cluster_df.index.map(pid2pos_bref)
+            cluster_df['Cluster'] = labels 
+            cluster_df['Cluster'] = cluster_df['Cluster'].map( (cluster_df['Cluster'].value_counts() + cluster_df['Cluster'].value_counts().index / 1000 ).rank(ascending=False)) # re-ordering clusters ID, and adding a small delta to diffeentiate equailities 
+            sns.heatmap(cluster_df.pivot_table(index = 'Cluster', columns = ['Position'], values = 'id', aggfunc= 'count').fillna(0).astype(int)[['PG','SG','SF','PF','C']],
+                annot= True, fmt = 'd', cmap = 'coolwarm', cbar=False, ax = axs[3]);
+            axs[3].set_title("Cluster repartition vs positions");
+            axs[3].set_yticklabels(cluster_ids)
             
             if return_data:
                 return X_proj, labels
@@ -234,6 +255,11 @@ class Clusterer :
             _X_proj.index = [pid2name[int(x.split("_")[0])] + "_" +  x.split("_")[1] for x in _X_proj.index]
         
         return _X_proj
+
+    def _compute_metrics(self, X, labels):
+        _metrics = {k : v['function'](X, labels) for k,v in self.metrics.items()}
+        _metrics['entropy'] = self.normalized_entropy(labels)
+        return _metrics
 
     # Features handling
     def _manage_colinearity_handler(self):
@@ -284,7 +310,83 @@ class Clusterer :
         freq = counts / counts.sum()
         return entropy(freq) / np.log(unique.shape[0])
     
-    
-    
+    @staticmethod
+    def _silhouetteW(X, labels):
+        """
+        Compute weighted silhouette score (SilhouetteW metric).
+        Args:
+            X: array-like of shape (n_samples, n_features) - The data
+            labels: array-like of shape (n_samples,) - Cluster labels
+        
+        Returns:
+            float: SilhouetteW score
+        """
+        ssa = silhouette_samples(X, labels)
+        # Get unique clusters and their counts
+        # unique_labels: (n_clusters,), inverse: (n_samples,), counts: (n_clusters,)
+        unique_labels, inverse_indices, counts = np.unique(
+            labels, return_inverse=True, return_counts=True
+        )
+        
+        nns = np.sum(counts > 1)
+        if nns == 0:
+            return 0.0
+        
+        populations = counts[inverse_indices]
+        return np.sum(ssa / populations) / nns
+
+    @staticmethod
+    def _ball_hall(X, labels):
+        """
+        Compute the Ball-Hall index.
+        
+        Args:
+            X: array-like of shape (n_samples, n_features) - The data points
+            labels: array-like of shape (n_samples,) - Cluster labels for each point
+        
+        Returns:
+            float: Ball-Hall index (negative value, higher is better, closer to 0)
+        """
+        
+        # Get unique clusters and remap labels to contiguous indices
+        # unique_labels: (n_clusters,)
+        # inverse: (n_samples,) - contiguous indices [0, 1, 2, ...]
+        # counts: (n_clusters,)
+        unique_labels, inverse, counts = np.unique(
+            labels, return_inverse=True, return_counts=True
+        )
+        
+        n_clusters = len(unique_labels)
+        n_features = X.shape[1]
+        
+        # Compute centroids using bincount (very fast)
+        # centroids: (n_clusters, n_features)
+        centroids = np.zeros((n_clusters, n_features), dtype=np.float64)
+        
+        for j in range(n_features):
+            # Sum all feature values per cluster
+            centroids[:, j] = np.bincount(inverse, weights=X[:, j], minlength=n_clusters)
+        
+        # Divide by counts to get means
+        # counts[:, None]: (n_clusters, 1) for broadcasting
+        centroids /= counts[:, None]
+        
+        # Get centroid for each point
+        # point_centroids: (n_samples, n_features)
+        point_centroids = centroids[inverse]
+        
+        # Compute squared distances
+        # squared_distances: (n_samples,)
+        squared_distances = np.sum((X - point_centroids) ** 2, axis=1)
+        
+        # Sum squared distances per cluster using bincount
+        # wcss_per_cluster: (n_clusters,)
+        wcss_per_cluster = np.bincount(inverse, weights=squared_distances, minlength=n_clusters)
+        
+        # Compute Ball-Hall index
+        return np.sum(wcss_per_cluster / counts)
+
+
+  
 if __name__ == '__main__' :
-    Clusterer(use_positions=True, load_feature_version= 1, alpha=0.5, beta = 1).run_comparison()
+    Clusterer(use_positions=True, load_feature_version= 1, alpha=0.5, beta = 1).run_comparison(n_runs= 5)

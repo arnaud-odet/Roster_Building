@@ -124,10 +124,12 @@ class ColinearityHandler :
             loader._handle_duplicated()
         self.loader = loader
         self.df = loader.df
-        if not use_positions:
-            self.df.drop(columns = 'position', inplace=True)
         self.feature_version = feature_version
         self._create_features_dict()
+        if not use_positions:
+            self.df.drop(columns = 'position', inplace=True)
+        else :
+            self.incl.append('position')        
         
     def _create_features_dict(self):
         if self.feature_version == None :
@@ -136,7 +138,7 @@ class ColinearityHandler :
             self.excl_dict = MANUAL_DROP_COLS
             self.incl_dict = MANUAL_INCLUSION_COLS
         else :
-            feature_filepath = PREPROC_DATA_PATH / 'clustering' / f'feature_v{self.feature_version}.json'
+            feature_filepath = PREPROC_DATA_PATH / 'clustering' / f'features_v{self.feature_version}.json'
             with open(feature_filepath, "r") as f:
                 features = json.load(f)
             self.autoexcl_dict = features['autoexcl']
@@ -144,13 +146,13 @@ class ColinearityHandler :
             self.incl_dict = features['incl']
     
         self.autoexcl = []
-        for v in auto_drop_cols.values():
+        for v in self.autoexcl_dict.values():
             self.autoexcl += v
         self.excl = []
-        for v in MANUAL_DROP_COLS.values():
+        for v in self.excl_dict.values():
             self.excl += v
         self.incl = []
-        for v in MANUAL_INCLUSION_COLS.values():
+        for v in self.incl_dict.values():
             self.incl += v
 
     def get_data(self, feature_selection:str):
