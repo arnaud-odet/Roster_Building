@@ -9,35 +9,34 @@ import json
 
 from sklearn.preprocessing import MinMaxScaler, RobustScaler, StandardScaler
 from sklearn.decomposition import PCA
-from sklearn.cluster import KMeans, AgglomerativeClustering
+from sklearn.cluster import KMeans, AgglomerativeClustering, SpectralClustering
 from sklearn.metrics import silhouette_score, davies_bouldin_score, calinski_harabasz_score, silhouette_samples
 from scipy.stats import entropy
 
 from roster_lib.utils.colinearity_handler import ColinearityHandler
 from roster_lib.clustering.pca import find_n_PC
+from roster_lib.clustering.sphere import SphericalKMeans
 from roster_lib.constants import PREPROC_DATA_PATH
 from roster_lib.id_dict import pid2name, name2pid, pid2pos_bref
 
 SCALERS = {'minmax' : MinMaxScaler, 'robust': RobustScaler, 'standard': StandardScaler}
 PENALTY_RATE = 1
 
-EVRS = [0.6, 0.7, 0.8, 0.85, 0.9, 0.95, 0.98]
-N_CLUSTS = range(2,16)
-METHODS = ['kmeans',
-            'agg_ward',
-            'agg_average',
-            'agg_complete',
-            'agg_single'
-            ]
+EVRS = [0.6, 0.8, 0.9, 0.95, 0.98]
+N_CLUSTS = range(2,13)
+METHODS = {
+    'kmeans': KMeans,
+    'spherical-kmeans': SphericalKMeans,
+    'spectral': SpectralClustering,
+    'agg_ward': AgglomerativeClustering,
+    'agg_average': AgglomerativeClustering,
+    # 'agg_complete': AgglomerativeClustering,
+    # 'agg_single': AgglomerativeClustering
+}
 SCALINGS = ['standard', 'robust', 'minmax']
 FEATURES_SELECTIONS = ['incl', 'excl', 'autoexcl']
 
 DEFAULT_ALPHA, DEFAULT_BETA = 1, 1
-METRICS_ASC = {'silhouette_score': False,
-               'davies_bouldin': True,
-               'calinski_harabasz':False,	
-               'entropy': False,
-               'population_std': True}
 METRICS_LEVELS = {
     'Silhouette': [0.25, 0.5],
     'SilhouetteW': [0.25, 0.5],
@@ -81,7 +80,7 @@ class Clusterer :
                        scaling_methods: list = SCALINGS,
                        evr_targets: list = EVRS,
                        n_clusts: list = N_CLUSTS,
-                       methods: list = METHODS):
+                       methods: list = list(METHODS.keys())):
         
         version = self.last_version +1 
         fp = self.preproc_path / f"ARO_clustering_v{version}.csv"
@@ -98,11 +97,12 @@ class Clusterer :
         self._record_features(version=version)
         
         results = []
-        best_si, best_evr_ew_si, best_ew_si, best_sw = 0, 0, 0, 0
         for m, fs in enumerate(features_selections):
+            best_si, best_evr_ew_si, best_ew_si, best_sw = 0, 0, 0, 0  
+            df = colinearity_handler.get_data(feature_selection=fs)
+            print(f"Processing feature selection mode '{fs}' - n° feature considered : {df.shape[1]}")
             for i, scaling_method in enumerate(scaling_methods) :
                 scaler = SCALERS[scaling_method]()
-                df = colinearity_handler.get_data(feature_selection=fs)
                 df_scaled = scaler.fit_transform(df)
                 basis_pca = PCA().fit(df_scaled)
                 for j, evr in enumerate(evr_targets) :
@@ -120,13 +120,7 @@ class Clusterer :
                                 for key,val in _metrics_lists.items():
                                     val.append(_metrics[key])
                             _exp_metrics = {key: np.mean(val) for key,val in _metrics_lists.items()}
-                            _exp_params = {'feature_selection':fs,
-                                            'method': method, 
-                                            'scaling': scaling_method, 
-                                            'evr': evr, 
-                                            'n_PC': n_PCA , 
-                                            'n_clust': n_clust,
-                                            }
+                            _exp_params = {'feature_selection':fs,'method': method, 'scaling': scaling_method, 'evr': evr, 'n_PC': n_PCA , 'n_clust': n_clust}
                             _exp_params.update(_exp_metrics)
                             results.append(_exp_params)
                             counter = m* n_exps_per_fs + i * n_exps_per_scaler + j * n_exps_per_evr + k * n_exps_per_method + l
@@ -134,12 +128,12 @@ class Clusterer :
                             best_sw = max(best_sw, _exp_metrics['silhouetteW'])
                             best_ew_si = max(best_ew_si, _exp_metrics['silhouette'] * _exp_metrics['entropy'] ** self.alpha)
                             best_evr_ew_si = max(best_evr_ew_si, _exp_metrics['silhouette'] * evr ** self.beta * _exp_metrics['entropy'] ** self.alpha)
-                            msg = f"Processing experiment n° {counter+1:>4} of {n_exps}. Best scores: "
+                            msg = f"    Processing experiment n° {counter+1:>4} of {n_exps}. Best scores: "
                             msg += f"Silhouette Index = {best_si:.3f} | "
                             msg += f"SilhouetteW = {best_sw:.3f} | "
                             msg += f"Entropy-weighted Silhouette = {best_ew_si:.3f} | "
                             msg += f"EVR-EW Silhouette = {best_evr_ew_si:.3f} | "
-                            print (msg, end = '\r' if counter+1 < n_exps else '\n')
+                            print (msg, end = '\r' if counter - (m * n_exps_per_fs) + 1 < n_exps_per_fs else '\n')
         df = pd.DataFrame(results)
         df.to_csv(fp)
         return df       
@@ -293,9 +287,13 @@ class Clusterer :
     
     @staticmethod    
     def clusterize(X_proj, n_clust:int, method:str):
+        cl_args = {'n_clusters':n_clust}
         if '_' in method :
-            linkage = method.split('_')[1]
-        clustering = KMeans(n_clusters= n_clust).fit(X_proj) if method == 'kmeans' else AgglomerativeClustering(n_clusters= n_clust, linkage= linkage).fit(X_proj)
+            cl_args['linkage'] = method.split('_')[1]
+        if method == 'spectral':
+            cl_args['eigen_solver'] = 'amg'
+            cl_args['assign_labels'] = 'discretize'            
+        clustering = METHODS[method](**cl_args).fit(X_proj)
         labels = clustering.labels_
         return labels 
     
@@ -389,4 +387,4 @@ class Clusterer :
 
   
 if __name__ == '__main__' :
-    Clusterer(use_positions=True, load_feature_version= 1, alpha=0.5, beta = 1).run_comparison(n_runs= 5)
+    Clusterer(use_positions=True, load_feature_version= 3, alpha=0.5, beta = 1).run_comparison(n_runs= 5)
