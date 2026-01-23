@@ -27,11 +27,11 @@ N_CLUSTS = range(2,13)
 METHODS = {
     'kmeans': KMeans,
     'spherical-kmeans': SphericalKMeans,
-    # 'spectral': SpectralClustering,
+    'spectral': SpectralClustering,
     'agg_ward': AgglomerativeClustering,
     'agg_average': AgglomerativeClustering,
     'agg_complete': AgglomerativeClustering,
-    # 'agg_single': AgglomerativeClustering
+    'agg_single': AgglomerativeClustering
 }
 SCALINGS = ['standard', 'robust', 'minmax']
 FEATURES_SELECTIONS = ['incl', 'excl', 'autoexcl']
@@ -400,6 +400,9 @@ class Clusterer :
   
 if __name__ == '__main__' :
     Clusterer(use_positions=False, 
-                # load_feature_version= 1, 
+                load_feature_version= 1, 
                 alpha=0.5,
-                beta = 1).run_comparison(n_runs= 1)
+                beta = 1).run_comparison(n_runs= 1, 
+                                            scaling_methods=['standard','minmax'],
+                                            methods= ['kmeans','spherical-kmeans','agg_ward','agg_average','agg_complete'])
+    
