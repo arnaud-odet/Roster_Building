@@ -27,7 +27,7 @@ N_CLUSTS = range(2,13)
 METHODS = {
     'kmeans': KMeans,
     'spherical-kmeans': SphericalKMeans,
-    'spectral': SpectralClustering,
+    # 'spectral': SpectralClustering,
     'agg_ward': AgglomerativeClustering,
     'agg_average': AgglomerativeClustering,
     # 'agg_complete': AgglomerativeClustering,
@@ -98,13 +98,14 @@ class Clusterer :
         
         results = []
         for m, fs in enumerate(features_selections):
-            best_si, best_evr_ew_si, best_ew_si, best_sw = 0, 0, 0, 0  
             df = colinearity_handler.get_data(feature_selection=fs)
             print(f"Processing feature selection mode '{fs}' - n° feature considered : {df.shape[1]}")
             for i, scaling_method in enumerate(scaling_methods) :
+                best_si, best_evr_ew_si, best_ew_si, best_sw = 0, 0, 0, 0  
                 scaler = SCALERS[scaling_method]()
                 df_scaled = scaler.fit_transform(df)
                 basis_pca = PCA().fit(df_scaled)
+                print(f"    Processing scaling '{scaling_method}':")
                 for j, evr in enumerate(evr_targets) :
                     n_PCA = find_n_PC(basis_pca.explained_variance_ratio_, evr, display_fig= False, verbose = False)
                     _PCA = PCA(n_components=n_PCA)
@@ -112,28 +113,29 @@ class Clusterer :
                     _X_proj = _PCA.transform(df_scaled) 
                     for k, method in enumerate(methods):
                         for l, n_clust in enumerate(n_clusts):
-                            _metrics_lists = {key : [] for key in self.metrics.keys()}
-                            _metrics_lists.update({'entropy': []})
-                            for _ in range(n_runs):
-                                labels = self.clusterize(X_proj= _X_proj, n_clust= n_clust, method=method)
-                                _metrics = self._compute_metrics(_X_proj, labels)
-                                for key,val in _metrics_lists.items():
-                                    val.append(_metrics[key])
-                            _exp_metrics = {key: np.mean(val) for key,val in _metrics_lists.items()}
-                            _exp_params = {'feature_selection':fs,'method': method, 'scaling': scaling_method, 'evr': evr, 'n_PC': n_PCA , 'n_clust': n_clust}
-                            _exp_params.update(_exp_metrics)
-                            results.append(_exp_params)
+                            if self._check_exp_validity(method, n_clust, evr):
+                                _metrics_lists = {key : [] for key in self.metrics.keys()}
+                                _metrics_lists.update({'entropy': []})
+                                for _ in range(n_runs):
+                                    labels = self.clusterize(X_proj= _X_proj, n_clust= n_clust, method=method)
+                                    _metrics = self._compute_metrics(_X_proj, labels)
+                                    for key,val in _metrics_lists.items():
+                                        val.append(_metrics[key])
+                                _exp_metrics = {key: np.mean(val) for key,val in _metrics_lists.items()}
+                                _exp_params = {'feature_selection':fs,'method': method, 'scaling': scaling_method, 'evr': evr, 'n_PC': n_PCA , 'n_clust': n_clust}
+                                _exp_params.update(_exp_metrics)
+                                results.append(_exp_params)
                             counter = m* n_exps_per_fs + i * n_exps_per_scaler + j * n_exps_per_evr + k * n_exps_per_method + l
                             best_si = max(best_si, _exp_metrics['silhouette'])
                             best_sw = max(best_sw, _exp_metrics['silhouetteW'])
                             best_ew_si = max(best_ew_si, _exp_metrics['silhouette'] * _exp_metrics['entropy'] ** self.alpha)
                             best_evr_ew_si = max(best_evr_ew_si, _exp_metrics['silhouette'] * evr ** self.beta * _exp_metrics['entropy'] ** self.alpha)
-                            msg = f"    Processing experiment n° {counter+1:>4} of {n_exps}. Best scores: "
+                            msg = f"        Processing experiment n° {counter+1:>4} of {n_exps}. Best scores: "
                             msg += f"Silhouette Index = {best_si:.3f} | "
                             msg += f"SilhouetteW = {best_sw:.3f} | "
                             msg += f"Entropy-weighted Silhouette = {best_ew_si:.3f} | "
                             msg += f"EVR-EW Silhouette = {best_evr_ew_si:.3f} | "
-                            print (msg, end = '\r' if counter - (m * n_exps_per_fs) + 1 < n_exps_per_fs else '\n')
+                            print (msg, end = '\r' if counter - (m * n_exps_per_fs + i* n_exps_per_scaler) + 1 < n_exps_per_scaler else '\n')
         df = pd.DataFrame(results)
         df.to_csv(fp)
         return df       
@@ -285,6 +287,12 @@ class Clusterer :
             data = json.load(f)
         return data        
     
+    def _check_exp_validity(self, method:str, n_clust:int, evr:float):
+        # Prevents experiments considered too expensive
+        if method == 'spectral':
+            return False
+        return True
+    
     @staticmethod    
     def clusterize(X_proj, n_clust:int, method:str):
         cl_args = {'n_clusters':n_clust}
@@ -387,4 +395,7 @@ class Clusterer :
 
   
 if __name__ == '__main__' :
-    Clusterer(use_positions=True, load_feature_version= 3, alpha=0.5, beta = 1).run_comparison(n_runs= 5)
+    Clusterer(use_positions=True, 
+                load_feature_version= 1, 
+                alpha=0.5,
+                beta = 1).run_comparison(n_runs= 1, features_selections= ['incl'])

@@ -19,6 +19,7 @@ class Loader :
             self._load_preproc_data()
         else :
             self._preprocess_data()
+        self._get_initial_features()
         
     
     def _load_preproc_data(self):
@@ -59,5 +60,11 @@ class Loader :
         # 32 players are partly missing, none of them playing more than 10 minutes in any dataset, droping them
         df = df.dropna()
         return df
+    
+    def _get_initial_features(self):
+        if not hasattr(self, 'raw_data'):
+            self._load_raw_data()
+        self.features = {k : v.drop(columns = ['MIN', 'GP', 'Season']).columns for k,v in self.raw_data.items()}
+    
         
     
