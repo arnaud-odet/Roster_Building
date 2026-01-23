@@ -155,15 +155,8 @@ class ColinearityHandler :
         for v in self.incl_dict.values():
             self.incl += v
 
-    def get_data(self, feature_selection:str, consolidated:bool = True):
-        if consolidated:
-            return self.df[self.incl] if feature_selection == 'incl' else self.df.drop(columns = self.excl if feature_selection =='excl' else self.autoexcl)
-        else :
-            if feature_selection == 'incl':
-                return {k : self.df[v] for k,v in self.incl_dict.items()}
-            else :
-                excl_dict = self.excl_dict if feature_selection == 'excl' else self.autoexcl_dict
-                return {k : self.df[self.loader.features[k]].drop(columns = v) for k,v in excl_dict.items()}
+    def get_data(self, feature_selection:str):
+        return self.df[self.incl] if feature_selection == 'incl' else self.df.drop(columns = self.excl if feature_selection =='excl' else self.autoexcl)
 
     
     def auto_excl_vif(self, df, threshold:float=10):

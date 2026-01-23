@@ -30,7 +30,7 @@ METHODS = {
     # 'spectral': SpectralClustering,
     'agg_ward': AgglomerativeClustering,
     'agg_average': AgglomerativeClustering,
-    # 'agg_complete': AgglomerativeClustering,
+    'agg_complete': AgglomerativeClustering,
     # 'agg_single': AgglomerativeClustering
 }
 SCALINGS = ['standard', 'robust', 'minmax']
@@ -235,11 +235,13 @@ class Clusterer :
                 scaler = SCALERS[sc]()
                 _df_scaled = scaler.fit_transform(_df)
                 _X_proj = PCA().fit_transform(_df_scaled)
-                _X_proj = pd.DataFrame(_X_proj, columns = [f"PC_{i+1}" for i in range(_X_proj.shape[1])])
-                sns.scatterplot(data = _X_proj, x = 'PC_1', y = 'PC_2', alpha = 0.5, ax = axs[i,j]);
+                _X_proj = pd.DataFrame(_X_proj, columns = [f"PC_{i+1}" for i in range(_X_proj.shape[1])], index= _df.index)
+                _X_proj['position'] = _X_proj.index.map(pid2pos_bref)
+                
+                sns.scatterplot(data = _X_proj, x = 'PC_1', y = 'PC_2', alpha = 0.5, ax = axs[i,j], hue = 'position', legend= i == 0 and j ==0);
                 axs[i,j].set_title(f"{sc} scaling, feature selection : {fs}");
                      
-    def get_scaled_data(self, scaling:str = 'robust', feature_selection:str= 'incl', retrieve_name:bool=True):
+    def get_scaled_data(self, scaling:str = 'robust', feature_selection:str= 'incl', retrieve_name:bool=True, retrieve_position:bool=True):
         
         colinearity_handler = self._manage_colinearity_handler()
         _df = colinearity_handler.get_data(feature_selection)
@@ -247,6 +249,8 @@ class Clusterer :
         _df_scaled = sc.fit_transform(_df)
         _X_proj = PCA().fit_transform(_df_scaled)
         _X_proj = pd.DataFrame(_X_proj, columns = [f"PC_{i+1}" for i in range(_X_proj.shape[1])], index = _df.index)
+        if retrieve_position:
+            _X_proj['position'] = _X_proj.index.map(pid2pos_bref)
         if retrieve_name:
             _X_proj.index = [pid2name[int(x.split("_")[0])] + "_" +  x.split("_")[1] for x in _X_proj.index]
         
@@ -395,7 +399,7 @@ class Clusterer :
 
   
 if __name__ == '__main__' :
-    Clusterer(use_positions=True, 
-                load_feature_version= 1, 
+    Clusterer(use_positions=False, 
+                # load_feature_version= 1, 
                 alpha=0.5,
-                beta = 1).run_comparison(n_runs= 1, features_selections= ['incl'])
+                beta = 1).run_comparison(n_runs= 1)
