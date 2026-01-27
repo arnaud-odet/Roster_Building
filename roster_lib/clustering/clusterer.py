@@ -13,7 +13,7 @@ from sklearn.cluster import KMeans, AgglomerativeClustering, SpectralClustering
 from sklearn.metrics import silhouette_score, davies_bouldin_score, calinski_harabasz_score, silhouette_samples
 from scipy.stats import entropy
 
-from roster_lib.utils.colinearity_handler import ColinearityHandler
+from roster_lib.utils.feature_handler import FeatureHandler
 from roster_lib.clustering.pca import find_n_PC
 from roster_lib.clustering.sphere import SphericalKMeans
 from roster_lib.constants import PREPROC_DATA_PATH
@@ -92,13 +92,13 @@ class Clusterer :
 
         print(f"Running clustering comparison version {version}: {n_exps} experiments consisting in {n_runs} runs each.")
         print(f"Data extraction in progress ...", end = '\r')
-        colinearity_handler = self._manage_colinearity_handler()
+        feature_handler = self._manage_feature_handler()
         print(f"Data extraction COMPLETED.     ")
         self._record_features(version=version)
         
         results = []
         for m, fs in enumerate(features_selections):
-            df = colinearity_handler.get_data(feature_selection=fs)
+            df = feature_handler.get_data(feature_selection=fs)
             print(f"Processing feature selection mode '{fs}' - n° feature considered : {df.shape[1]}")
             for i, scaling_method in enumerate(scaling_methods) :
                 best_si, best_evr_ew_si, best_ew_si, best_sw = 0, 0, 0, 0  
@@ -148,9 +148,9 @@ class Clusterer :
                             feature_selection:str = 'incl',
                             verbose:bool = True):
         
-        colinearity_handler = self._manage_colinearity_handler()
+        feature_handler = self._manage_feature_handler()
             
-        selected_df = colinearity_handler.get_data(feature_selection=feature_selection)
+        selected_df = feature_handler.get_data(feature_selection=feature_selection)
         if scaling is not None:
             scaler = SCALERS[scaling]()
             df_scaled = scaler.fit_transform(selected_df)
@@ -210,7 +210,7 @@ class Clusterer :
             axs[2].set(ylabel='Metric value', title='Clustering metrics', ylim=(0, 1))
             axs[2].bar_label(bar_container, fmt='{:,.3f}')
             
-            cluster_df = self.colinearity_handler.df.copy()
+            cluster_df = self.feature_handler.df.copy()
             cluster_df['id'] = [int(x.split('_')[0]) for x in cluster_df.index]
             cluster_df['name'] = cluster_df['id'].map(pid2name)
             cluster_df['Position'] = cluster_df.index.map(pid2pos_bref)
@@ -224,13 +224,20 @@ class Clusterer :
             if return_data:
                 return X_proj, labels
             
-    def plot_data(self, scalings:list = ['minmax','standard','robust'], feature_selections:list = ['incl','excl','autoexcl']):
+    def _compute_metrics(self, X, labels):
+        _metrics = {k : v['function'](X, labels) for k,v in self.metrics.items()}
+        _metrics['entropy'] = self.normalized_entropy(labels)
+        return _metrics
 
-        colinearity_handler = self._manage_colinearity_handler()
+
+    # Data hadling        
+    def plot_data(self, scalings:list = ['minmax','standard','robust'], feature_selections:list = ['incl','excl','autoexcl',None]):
+
+        feature_handler = self._manage_feature_handler()
         fig, axs = plt.subplots(len(feature_selections), len(scalings), figsize = (5* len(scalings), 5* len(feature_selections)))
         
         for i, fs in enumerate(feature_selections):
-            _df = colinearity_handler.get_data(fs)
+            _df = feature_handler.get_data(fs)
             for j, sc in enumerate(scalings):      
                 scaler = SCALERS[sc]()
                 _df_scaled = scaler.fit_transform(_df)
@@ -241,41 +248,81 @@ class Clusterer :
                 sns.scatterplot(data = _X_proj, x = 'PC_1', y = 'PC_2', alpha = 0.5, ax = axs[i,j], hue = 'position', legend= i == 0 and j ==0);
                 axs[i,j].set_title(f"{sc} scaling, feature selection : {fs}");
                      
-    def get_scaled_data(self, scaling:str = 'robust', feature_selection:str= 'incl', retrieve_name:bool=True, retrieve_position:bool=True):
+    def get_data(self, scaling:str = None, feature_selection:str= None, perform_PCA:bool=True, retrieve_name:bool=True, retrieve_position:bool=True, new_instance:bool=False):
         
-        colinearity_handler = self._manage_colinearity_handler()
-        _df = colinearity_handler.get_data(feature_selection)
-        sc = SCALERS[scaling]()
-        _df_scaled = sc.fit_transform(_df)
-        _X_proj = PCA().fit_transform(_df_scaled)
-        _X_proj = pd.DataFrame(_X_proj, columns = [f"PC_{i+1}" for i in range(_X_proj.shape[1])], index = _df.index)
+        feature_handler = self._manage_feature_handler(new_instance=new_instance)
+        data = feature_handler.get_data(feature_selection).copy()
+        _index = data.index
+        _columns = data.columns
+        if scaling is not None :
+            sc = SCALERS[scaling]()
+            data = sc.fit_transform(data)
+            data = pd.DataFrame(data,index = _index, columns= _columns)
+        if perform_PCA :    
+            data = PCA().fit_transform(data)
+            data = pd.DataFrame(data, columns = [f"PC_{i+1}" for i in range(data.shape[1])], index = _index)
         if retrieve_position:
-            _X_proj['position'] = _X_proj.index.map(pid2pos_bref)
+            data['position'] = data.index.map(pid2pos_bref)
         if retrieve_name:
-            _X_proj.index = [pid2name[int(x.split("_")[0])] + "_" +  x.split("_")[1] for x in _X_proj.index]
+            data.index = [pid2name[int(x.split("_")[0])] + "_" +  x.split("_")[1] for x in data.index]
         
-        return _X_proj
+        return data
 
-    def _compute_metrics(self, X, labels):
-        _metrics = {k : v['function'](X, labels) for k,v in self.metrics.items()}
-        _metrics['entropy'] = self.normalized_entropy(labels)
-        return _metrics
+    def get_ACP_matrix(self,
+                    scaling:str = None,
+                    feature_selection:str=None,
+                    return_PCA:bool=False):
+        
+        _df = self.get_data(scaling=scaling, feature_selection=feature_selection, retrieve_name=False, retrieve_position=False, perform_PCA=False)
+        pca = PCA().fit(_df)
+        W = pca.components_
+        W = pd.DataFrame(W.T,
+                        index=_df.columns,
+                        columns=[f'PC_{i}' for i in range(1, _df.shape[1]+1)])
+        if return_PCA :
+            return W, pca
+        return W
+    
+    def plot_PCA(self,
+                n_features:int = 20,
+                scaling:str = None,
+                feature_selection:str = None,
+                ax=None):
+        W = self.get_ACP_matrix(scaling=scaling, feature_selection=feature_selection)
+        W = W[['PC_1','PC_2']]
+        W['norm'] = W['PC_1'] **2 + W['PC_2']**2
+        W.sort_values(by = 'norm', ascending=False, inplace=True)
+        W = W.reset_index().loc[:n_features]
+        if ax ==None:
+            fig, ax = plt.subplots(1,1,figsize = (8,6))   
+        sns.scatterplot(data = W, x = 'PC_1', y = 'PC_2', ax = ax);
+        bottom_x, top_x = ax.get_xlim()  
+        bottom_y, top_y = ax.get_ylim()
+        ax.plot([min(bottom_x,0),max(top_x,0)],[0,0], c = 'black');
+        ax.plot([0,0],[min(bottom_y,0),max(top_y,0)], c = 'black');
+        for index, row in W.iterrows():
+            ax.annotate(row['index'], xy = (row['PC_1'], row['PC_2']));
+          
+           
+        
 
     # Features handling
-    def _manage_colinearity_handler(self):
-        if hasattr(self, 'colinearity_handler'):
-            colinearity_handler = self.colinearity_handler
+    def _manage_feature_handler(self, new_instance:bool=False):
+        if hasattr(self, 'feature_handler') and not new_instance:
+            feature_handler = self.feature_handler
         else : 
-            colinearity_handler = ColinearityHandler(verbose = False, use_positions =self.use_positions, feature_version= self.load_feature_version)
-            self.colinearity_handler = colinearity_handler
-        return colinearity_handler        
+            feature_handler = FeatureHandler(verbose = False, 
+                                            use_positions =self.use_positions, 
+                                            feature_version= None if new_instance else self.load_feature_version)
+            self.feature_handler = feature_handler
+        return feature_handler        
 
     def _record_features(self, version:int = None):
-        colinearity_handler = self._manage_colinearity_handler()
+        feature_handler = self._manage_feature_handler()
         features = {
-            "incl": colinearity_handler.incl_dict,
-            "excl": colinearity_handler.excl_dict,
-            "autoexcl": colinearity_handler.autoexcl_dict
+            "incl": feature_handler.incl_dict,
+            "excl": feature_handler.excl_dict,
+            "autoexcl": feature_handler.autoexcl_dict
         }
         if version == None :
             version = self.last_version
@@ -400,9 +447,9 @@ class Clusterer :
   
 if __name__ == '__main__' :
     Clusterer(use_positions=False, 
-                load_feature_version= 1, 
+                load_feature_version= None, 
                 alpha=0.5,
                 beta = 1).run_comparison(n_runs= 1, 
-                                            scaling_methods=['standard','minmax'],
+                                            scaling_methods=['standard','robust','minmax'],
                                             methods= ['kmeans','spherical-kmeans','agg_ward','agg_average','agg_complete'])
     

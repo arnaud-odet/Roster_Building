@@ -16,6 +16,8 @@ MANUAL_DROP_COLS = {'Score': ['TS_PCT'],
 
 MANUAL_INCLUSION_COLS = {
     'Score': [
+        'MIN', 
+        'GP',
         'EFG_PCT',
         'USG_PCT',
         # 'PTS_OFF_TOV',
@@ -114,7 +116,7 @@ MANUAL_INCLUSION_COLS = {
         ]
     }
 
-class ColinearityHandler :
+class FeatureHandler :
     
     def __init__(self, use_positions:bool=True, feature_version:int = None, verbose :bool = True):
         loader = Loader()
@@ -155,7 +157,9 @@ class ColinearityHandler :
         for v in self.incl_dict.values():
             self.incl += v
 
-    def get_data(self, feature_selection:str):
+    def get_data(self, feature_selection:str= None):
+        if feature_selection == None:
+            return self.df
         return self.df[self.incl] if feature_selection == 'incl' else self.df.drop(columns = self.excl if feature_selection =='excl' else self.autoexcl)
 
     

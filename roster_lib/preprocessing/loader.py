@@ -47,6 +47,7 @@ class Loader :
         
     def _merge_data(self):
         df = pd.concat([v.drop(columns = ['MIN', 'GP', 'Season']) for v in self.preproc_data.values()], axis = 1)
+        df = df.merge(self.preproc_data['Score'][['MIN']], left_index=True, right_index=True, how = 'left')
         return df
     
     def _clean_data(self):
