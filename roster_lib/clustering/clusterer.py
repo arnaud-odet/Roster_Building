@@ -231,14 +231,14 @@ class Clusterer :
 
 
     # Data hadling        
-    def plot_data(self, scalings:list = ['minmax','standard','robust'], feature_selections:list = ['incl','excl','autoexcl',None]):
+    def plot_data(self, scalings:list = ['standard','robust','minmax'], feature_selections:list = ['incl','excl','autoexcl',None]):
 
         feature_handler = self._manage_feature_handler()
-        fig, axs = plt.subplots(len(feature_selections), len(scalings), figsize = (5* len(scalings), 5* len(feature_selections)))
+        fig, axs = plt.subplots(len(scalings), len(feature_selections), figsize = (5* len(feature_selections), 5* len(scalings)))
         
-        for i, fs in enumerate(feature_selections):
+        for j, fs in enumerate(feature_selections):      
             _df = feature_handler.get_data(fs)
-            for j, sc in enumerate(scalings):      
+            for i, sc in enumerate(scalings):
                 scaler = SCALERS[sc]()
                 _df_scaled = scaler.fit_transform(_df)
                 _X_proj = PCA().fit_transform(_df_scaled)
@@ -248,7 +248,7 @@ class Clusterer :
                 sns.scatterplot(data = _X_proj, x = 'PC_1', y = 'PC_2', alpha = 0.5, ax = axs[i,j], hue = 'position', legend= i == 0 and j ==0);
                 axs[i,j].set_title(f"{sc} scaling, feature selection : {fs}");
                      
-    def get_data(self, scaling:str = None, feature_selection:str= None, perform_PCA:bool=True, retrieve_name:bool=True, retrieve_position:bool=True, new_instance:bool=False):
+    def get_data(self, scaling:str = None, feature_selection:str= None, perform_PCA:bool=True, retrieve_name:bool=False, retrieve_position:bool=False, new_instance:bool=False):
         
         feature_handler = self._manage_feature_handler(new_instance=new_instance)
         data = feature_handler.get_data(feature_selection).copy()
@@ -451,5 +451,6 @@ if __name__ == '__main__' :
                 alpha=0.5,
                 beta = 1).run_comparison(n_runs= 1, 
                                             scaling_methods=['standard','robust','minmax'],
-                                            methods= ['kmeans','spherical-kmeans','agg_ward','agg_average','agg_complete'])
+                                            methods= ['kmeans','spherical-kmeans','agg_ward','agg_average','agg_complete'],
+                                            features_selections=['incl'])
     
