@@ -26,11 +26,12 @@ class PartitionHDBSCAN:
         
     @staticmethod
     def _allocate_to_centroids(X, labels, centroids):
-        final_labels = np.copy(labels)
-        pdist = pairwise_distances(X[labels == -1], centroids)
-        closest_cluster = np.argmin(pdist, axis = 1)
-        final_labels[labels == -1] = closest_cluster
-        return final_labels
+        if X[labels == -1].shape[0] > 0 :
+            final_labels = np.copy(labels)
+            pdist = pairwise_distances(X[labels == -1], centroids)
+            closest_cluster = np.argmin(pdist, axis = 1)
+            final_labels[labels == -1] = closest_cluster
+            return final_labels
     
     @staticmethod
     def _silhouetteW(X, labels):
@@ -68,13 +69,23 @@ class PartitionHDBSCAN:
         labels = clusterer.labels_
         self.hdbscan_labels_ = labels
         self.hdbscan_allocated_ = labels != -1
-        centroids = self._create_centroids(X, labels)
-        final_labels = self._allocate_to_centroids(X, labels, centroids)
-        self.labels_ = final_labels
-        n_clust = np.unique(final_labels).shape[0]
-        self.n_clusters_ = n_clust
-        self.silhouette_score = silhouette_score(X, final_labels) if n_clust > 1 else -1
-        self.silhouetteW_score = self._silhouetteW(X, final_labels) if n_clust > 1 else -1
+        if (labels == -1).sum() == X.shape[0]:
+            self.labels_ = labels
+            self.n_clusters_ = 0
+            self.silhouette_score = -1
+            self.silhouetteW_score = -1
+            print("Clustering failed, no clusters were identified.")
+        else :
+            if (labels == -1).sum() == 0 :
+                self.labels_ = labels
+            else :     
+                centroids = self._create_centroids(X, labels)
+                final_labels = self._allocate_to_centroids(X, labels, centroids)
+                self.labels_ = final_labels
+            n_clust = np.unique(final_labels).shape[0]
+            self.n_clusters_ = n_clust
+            self.silhouette_score = silhouette_score(X, final_labels) if n_clust > 1 else -1
+            self.silhouetteW_score = self._silhouetteW(X, final_labels) if n_clust > 1 else -1
         
         
         
