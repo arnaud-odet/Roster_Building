@@ -62,7 +62,7 @@ class Clusterer :
             'silhouetteW': {'function': self._silhouetteW, 'ascending' : False},
             'davies_bouldin': {'function': davies_bouldin_score, 'ascending' : True},
             'calinski_harabasz': {'function': calinski_harabasz_score, 'ascending' : False},
-            'ball_hall': {'function': self._ball_hall, 'ascending' : True},
+            # 'ball_hall': {'function': self._ball_hall, 'ascending' : True},
         }
         
     def load_results(self, version:int = None):

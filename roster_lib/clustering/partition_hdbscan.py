@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import os
 from sklearn.cluster import HDBSCAN
 from sklearn.metrics import pairwise_distances, silhouette_score, silhouette_samples
 
@@ -120,7 +121,9 @@ class P_HDB_GridSearch:
             self.n_cluster_eps = len(cluster_selection_epsilons)
             self.max_cluster_sizes = max_cluster_sizes 
             self.n_max_sizes = len(max_cluster_sizes)
-            self.preproc_path = PREPROC_DATA_PATH / 'clustering' / 'partition_hdbscan.csv'
+            self.preproc_path = PREPROC_DATA_PATH / 'clustering' 
+            self.version = max([int(f.split('_')[-1][1:-4]) for f in os.listdir(self.preproc_path) if 'partition_hdbscan' in f]) +1 
+            self.filepath = self.preproc_path / f'partition_hdbscan_v{self.version}.csv'
             
             self.clusterer = Clusterer(alpha= clusterer_alpha, beta = clusterer_beta, use_positions=use_positions)
             
@@ -162,16 +165,16 @@ class P_HDB_GridSearch:
                                 _results.append(exp_details)
                                 best_score = max(best_score, exp_details[self.ref_metric])
         results_df = pd.DataFrame(_results).fillna(0) # na corresponds to the except above, in case metrics are not computed, or None values of parameters
-        results_df.to_csv(self.preproc_path)
+        results_df.to_csv(self.filepath)
         
 if __name__ == '__main__':
     grid = P_HDB_GridSearch(
-        scalings= ['minmax','robust','standard'],
-        feature_selection= ['incl', 'autoexcl','excl', None],
-        min_cluster_sizes= [4,6,10,16,40],
-        min_samples= [10,20,None],
-        cluster_selection_epsilons= [0,0.1,0.5,1],
-        max_cluster_sizes= [400,800,None]
+        scalings= ['minmax', 'standard', 'robust'],
+        feature_selection= ['incl','excl', None],
+        min_cluster_sizes= [4, 6, 10, 16, 32 , 50],
+        min_samples= [10, 20, 40, None],
+        cluster_selection_epsilons= [0, 0.01, 0.1, 1, 10],
+        max_cluster_sizes= [500, 800, 1000, None]
     )
     grid.fit(verbose=True)
 
