@@ -165,7 +165,8 @@ class Clusterer :
         labels = self.clusterize(X_proj, n_clust, method)
         _metrics = self._compute_metrics(X_proj, labels)
         if verbose :
-            print(f"Silhouette: {_metrics['silhouette']:.3f} | SilhouetteW: {_metrics['silhouetteW']:.3f} | Davies-Bouldin: {_metrics['davies_bouldin']:.3f} | Calinski-Harabasz: {_metrics['calinski_harabasz']:.3f} | Ball-Hall: {_metrics['ball_hall']:.3f} | Normalized Entropy : {_metrics['entropy']:.3f}")
+            metrics_str = ("| ").join([f"{k}: {v:.3f} " for k,v in _metrics.items()])
+            print(metrics_str)
         return X_proj, labels  
     
     def plot_clustering(self,
@@ -248,7 +249,17 @@ class Clusterer :
                 sns.scatterplot(data = _X_proj, x = 'PC_1', y = 'PC_2', alpha = 0.5, ax = axs[i,j], hue = 'position', legend= i == 0 and j ==0);
                 axs[i,j].set_title(f"{sc} scaling, feature selection : {fs}");
                      
-    def get_data(self, scaling:str = None, feature_selection:str= None, perform_PCA:bool=True, retrieve_name:bool=False, retrieve_position:bool=False, new_instance:bool=False):
+    def get_data(self, 
+                scaling:str = None, 
+                feature_selection:str= None, 
+                perform_PCA:bool=True, 
+                target_evr:float = None,
+                retrieve_name:bool=False, 
+                retrieve_position:bool=False, 
+                new_instance:bool=False):
+        
+        if (not perform_PCA) and (target_evr is not None) :
+            print(f"perform_PCA is set to False, ignoring parameter target_evr")
         
         feature_handler = self._manage_feature_handler(new_instance=new_instance)
         data = feature_handler.get_data(feature_selection).copy()
@@ -259,7 +270,13 @@ class Clusterer :
             data = sc.fit_transform(data)
             data = pd.DataFrame(data,index = _index, columns= _columns)
         if perform_PCA :    
-            data = PCA().fit_transform(data)
+            basis_pca = PCA().fit(data)
+            if target_evr is not None :
+                n_PCA = find_n_PC(basis_pca.explained_variance_ratio_, target_evr, display_fig= False, verbose = False)
+                _PCA = PCA(n_components=n_PCA)
+                data = _PCA.fit_transform(data)                
+            else :
+                data = basis_pca.fit_transform(data)
             data = pd.DataFrame(data, columns = [f"PC_{i+1}" for i in range(data.shape[1])], index = _index)
         if retrieve_position:
             data['position'] = data.index.map(pid2pos_bref)
@@ -450,7 +467,7 @@ if __name__ == '__main__' :
                 load_feature_version= None, 
                 alpha=0.5,
                 beta = 1).run_comparison(n_runs= 1, 
-                                            scaling_methods=['standard','robust','minmax'],
+                                            scaling_methods=['standard','minmax'],
                                             methods= ['kmeans','spherical-kmeans','agg_ward','agg_average','agg_complete'],
-                                            features_selections=['incl'])
+                                            features_selections=['incl','excl'])
     

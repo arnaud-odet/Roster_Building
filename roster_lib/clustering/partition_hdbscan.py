@@ -100,6 +100,7 @@ class P_HDB_GridSearch:
                 ref_metric:str = 'silhouette',
                 scalings:list = ['standard'],
                 feature_selection: list = [None],
+                target_evrs:list = [1],
                 min_cluster_sizes: list = [5],
                 min_samples: list = [None],
                 cluster_selection_epsilons:list = [0],
@@ -110,17 +111,20 @@ class P_HDB_GridSearch:
         
             self.ref_metric = ref_metric 
             self.scalings = scalings
-            self.n_scalings = len(scalings)
             self.feature_selection = feature_selection
-            self.n_fs = len(self.feature_selection) 
+            self.target_evrs = target_evrs
             self.min_cluster_sizes = min_cluster_sizes
-            self.n_min_sizes = len(min_cluster_sizes) 
             self.min_samples = min_samples 
-            self.n_min_samples = len(min_samples)
             self.cluster_selection_epsilons = cluster_selection_epsilons 
-            self.n_cluster_eps = len(cluster_selection_epsilons)
             self.max_cluster_sizes = max_cluster_sizes 
-            self.n_max_sizes = len(max_cluster_sizes)
+            n_scalings = len(scalings)
+            n_fs = len(self.feature_selection) 
+            n_te = len(target_evrs)
+            n_min_sizes = len(min_cluster_sizes) 
+            n_min_samples = len(min_samples)
+            n_cluster_eps = len(cluster_selection_epsilons)
+            n_max_sizes = len(max_cluster_sizes)
+            self.n_exps = n_scalings * n_fs * n_te * n_min_sizes * n_min_samples * n_cluster_eps * n_max_sizes
             self.preproc_path = PREPROC_DATA_PATH / 'clustering' 
             self.version = max([int(f.split('_')[-1][1:-4]) for f in os.listdir(self.preproc_path) if 'partition_hdbscan' in f]) +1 
             self.filepath = self.preproc_path / f'partition_hdbscan_v{self.version}.csv'
@@ -129,52 +133,54 @@ class P_HDB_GridSearch:
             
     def fit(self, verbose):
         
-        n_exps = self.n_scalings * self.n_fs * self.n_min_sizes * self.n_min_samples * self.n_cluster_eps * self.n_max_sizes
         _results = []
         best_score = 0
         counter = 0
-        for i, fs in enumerate(self.feature_selection):
-            for j, sc in enumerate(self.scalings):
-                base_X = self.clusterer.get_data(scaling=sc, feature_selection=fs , perform_PCA=True, retrieve_name=False, retrieve_position=False)
-                for k, mcs in enumerate(self.min_cluster_sizes):
-                    for l, mss in enumerate(self.min_samples):
-                        for m, cse in enumerate(self.cluster_selection_epsilons):
-                            for n, mx in enumerate(self.max_cluster_sizes):
-                                counter += 1 
-                                if verbose :
-                                    print(f"Processing exp n° {counter:>4} out of {n_exps:>4} | Best {self.ref_metric} reached = {best_score:.3f}", end = '\r' if counter < n_exps else '\n')
-                                X = base_X.copy()
-                                p_hdb = PartitionHDBSCAN(min_cluster_size=mcs, 
-                                                    min_samples=mss, 
-                                                    cluster_selection_epsilon =cse,
-                                                    max_cluster_size = mx,
-                                                    )
-                                p_hdb.fit(X, verbose = False)
-                                exp_details = {'feature_selection':fs,
-                                                'scaling': sc,
-                                                'min_cluster_size':mcs, 
-                                                'min_samples':mss, 
-                                                'cluster_selection_epsilon':cse, 
-                                                'max_cluster_size':mx, 
-                                                'n_clust': p_hdb.n_clusters_}
-                                try : 
-                                    exp_metrics = self.clusterer._compute_metrics(X, p_hdb.labels_)
-                                except :
-                                    exp_metrics = {'silhouette': p_hdb.silhouette_score, 'silhouetteW':p_hdb.silhouetteW_score}
-                                exp_details.update(exp_metrics)
-                                _results.append(exp_details)
-                                best_score = max(best_score, exp_details[self.ref_metric])
+        for fs in self.feature_selection:
+            for sc in self.scalings:
+                for evr in self.target_evrs:
+                    base_X = self.clusterer.get_data(scaling=sc, feature_selection=fs , perform_PCA=True, target_evr= evr, retrieve_name=False, retrieve_position=False)
+                    for mcs in self.min_cluster_sizes:
+                        for mss in self.min_samples:
+                            for cse in self.cluster_selection_epsilons:
+                                for mx in self.max_cluster_sizes:
+                                    counter += 1 
+                                    if verbose :
+                                        print(f"Processing exp n° {counter:>4} out of {self.n_exps:>4} | Best {self.ref_metric} reached = {best_score:.3f}", end = '\r' if counter < self.n_exps else '\n')
+                                    X = base_X.copy()
+                                    p_hdb = PartitionHDBSCAN(min_cluster_size=mcs, 
+                                                        min_samples=mss, 
+                                                        cluster_selection_epsilon =cse,
+                                                        max_cluster_size = mx,
+                                                        )
+                                    p_hdb.fit(X, verbose = False)
+                                    exp_details = {'feature_selection':fs,
+                                                    'scaling': sc,
+                                                    'evr': evr, 
+                                                    'min_cluster_size':mcs, 
+                                                    'min_samples':mss, 
+                                                    'cluster_selection_epsilon':cse, 
+                                                    'max_cluster_size':mx, 
+                                                    'n_clust': p_hdb.n_clusters_}
+                                    try : 
+                                        exp_metrics = self.clusterer._compute_metrics(X, p_hdb.labels_)
+                                    except :
+                                        exp_metrics = {'silhouette': p_hdb.silhouette_score, 'silhouetteW':p_hdb.silhouetteW_score}
+                                    exp_details.update(exp_metrics)
+                                    _results.append(exp_details)
+                                    best_score = max(best_score, exp_details[self.ref_metric])
         results_df = pd.DataFrame(_results).fillna(0) # na corresponds to the except above, in case metrics are not computed, or None values of parameters
         results_df.to_csv(self.filepath)
         
 if __name__ == '__main__':
     grid = P_HDB_GridSearch(
-        scalings= ['minmax', 'standard', 'robust'],
+        scalings= ['minmax', 'standard'],
         feature_selection= ['incl','excl', None],
-        min_cluster_sizes= [4, 6, 10, 16, 32 , 50],
-        min_samples= [10, 20, 40, None],
-        cluster_selection_epsilons= [0, 0.01, 0.1, 1, 10],
-        max_cluster_sizes= [500, 800, 1000, None]
+        target_evrs= [0.6, 0.8, 0.9, 0.95, 0.98],
+        min_cluster_sizes= [4, 6, 8, 10, 12 ,14, 16, 18, 20, 30, 40, 50],
+        min_samples= list(range(3,16)),
+        cluster_selection_epsilons= [0],
+        max_cluster_sizes= [None]
     )
     grid.fit(verbose=True)
 
