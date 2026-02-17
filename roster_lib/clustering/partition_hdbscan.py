@@ -6,6 +6,7 @@ from sklearn.metrics import pairwise_distances, silhouette_score, silhouette_sam
 
 from roster_lib.clustering.clusterer import Clusterer
 from roster_lib.constants import PREPROC_DATA_PATH
+from roster_lib.utils.clustering import silhouetteW
 
 class PartitionHDBSCAN:
     
@@ -37,31 +38,6 @@ class PartitionHDBSCAN:
             final_labels[labels == -1] = closest_cluster
             return final_labels
     
-    @staticmethod
-    def _silhouetteW(X, labels):
-        """
-        Compute weighted silhouette score (SilhouetteW metric).
-        Args:
-            X: array-like of shape (n_samples, n_features) - The data
-            labels: array-like of shape (n_samples,) - Cluster labels
-        
-        Returns:
-            float: SilhouetteW score
-        """
-        ssa = silhouette_samples(X, labels)
-        # Get unique clusters and their counts
-        # unique_labels: (n_clusters,), inverse: (n_samples,), counts: (n_clusters,)
-        unique_labels, inverse_indices, counts = np.unique(
-            labels, return_inverse=True, return_counts=True
-        )
-        
-        nns = np.sum(counts > 1)
-        if nns == 0:
-            return 0.0
-        
-        populations = counts[inverse_indices]
-        return np.sum(ssa / populations) / nns
-    
     def fit(self, X, verbose:bool = True):
         self.data = X
         clusterer = HDBSCAN(min_cluster_size = self.min_cluster_size,
@@ -91,7 +67,7 @@ class PartitionHDBSCAN:
             n_clust = np.unique(final_labels).shape[0]
             self.n_clusters_ = n_clust
             self.silhouette_score = silhouette_score(X, final_labels) if n_clust > 1 else -1
-            self.silhouetteW_score = self._silhouetteW(X, final_labels) if n_clust > 1 else -1
+            self.silhouetteW_score = silhouetteW(X, final_labels) if n_clust > 1 else -1
         
         
 class P_HDB_GridSearch:
@@ -131,7 +107,7 @@ class P_HDB_GridSearch:
             
             self.clusterer = Clusterer(alpha= clusterer_alpha, beta = clusterer_beta, use_positions=use_positions)
             
-    def fit(self, verbose):
+    def fit(self, verbose:bool = True):
         
         _results = []
         best_score = 0
@@ -171,6 +147,7 @@ class P_HDB_GridSearch:
                                     best_score = max(best_score, exp_details[self.ref_metric])
         results_df = pd.DataFrame(_results).fillna(0) # na corresponds to the except above, in case metrics are not computed, or None values of parameters
         results_df.to_csv(self.filepath)
+        return results_df
         
 if __name__ == '__main__':
     grid = P_HDB_GridSearch(
