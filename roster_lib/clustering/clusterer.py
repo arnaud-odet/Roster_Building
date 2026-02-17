@@ -11,10 +11,10 @@ from sklearn.preprocessing import MinMaxScaler, RobustScaler, StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans, AgglomerativeClustering, SpectralClustering
 from sklearn.metrics import silhouette_score, davies_bouldin_score, calinski_harabasz_score, silhouette_samples
-from scipy.stats import entropy
 
 from roster_lib.utils.feature_handler import FeatureHandler
 from roster_lib.clustering.pca import find_n_PC
+from roster_lib.utils.clustering import silhouetteW, normalized_entropy, ball_hall
 from roster_lib.clustering.sphere import SphericalKMeans
 from roster_lib.constants import PREPROC_DATA_PATH
 from roster_lib.id_dict import pid2name, name2pid, pid2pos_bref
@@ -59,9 +59,10 @@ class Clusterer :
         self.rdf = self.load_results()
         self.metrics = {
             'silhouette': {'function': silhouette_score, 'ascending' : False},
-            'silhouetteW': {'function': self._silhouetteW, 'ascending' : False},
+            'silhouetteW': {'function': silhouetteW, 'ascending' : False},
             'davies_bouldin': {'function': davies_bouldin_score, 'ascending' : True},
             'calinski_harabasz': {'function': calinski_harabasz_score, 'ascending' : False},
+            'normalized_entropy': {'function': normalized_entropy, 'ascending' : False},            
             # 'ball_hall': {'function': self._ball_hall, 'ascending' : True},
         }
         
@@ -227,11 +228,10 @@ class Clusterer :
             
     def _compute_metrics(self, X, labels):
         _metrics = {k : v['function'](X, labels) for k,v in self.metrics.items()}
-        _metrics['entropy'] = self.normalized_entropy(labels)
         return _metrics
 
 
-    # Data hadling        
+    # Data handling        
     def plot_data(self, scalings:list = ['standard','robust','minmax'], feature_selections:list = ['incl','excl','autoexcl',None]):
 
         feature_handler = self._manage_feature_handler()
@@ -319,9 +319,7 @@ class Clusterer :
         ax.plot([0,0],[min(bottom_y,0),max(top_y,0)], c = 'black');
         for index, row in W.iterrows():
             ax.annotate(row['index'], xy = (row['PC_1'], row['PC_2']));
-          
-           
-        
+                 
 
     # Features handling
     def _manage_feature_handler(self, new_instance:bool=False):
@@ -373,94 +371,6 @@ class Clusterer :
         labels = clustering.labels_
         return labels 
     
-    @staticmethod
-    def _pop_std(labels:np.array):
-        _, counts = np.unique(labels, return_counts= True)
-        return (counts / counts.sum()).std() 
-    
-    @staticmethod       
-    def normalized_entropy(labels:np.array):
-        unique, counts = np.unique(labels, return_counts= True)
-        freq = counts / counts.sum()
-        return entropy(freq) / np.log(unique.shape[0])
-    
-    @staticmethod
-    def _silhouetteW(X, labels):
-        """
-        Compute weighted silhouette score (SilhouetteW metric).
-        Args:
-            X: array-like of shape (n_samples, n_features) - The data
-            labels: array-like of shape (n_samples,) - Cluster labels
-        
-        Returns:
-            float: SilhouetteW score
-        """
-        ssa = silhouette_samples(X, labels)
-        # Get unique clusters and their counts
-        # unique_labels: (n_clusters,), inverse: (n_samples,), counts: (n_clusters,)
-        unique_labels, inverse_indices, counts = np.unique(
-            labels, return_inverse=True, return_counts=True
-        )
-        
-        nns = np.sum(counts > 1)
-        if nns == 0:
-            return 0.0
-        
-        populations = counts[inverse_indices]
-        return np.sum(ssa / populations) / nns
-
-    @staticmethod
-    def _ball_hall(X, labels):
-        """
-        Compute the Ball-Hall index.
-        
-        Args:
-            X: array-like of shape (n_samples, n_features) - The data points
-            labels: array-like of shape (n_samples,) - Cluster labels for each point
-        
-        Returns:
-            float: Ball-Hall index (negative value, higher is better, closer to 0)
-        """
-        
-        # Get unique clusters and remap labels to contiguous indices
-        # unique_labels: (n_clusters,)
-        # inverse: (n_samples,) - contiguous indices [0, 1, 2, ...]
-        # counts: (n_clusters,)
-        unique_labels, inverse, counts = np.unique(
-            labels, return_inverse=True, return_counts=True
-        )
-        
-        n_clusters = len(unique_labels)
-        n_features = X.shape[1]
-        
-        # Compute centroids using bincount (very fast)
-        # centroids: (n_clusters, n_features)
-        centroids = np.zeros((n_clusters, n_features), dtype=np.float64)
-        
-        for j in range(n_features):
-            # Sum all feature values per cluster
-            centroids[:, j] = np.bincount(inverse, weights=X[:, j], minlength=n_clusters)
-        
-        # Divide by counts to get means
-        # counts[:, None]: (n_clusters, 1) for broadcasting
-        centroids /= counts[:, None]
-        
-        # Get centroid for each point
-        # point_centroids: (n_samples, n_features)
-        point_centroids = centroids[inverse]
-        
-        # Compute squared distances
-        # squared_distances: (n_samples,)
-        squared_distances = np.sum((X - point_centroids) ** 2, axis=1)
-        
-        # Sum squared distances per cluster using bincount
-        # wcss_per_cluster: (n_clusters,)
-        wcss_per_cluster = np.bincount(inverse, weights=squared_distances, minlength=n_clusters)
-        
-        # Compute Ball-Hall index
-        return np.sum(wcss_per_cluster / counts)
-
-
   
 if __name__ == '__main__' :
     Clusterer(use_positions=False, 

@@ -30,8 +30,7 @@ class GMM_Custom_GridSearch:
             n_te = len(target_evrs)
             n_nc = len(n_components)
             n_ct = len(covariance_types)
-            self.n_exps = n_scalings * n_fs * n_te
-            self.exps_per_gs = n_nc * n_ct
+            self.n_exps = n_scalings * n_fs * n_te * n_nc * n_ct
             self.preproc_path = PREPROC_DATA_PATH / 'clustering' 
             try :
                 self.version = max([int(f.split('_')[-1][1:-4]) for f in os.listdir(self.preproc_path) if 'gmm' in f]) +1 
