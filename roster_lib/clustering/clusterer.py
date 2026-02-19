@@ -202,7 +202,7 @@ class Clusterer :
             _metrics = self._compute_metrics(X_proj, labels)
             silhouette = _metrics['silhouette']
             silhouetteW = _metrics['silhouetteW']
-            entropy = _metrics['entropy']
+            entropy = _metrics['normalized_entropy']
             entropy_silhouette = silhouette * entropy ** self.alpha
             evr_ew_silhouette = entropy_silhouette * evr ** self.beta
             metrics = ['Silhouette', 'SilhouetteW' ,'Entropy', 'EW Silh.', 'EVR-EW Silh.']
