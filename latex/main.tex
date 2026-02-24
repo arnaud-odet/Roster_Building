@@ -1,4 +1,4 @@
-\documentclass[a4paper,11pt,twoside]{ThesisStyle}
+\documentclass[a4paper,12pt]{article}
 
 %\usepackage{yfonts}
 %\usepackage{unicode-math}
@@ -28,12 +28,9 @@
 \usepackage{enumerate}
 
 \usepackage{appendix}
-\usepackage[ED=MITT-MathA, Ets=UT3]{tlsflyleaf}
 \usepackage{caption}
 \usepackage{subcaption}
-\graphicspath{ {./introduction/figures/} {./chapters/figures/} {./conclusion/figures/}}
-% \usepackage{chngcntr}
-% \usepackage{ThesisStyle}
+\graphicspath{ {./figures/} }
 
 \newcommand{\rr}[1]{\textcolor{red}{#1}}
 \newcommand{\ob}[1]{\colorbox{orange}{#1}}
@@ -47,8 +44,6 @@
 
 \newcommand{\citeauth}[1]{\citeauthor{#1}, \citeyear{#1}}
 
-% page de garde
-\input{preamble}
 
 \title{Optimal Roster Constitution in Basket-Ball.}
 \author{Arnaud ODET}
@@ -57,43 +52,32 @@
 
 \begin{document}
 
-% \makeflyleaf % makes a UPS cover
 \hbadness=99999  % suppresses underfull hbox warnings
 
 \maketitle
 
 
-	
-
-{\selectlanguage{english} \tableofcontents}
-
 \selectlanguage{english}
 
+\section*{Abstract}
+
+\ob{To Do}
 
 \input{introduction}
 
-\input{}
+\input{related_work}
+
+\input{methodology}
+
+\input{results}
+
+\input{discussion}
 
 \input{conclusion}
-
-\section*{Bibliography}
 
 
 \bibliographystyle{apalike}
 \bibliography{bibliography}
 
-% \chapter*{End} % For pagecount
-% \label{chap:end}
-% \addcontentsline{toc}{chapter}{\nameref{chap:end}}
-
-
-\newpage
-\thispagestyle{empty}
-~
-\clearpage
-\newpage
-
-	
-% \includepdf{Quatrieme_couverture.pdf}
 
 \end{document}
