@@ -49,7 +49,13 @@ COLORS = ['darkred', 'darkorange', 'seagreen']
 
 class Clusterer :
     
-    def __init__(self, use_positions:bool=True, load_feature_version:int = None, alpha:float = DEFAULT_ALPHA, beta:float = DEFAULT_BETA):
+    def __init__(self, 
+                time_norm: bool = True,
+                use_positions:bool=True, 
+                load_feature_version:int = None, 
+                alpha:float = DEFAULT_ALPHA, 
+                beta:float = DEFAULT_BETA):
+        self.time_norm = time_norm
         self.preproc_path = PREPROC_DATA_PATH / 'clustering'
         self.last_version = max([int(f.split('_')[-1][1:-4]) for f in os.listdir(self.preproc_path) if 'clustering' in f])
         self.use_positions = use_positions
@@ -71,7 +77,8 @@ class Clusterer :
             version = self.last_version
         fp = self.preproc_path / f"ARO_clustering_v{version}.csv"
         df = pd.read_csv(fp, index_col = 0)
-        df['e_w_silhouette'] = df['silhouette'] * df['entropy'] ** self.alpha
+        entr_col = 'entropy' if not 'normalized_entropy' in df.columns else 'normalized_entropy'
+        df['e_w_silhouette'] = df['silhouette'] * df[entr_col] ** self.alpha
         df['evr_e_w_silhouette'] = df['e_w_silhouette'] * df['evr'] ** self.beta
         return df
 
@@ -116,7 +123,7 @@ class Clusterer :
                         for l, n_clust in enumerate(n_clusts):
                             if self._check_exp_validity(method, n_clust, evr):
                                 _metrics_lists = {key : [] for key in self.metrics.keys()}
-                                _metrics_lists.update({'entropy': []})
+                                # _metrics_lists.update({'entropy': []})
                                 for _ in range(n_runs):
                                     labels = self.clusterize(X_proj= _X_proj, n_clust= n_clust, method=method)
                                     _metrics = self._compute_metrics(_X_proj, labels)
@@ -129,8 +136,8 @@ class Clusterer :
                             counter = m* n_exps_per_fs + i * n_exps_per_scaler + j * n_exps_per_evr + k * n_exps_per_method + l
                             best_si = max(best_si, _exp_metrics['silhouette'])
                             best_sw = max(best_sw, _exp_metrics['silhouetteW'])
-                            best_ew_si = max(best_ew_si, _exp_metrics['silhouette'] * _exp_metrics['entropy'] ** self.alpha)
-                            best_evr_ew_si = max(best_evr_ew_si, _exp_metrics['silhouette'] * evr ** self.beta * _exp_metrics['entropy'] ** self.alpha)
+                            best_ew_si = max(best_ew_si, _exp_metrics['silhouette'] * _exp_metrics['normalized_entropy'] ** self.alpha)
+                            best_evr_ew_si = max(best_evr_ew_si, _exp_metrics['silhouette'] * evr ** self.beta * _exp_metrics['normalized_entropy'] ** self.alpha)
                             msg = f"        Processing experiment n° {counter+1:>4} of {n_exps}. Best scores: "
                             msg += f"Silhouette Index = {best_si:.3f} | "
                             msg += f"SilhouetteW = {best_sw:.3f} | "
@@ -327,6 +334,7 @@ class Clusterer :
             feature_handler = self.feature_handler
         else : 
             feature_handler = FeatureHandler(verbose = False, 
+                                            time_norm= self.time_norm,
                                             use_positions =self.use_positions, 
                                             feature_version= None if new_instance else self.load_feature_version)
             self.feature_handler = feature_handler
@@ -374,10 +382,11 @@ class Clusterer :
   
 if __name__ == '__main__' :
     Clusterer(use_positions=False, 
+                time_norm= True,
                 load_feature_version= None, 
                 alpha=0.5,
                 beta = 1).run_comparison(n_runs= 1, 
-                                            scaling_methods=['standard','minmax'],
+                                            scaling_methods=['standard','minmax','robust'],
                                             methods= ['kmeans','spherical-kmeans','agg_ward','agg_average','agg_complete'],
-                                            features_selections=['incl','excl'])
+                                            features_selections=['incl','excl', None, 'autoexcl'])
     

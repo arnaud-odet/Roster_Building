@@ -74,6 +74,7 @@ class P_HDB_GridSearch:
     
     def __init__(self,
                 ref_metric:str = 'silhouette',
+                time_norm:bool = True,
                 scalings:list = ['standard'],
                 feature_selection: list = [None],
                 target_evrs:list = [1],
@@ -105,7 +106,7 @@ class P_HDB_GridSearch:
             self.version = max([int(f.split('_')[-1][1:-4]) for f in os.listdir(self.preproc_path) if 'partition_hdbscan' in f]) +1 
             self.filepath = self.preproc_path / f'partition_hdbscan_v{self.version}.csv'
             
-            self.clusterer = Clusterer(alpha= clusterer_alpha, beta = clusterer_beta, use_positions=use_positions)
+            self.clusterer = Clusterer(time_norm= time_norm, alpha= clusterer_alpha, beta = clusterer_beta, use_positions=use_positions)
             
     def fit(self, verbose:bool = True):
         
@@ -151,8 +152,8 @@ class P_HDB_GridSearch:
         
 if __name__ == '__main__':
     grid = P_HDB_GridSearch(
-        scalings= ['minmax', 'standard'],
-        feature_selection= ['incl','excl', None],
+        scalings= ['minmax', 'standard', 'robust'],
+        feature_selection= ['incl','excl', None, 'autoexcl'],
         target_evrs= [0.6, 0.8, 0.9, 0.95, 0.98],
         min_cluster_sizes= [4, 6, 8, 10, 12 ,14, 16, 18, 20, 30, 40, 50],
         min_samples= list(range(3,16)),

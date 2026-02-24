@@ -117,8 +117,8 @@ MANUAL_INCLUSION_COLS = {
 
 class FeatureHandler :
     
-    def __init__(self, use_positions:bool=True, feature_version:int = None, verbose :bool = True):
-        loader = Loader()
+    def __init__(self, time_norm:bool = True, use_positions:bool=True, feature_version:int = None, verbose :bool = True):
+        loader = Loader(time_norm= time_norm)
         self.verbose = verbose
         if not hasattr(loader, 'preproc_data'):            
             loader._load_raw_data()

@@ -10,6 +10,7 @@ class GMM_Custom_GridSearch:
     
     def __init__(self,
                 ref_metric:str = 'silhouette',
+                time_norm:bool = True,
                 scalings:list = ['standard'],
                 feature_selection: list = [None],
                 target_evrs:list = [1],
@@ -38,7 +39,7 @@ class GMM_Custom_GridSearch:
                 self.version = 0
             self.filepath = self.preproc_path / f'gmm_v{self.version}.csv'
             
-            self.clusterer = Clusterer(alpha= clusterer_alpha, beta = clusterer_beta, use_positions=use_positions)
+            self.clusterer = Clusterer(time_norm= time_norm, alpha= clusterer_alpha, beta = clusterer_beta, use_positions=use_positions)
             
     def fit(self, verbose:bool = True):
         
