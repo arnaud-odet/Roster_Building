@@ -1,0 +1,99 @@
+\documentclass[a4paper,11pt,twoside]{ThesisStyle}
+
+%\usepackage{yfonts}
+%\usepackage{unicode-math}
+%\usepackage{fontspec}
+
+\usepackage[round]{natbib}
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage[english,french]{babel}
+\selectlanguage{english}
+\usepackage{numprint}
+
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage[a4paper,top=2.5cm,bottom=2.5cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage{graphicx} % Required for inserting images
+\usepackage{latexsym,amsmath,amssymb,amscd,amsfonts,amsthm,mathrsfs,dsfont, txfonts}
+\usepackage{tcolorbox}
+\usepackage{xcolor}
+\usepackage{amsbsy}
+\usepackage{float}
+\usepackage[colorlinks=true, allcolors=blue,breaklinks=true]{hyperref}
+\usepackage[T1]{fontenc}
+\usepackage{soul}
+\usepackage{enumerate}
+
+\usepackage{appendix}
+\usepackage[ED=MITT-MathA, Ets=UT3]{tlsflyleaf}
+\usepackage{caption}
+\usepackage{subcaption}
+\graphicspath{ {./introduction/figures/} {./chapters/figures/} {./conclusion/figures/}}
+% \usepackage{chngcntr}
+% \usepackage{ThesisStyle}
+
+\newcommand{\rr}[1]{\textcolor{red}{#1}}
+\newcommand{\ob}[1]{\colorbox{orange}{#1}}
+\newcommand{\cb}[1]{\colorbox{cyan}{#1}}
+\newcommand{\gb}[1]{\colorbox{lime}{#1}}
+\newcommand{\yb}[1]{\colorbox{yellow}{#1}}
+
+\newcommand{\nb}[1]{\yb{<begin NEW>}{#1}\yb{<end NEW>}}
+
+
+
+\newcommand{\citeauth}[1]{\citeauthor{#1}, \citeyear{#1}}
+
+% page de garde
+\input{preamble}
+
+\title{Optimal Roster Constitution in Basket-Ball.}
+\author{Arnaud ODET}
+\date{Date TBD}
+
+
+\begin{document}
+
+% \makeflyleaf % makes a UPS cover
+\hbadness=99999  % suppresses underfull hbox warnings
+
+\maketitle
+
+
+	
+
+{\selectlanguage{english} \tableofcontents}
+
+\selectlanguage{english}
+
+
+\input{introduction}
+
+\input{}
+
+\input{conclusion}
+
+\section*{Bibliography}
+
+
+\bibliographystyle{apalike}
+\bibliography{bibliography}
+
+% \chapter*{End} % For pagecount
+% \label{chap:end}
+% \addcontentsline{toc}{chapter}{\nameref{chap:end}}
+
+
+\newpage
+\thispagestyle{empty}
+~
+\clearpage
+\newpage
+
+	
+% \includepdf{Quatrieme_couverture.pdf}
+
+\end{document}

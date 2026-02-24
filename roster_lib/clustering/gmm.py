@@ -73,9 +73,9 @@ class GMM_Custom_GridSearch:
     
 if __name__ == '__main__':
     gs_gmm = GMM_Custom_GridSearch(
-        scalings= ['minmax', 'standard'],
-        feature_selection= ['incl','excl', None],
+        scalings= ['minmax', 'standard','robust'],
+        feature_selection= ['incl','excl', None, 'autoexcl'],
         target_evrs= [0.6, 0.8, 0.9, 0.95, 0.98],
-        n_components= list(range(2,11)),
+        n_components= list(range(2,13)),
         covariance_types= ["spherical", "tied", "full","diag"]        
     ).fit()
