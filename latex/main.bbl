@@ -1,3 +1,22 @@
 \begin{thebibliography}{}
 
+\bibitem[Calvo et~al., 2025]{calvo_selecting_2025}
+Calvo, G., Armero, C., Grimm, B., and Ley, C. (2025).
+\newblock Selecting the {Best} {Compositions} of a {Wheelchair} {Basketball} {Team}: {A} {Data}-{Driven} {Approach}.
+\newblock {\em The American Statistician}, 79(2):212--220.
+
+\bibitem[James, 1984]{James1984TheBJ}
+James, B. (1984).
+\newblock The bill james baseball abstract.
+
+\bibitem[Muniz and Flamand, 2022]{muniz_weighted_2022}
+Muniz, M. and Flamand, T. (2022).
+\newblock A weighted network clustering approach in the {NBA}.
+\newblock {\em Journal of Sports Analytics}, 8(4):251--275.
+
+\bibitem[Oliver, 2004]{oliver2004basketball}
+Oliver, D. (2004).
+\newblock {\em Basketball on paper: rules and tools for performance analysis}.
+\newblock U of Nebraska Press.
+
 \end{thebibliography}
