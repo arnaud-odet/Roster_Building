@@ -4,10 +4,13 @@ Sports analytics has been a burgeoning field for decades.
 In team sports, data were primarily descriptive and high-level, focusing on direct measurements necessary to determine the outcome of a contest (number of points scored, win-loss records, etc.).
 The mid-20th century, through the professionalization of sports, saw the emergence of individual performance statistics, such as shots, tackles, and passes.
 These data, commonly referred to as \textbf{box-score} statistics, brought a player-centric dimension to performance analysis.
-Indeed, they introduced the possibility of attributing collective performance to individual players. \newline
+Indeed, they introduced the possibility of attributing collective performance to individual players. 
+Later development, with the increasing use of tracking systems in the 2010s, allowed to considerably enrich these data, adding more granularity.
+In the National Basketball Association (NBA), a real-time tracking technology, SportVU, was introduced into every arena in 2014.
+It allows differentiating shots no longer by their sole value (2 or 3 points) but by their location (elbow, post, etc.), or assess if a rebound is or is not contested. \newline
 
 While these statistics paved the way for aggregated indicators used to deepen the understanding of analyzed sports, with Sabermetrics in baseball \citep{James1984TheBJ} and Oliver's Four Factors in basketball \citep{oliver2004basketball} as pioneering efforts, they remain widely used to assess individual performance.
-In the National Basketball Association (NBA), arguably the most competitive basketball league in the world, individual awards such as Most Valuable Player (MVP), Defensive Player of the Year (DPoY), selections to the NBA All-NBA Teams, and participation in the All-Star Game are to a great extent determined by players' statistical output.
+In the NBA, arguably the most competitive basketball league in the world, individual awards such as Most Valuable Player (MVP), Defensive Player of the Year (DPoY), selections to the NBA All-NBA Teams, and participation in the All-Star Game are to a great extent determined by players' statistical output.
 In short, box-score statistics are routinely used to identify and evaluate key players.
 
 However, in team sports, while individual abilities and athletic level are crucial factors of performance, it is ultimately teams that win games and championships.
@@ -17,8 +20,8 @@ And, conversely, how can one infer, from individual statistics alone, the value 
 A seminal illustration of the use of box-score statistics to assemble a competitive team was presented in the book \textit{Moneyball: The Art of Winning an Unfair Game}, later adapted into a major motion picture.
 This story describes how a small-budget baseball team managed to leverage Sabermetrics to build a competitive roster despite significant financial constraints.
 While \textit{Moneyball} recounts a successful application of box-score-derived statistics, granting such data an overestimated relevance may yield opposite results.
-Since the 2010s, the NBA has witnessed several attempts at assembling so-called ``Superteams'', few of which achieved sustained success.
-While no strict consensus on the term ``Superteam'' has been established in the academic literature, NBA.com writer Steve Aschburner proposed the following defining characteristics\footnote{\url{https://www.nba.com/news/nba-super-teams-and-history}, consulted on February 25\textsuperscript{th}, 2026}:
+Since the 2010s, the NBA has witnessed several attempts at assembling so-called ``Super Teams'', few of which achieved sustained success.
+While no strict consensus on the term ``Super Team'' has been established in the academic literature, NBA.com writer Steve Aschburner proposed the following defining characteristics\footnote{\url{https://www.nba.com/news/nba-super-teams-and-history}, consulted on February 25\textsuperscript{th}, 2026}:
 
 \begin{enumerate}[i]
   \item It boasts two, three or more stars on its roster, any one of whom would be able to anchor a franchise on his own.
@@ -29,12 +32,13 @@ While no strict consensus on the term ``Superteam'' has been established in the 
 The recurring underperformance of such assemblies of individually dominant players relative to expectations highlights the limits of individual statistics as a sole proxy for team success, and motivates the development of more holistic analytical frameworks. \newline
 
 This work proposes a data-driven method, leveraging box-score statistics, to address the task of roster construction in basketball.
-To this end, we make use of a dataset referenced in \cite{muniz_weighted_2022}\footnote{\url{https://github.com/meganlynn12/jsa-cdkm?tab=readme-ov-file}, consulted on February 25\textsuperscript{th}, 2026}, and publicly available on Kaggle\footnote{\url{https://www.kaggle.com/datasets/schmadam97/nba-playbyplay-data-20182019}, consulted on February 25\textsuperscript{th}, 2026}.
 Our methodology unfolds in two complementary steps:
 
 \begin{enumerate}
   \item We apply \textbf{unsupervised learning} to players' individual statistics in order to identify archetypes of players, thereby creating an intermediate level of analysis that transcends the athlete level, at which each individual is unique by definition.
-  \item We subsequently leverage these archetypes to characterize each team according to the lineups it deploys, and relate this characterization to team success.
+  To this end, we make use of a dataset referenced in \cite{muniz_weighted_2022}\footnote{\url{https://github.com/meganlynn12/jsa-cdkm?tab=readme-ov-file}, consulted on February 25\textsuperscript{th}, 2026}.
+  \item We subsequently leverage these archetypes to \textbf{characterize each team according to the lineups it deploys}, and relate this characterization to team success.
+  Lineups were extracted from play-by-play data, publicly available on Kaggle\footnote{\url{https://www.kaggle.com/datasets/schmadam97/nba-playbyplay-data-20182019}, consulted on February 25\textsuperscript{th}, 2026}.
 \end{enumerate}
 
-The remainder of this paper is organized as follows: Section~\ref{sec:rw} reviews related work on unsupervised learning applications in sports analytics and roster construction; Section~\ref{sec:method} describes our methodology; Section~\ref{sec:results} presents our results, which are discussed in Section~\ref{sec:discuss}; and Section~\ref{sec:ccl} concludes the study.
+The remainder of this paper is organized as follows: Section~\ref{sec:rw} reviews related work on unsupervised learning applications in sports analytics and roster construction, Section~\ref{sec:method} describes our methodology, Section~\ref{sec:results} presents our results, which are discussed in Section~\ref{sec:discuss}, and Section~\ref{sec:ccl} concludes the study.
