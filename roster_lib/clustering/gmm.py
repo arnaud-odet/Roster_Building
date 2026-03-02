@@ -13,6 +13,10 @@ class GMM_Custom_GridSearch:
                 time_norm:bool = True,
                 scalings:list = ['standard'],
                 feature_selection: list = [None],
+                start_season:int = 2015,
+                end_season:int = 2019,
+                minimum_minutes_per_game:int = 0,
+                minimum_n_games:int = 0,
                 target_evrs:list = [1],
                 n_components:list = [5],
                 covariance_types:list = ['diag'],
@@ -26,6 +30,8 @@ class GMM_Custom_GridSearch:
             self.target_evrs = target_evrs
             self.n_components = n_components
             self.covariance_types= covariance_types
+            self.min_mpg = minimum_minutes_per_game
+            self.min_ng = minimum_n_games
             n_scalings = len(scalings)
             n_fs = len(self.feature_selection) 
             n_te = len(target_evrs)
@@ -39,7 +45,12 @@ class GMM_Custom_GridSearch:
                 self.version = 0
             self.filepath = self.preproc_path / f'gmm_v{self.version}.csv'
             
-            self.clusterer = Clusterer(time_norm= time_norm, alpha= clusterer_alpha, beta = clusterer_beta, use_positions=use_positions)
+            self.clusterer = Clusterer(time_norm= time_norm, 
+                                    start_season= start_season,
+                                    end_season= end_season,
+                                    alpha= clusterer_alpha, 
+                                    beta = clusterer_beta, 
+                                    use_positions=use_positions)
             
     def fit(self, verbose:bool = True):
         
@@ -49,7 +60,7 @@ class GMM_Custom_GridSearch:
         for fs in self.feature_selection:
             for sc in self.scalings:
                 for evr in self.target_evrs:
-                    X = self.clusterer.get_data(scaling=sc, feature_selection=fs , perform_PCA=True, target_evr= evr, retrieve_name=False, retrieve_position=False)
+                    X = self.clusterer.get_data(minimum_min_per_game= self.min_mpg, minimum_games= self.min_ng, scaling=sc, feature_selection=fs , perform_PCA=True, target_evr= evr, retrieve_name=False, retrieve_position=False)
                     for nc in self.n_components :
                         for ct in self.covariance_types :
                             counter += 1 
@@ -77,5 +88,6 @@ if __name__ == '__main__':
         feature_selection= ['incl','excl', None, 'autoexcl'],
         target_evrs= [0.6, 0.8, 0.9, 0.95, 0.98],
         n_components= list(range(2,13)),
+        time_norm= True,
         covariance_types= ["spherical", "tied", "full","diag"]        
     ).fit()

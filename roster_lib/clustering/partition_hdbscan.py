@@ -77,6 +77,10 @@ class P_HDB_GridSearch:
                 time_norm:bool = True,
                 scalings:list = ['standard'],
                 feature_selection: list = [None],
+                start_season:int = 2015,
+                end_season:int = 2019,
+                minimum_min_per_game:int = 0,
+                minimum_n_games:int = 0,
                 target_evrs:list = [1],
                 min_cluster_sizes: list = [5],
                 min_samples: list = [None],
@@ -94,6 +98,8 @@ class P_HDB_GridSearch:
             self.min_samples = min_samples 
             self.cluster_selection_epsilons = cluster_selection_epsilons 
             self.max_cluster_sizes = max_cluster_sizes 
+            self.min_mpg = minimum_min_per_game,
+            self.min_ng = minimum_n_games
             n_scalings = len(scalings)
             n_fs = len(self.feature_selection) 
             n_te = len(target_evrs)
@@ -106,7 +112,12 @@ class P_HDB_GridSearch:
             self.version = max([int(f.split('_')[-1][1:-4]) for f in os.listdir(self.preproc_path) if 'partition_hdbscan' in f]) +1 
             self.filepath = self.preproc_path / f'partition_hdbscan_v{self.version}.csv'
             
-            self.clusterer = Clusterer(time_norm= time_norm, alpha= clusterer_alpha, beta = clusterer_beta, use_positions=use_positions)
+            self.clusterer = Clusterer(time_norm= time_norm, 
+                                    start_season= start_season,
+                                    end_season= end_season,
+                                    alpha= clusterer_alpha, 
+                                    beta = clusterer_beta, 
+                                    use_positions=use_positions)
             
     def fit(self, verbose:bool = True):
         
@@ -116,7 +127,7 @@ class P_HDB_GridSearch:
         for fs in self.feature_selection:
             for sc in self.scalings:
                 for evr in self.target_evrs:
-                    base_X = self.clusterer.get_data(scaling=sc, feature_selection=fs , perform_PCA=True, target_evr= evr, retrieve_name=False, retrieve_position=False)
+                    base_X = self.clusterer.get_data(minimum_min_per_game= self.min_mpg, minimum_games= self.min_ng, scaling=sc, feature_selection=fs , perform_PCA=True, target_evr= evr, retrieve_name=False, retrieve_position=False)
                     for mcs in self.min_cluster_sizes:
                         for mss in self.min_samples:
                             for cse in self.cluster_selection_epsilons:
@@ -152,6 +163,7 @@ class P_HDB_GridSearch:
         
 if __name__ == '__main__':
     grid = P_HDB_GridSearch(
+        time_norm= False, 
         scalings= ['minmax', 'standard', 'robust'],
         feature_selection= ['incl','excl', None, 'autoexcl'],
         target_evrs= [0.6, 0.8, 0.9, 0.95, 0.98],

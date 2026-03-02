@@ -86,11 +86,13 @@ VOLUME_FEATURES = [
 
 class Loader :
     
-    def __init__(self, time_norm: bool = True):
+    def __init__(self, time_norm: bool = True, start_season:int = 2015, end_season:int = 2019):
         self.raw_data_path = RAW_DATA_PATH / 'muniz_data'
         self.time_norm = time_norm
+        self.start_season = start_season
+        self.end_season = end_season
         tn_str = 'time_norm' if time_norm else 'raw'
-        self.preproc_data_filepath = PREPROC_DATA_PATH / 'clustering' / f'concatenated_data_{tn_str}.csv'
+        self.preproc_data_filepath = PREPROC_DATA_PATH / 'clustering' / f'concatenated_data_{tn_str}_{start_season-2000}-{end_season-2000}.csv'
         
         if os.path.exists(self.preproc_data_filepath):
             self._load_preproc_data()
@@ -104,6 +106,7 @@ class Loader :
         self._load_raw_data()
         self._handle_duplicated()
         self.df = self._clean_data()
+        self._filter_data()
         if self.time_norm:
             for col in VOLUME_FEATURES:
                 self.df[col] =  self.df[col] / self.df['MIN']
@@ -129,6 +132,11 @@ class Loader :
         df = pd.concat([v.drop(columns = ['MIN', 'GP', 'Season']) for v in self.preproc_data.values()], axis = 1)
         df = df.merge(self.preproc_data['Score'][['MIN']], left_index=True, right_index=True, how = 'left')
         return df
+    
+    def _filter_data(self):
+        seasons_list = [f"{s}-{s-1999}" for s in range(self.start_season, self.end_season+1)]
+        _filter = [id.split('_')[1] in seasons_list for id in self.df.index]
+        self.df = self.df[_filter]
     
     def _clean_data(self):
         df = self._merge_data()

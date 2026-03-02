@@ -117,8 +117,13 @@ MANUAL_INCLUSION_COLS = {
 
 class FeatureHandler :
     
-    def __init__(self, time_norm:bool = True, use_positions:bool=True, feature_version:int = None, verbose :bool = True):
-        loader = Loader(time_norm= time_norm)
+    def __init__(self, time_norm:bool = True, 
+                start_season:int = 2015,
+                end_season:int = 2019,
+                use_positions:bool=True, 
+                feature_version:int = None, 
+                verbose :bool = True):
+        loader = Loader(time_norm= time_norm, start_season= start_season, end_season= end_season)
         self.verbose = verbose
         if not hasattr(loader, 'preproc_data'):            
             loader._load_raw_data()
@@ -156,10 +161,19 @@ class FeatureHandler :
         for v in self.incl_dict.values():
             self.incl += v
 
-    def get_data(self, feature_selection:str= None):
+    def get_data(self, feature_selection:str= None, minimum_minutes_per_game:int = 0, minimum_n_games:int = 0):
+        _df = self.df.copy()
+        if 'MIN' in _df.columns:
+            _df = _df[_df['MIN'] >= minimum_minutes_per_game]
+        elif minimum_minutes_per_game > 0 :
+            print('Minutes per game are not available in the dataset, parameter minimum_minutes_per_game ignored')
+        if 'GP' in _df.columns:
+            _df = _df[_df['GP'] >= minimum_n_games]
+        elif minimum_n_games > 0 :
+            print('Number of games are not available in the dataset, parameter minimum_n_games ignored')        
         if feature_selection == None:
-            return self.df
-        return self.df[self.incl] if feature_selection == 'incl' else self.df.drop(columns = self.excl if feature_selection =='excl' else self.autoexcl)
+            return _df
+        return _df[self.incl] if feature_selection == 'incl' else _df.drop(columns = self.excl if feature_selection =='excl' else self.autoexcl)
 
     
     def auto_excl_vif(self, df, threshold:float=10):

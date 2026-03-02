@@ -47,10 +47,14 @@ METRICS_LEVELS = {
 
 COLORS = ['darkred', 'darkorange', 'seagreen']
 
+
+### Revoir auxiliaries functions for minutes and game minimums.
 class Clusterer :
     
     def __init__(self, 
                 time_norm: bool = True,
+                start_season:int = 2015,
+                end_season:int = 2019,
                 use_positions:bool=True, 
                 load_feature_version:int = None, 
                 alpha:float = DEFAULT_ALPHA, 
@@ -60,6 +64,8 @@ class Clusterer :
         self.last_version = max([int(f.split('_')[-1][1:-4]) for f in os.listdir(self.preproc_path) if 'clustering' in f])
         self.use_positions = use_positions
         self.load_feature_version = load_feature_version
+        self.start_season = start_season
+        self.end_season = end_season
         self.alpha = alpha
         self.beta = beta
         self.rdf = self.load_results()
@@ -85,6 +91,8 @@ class Clusterer :
     def run_comparison(self,
                        n_runs:int = 5,
                        features_selections: list = FEATURES_SELECTIONS,
+                       minimum_min_per_game:int = 0,
+                       minimum_n_games:int = 0,
                        scaling_methods: list = SCALINGS,
                        evr_targets: list = EVRS,
                        n_clusts: list = N_CLUSTS,
@@ -106,7 +114,7 @@ class Clusterer :
         
         results = []
         for m, fs in enumerate(features_selections):
-            df = feature_handler.get_data(feature_selection=fs)
+            df = feature_handler.get_data(feature_selection=fs, minimum_minutes_per_game= minimum_min_per_game, minimum_n_games= minimum_n_games)
             print(f"Processing feature selection mode '{fs}' - n° feature considered : {df.shape[1]}")
             for i, scaling_method in enumerate(scaling_methods) :
                 best_si, best_evr_ew_si, best_ew_si, best_sw = 0, 0, 0, 0  
@@ -151,6 +159,8 @@ class Clusterer :
     def customized_clustering(self,
                             evr:float = 1.0,
                             n_clust:int = 2,
+                            min_min_per_game:int = 0,
+                            min_n_games:int = 0,
                             method:str = 'kmeans',
                             scaling:str = 'standard',
                             feature_selection:str = 'incl',
@@ -158,7 +168,9 @@ class Clusterer :
         
         feature_handler = self._manage_feature_handler()
             
-        selected_df = feature_handler.get_data(feature_selection=feature_selection)
+        selected_df = feature_handler.get_data(feature_selection=feature_selection, 
+                                               minimum_minutes_per_game=  min_min_per_game,
+                                               minimum_n_games= min_n_games)
         if scaling is not None:
             scaler = SCALERS[scaling]()
             df_scaled = scaler.fit_transform(selected_df)
@@ -239,13 +251,17 @@ class Clusterer :
 
 
     # Data handling        
-    def plot_data(self, scalings:list = ['standard','robust','minmax'], feature_selections:list = ['incl','excl','autoexcl',None]):
+    def plot_data(self,
+                min_minute_per_game: int = 0,
+                min_n_games:int = 0, 
+                scalings:list = ['standard','robust','minmax'], 
+                feature_selections:list = ['incl','excl','autoexcl',None]):
 
         feature_handler = self._manage_feature_handler()
         fig, axs = plt.subplots(len(scalings), len(feature_selections), figsize = (5* len(feature_selections), 5* len(scalings)))
         
         for j, fs in enumerate(feature_selections):      
-            _df = feature_handler.get_data(fs)
+            _df = feature_handler.get_data(fs, minimum_minutes_per_game= min_minute_per_game, minimum_n_games= min_n_games)
             for i, sc in enumerate(scalings):
                 scaler = SCALERS[sc]()
                 _df_scaled = scaler.fit_transform(_df)
@@ -257,6 +273,8 @@ class Clusterer :
                 axs[i,j].set_title(f"{sc} scaling, feature selection : {fs}");
                      
     def get_data(self, 
+                minimum_min_per_game:int = 0,
+                minimum_games:int = 0,
                 scaling:str = None, 
                 feature_selection:str= None, 
                 perform_PCA:bool=True, 
@@ -269,7 +287,7 @@ class Clusterer :
             print(f"perform_PCA is set to False, ignoring parameter target_evr")
         
         feature_handler = self._manage_feature_handler(new_instance=new_instance)
-        data = feature_handler.get_data(feature_selection).copy()
+        data = feature_handler.get_data(feature_selection= feature_selection, minimum_minutes_per_game= minimum_min_per_game, minimum_n_games= minimum_games).copy()
         _index = data.index
         _columns = data.columns
         if scaling is not None :
@@ -293,11 +311,19 @@ class Clusterer :
         return data
 
     def get_ACP_matrix(self,
+                    minimum_min_per_game:int = 0,
+                    minimum_n_games:int = 0,
                     scaling:str = None,
                     feature_selection:str=None,
                     return_PCA:bool=False):
         
-        _df = self.get_data(scaling=scaling, feature_selection=feature_selection, retrieve_name=False, retrieve_position=False, perform_PCA=False)
+        _df = self.get_data(minimum_min_per_game= minimum_min_per_game,
+                            minimum_games= minimum_n_games,
+                            scaling=scaling, 
+                            feature_selection=feature_selection, 
+                            retrieve_name=False, 
+                            retrieve_position=False, 
+                            perform_PCA=False)
         pca = PCA().fit(_df)
         W = pca.components_
         W = pd.DataFrame(W.T,
@@ -309,10 +335,15 @@ class Clusterer :
     
     def plot_PCA(self,
                 n_features:int = 20,
+                min_minutes_per_game:int = 0,
+                min_n_games:int = 0,
                 scaling:str = None,
                 feature_selection:str = None,
                 ax=None):
-        W = self.get_ACP_matrix(scaling=scaling, feature_selection=feature_selection)
+        W = self.get_ACP_matrix(minimum_min_per_game= min_minutes_per_game,
+                                minimum_n_games= min_n_games,
+                                scaling=scaling, 
+                                feature_selection=feature_selection)
         W = W[['PC_1','PC_2']]
         W['norm'] = W['PC_1'] **2 + W['PC_2']**2
         W.sort_values(by = 'norm', ascending=False, inplace=True)
@@ -335,6 +366,8 @@ class Clusterer :
         else : 
             feature_handler = FeatureHandler(verbose = False, 
                                             time_norm= self.time_norm,
+                                            start_season= self.start_season,
+                                            end_season = self.end_season,
                                             use_positions =self.use_positions, 
                                             feature_version= None if new_instance else self.load_feature_version)
             self.feature_handler = feature_handler
@@ -382,7 +415,7 @@ class Clusterer :
   
 if __name__ == '__main__' :
     Clusterer(use_positions=False, 
-                time_norm= True,
+                time_norm= False,
                 load_feature_version= None, 
                 alpha=0.5,
                 beta = 1).run_comparison(n_runs= 1, 
