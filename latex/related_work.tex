@@ -2,10 +2,48 @@
 \label{sec:rw}
 
 \subsection{Unsupervised Learning in Sports}
-\ob{To do}
-\cite{Bialkowski2014large}, \cite{Duarte2012sports}, \cite{Fewell2012basketball}, \cite{Miller2017possession}, \cite{muniz_weighted_2022}, \cite{Pervse2009trajectory}
 
-\subsection{Roster Constitution}
-\ob{To do}
-\ob{Look for football in Elicit report}
-\cite{ke_unified_2024}, \cite{calvo_selecting_2025}, \cite{Penner2025player}, \cite{Sapienza2019deep}
+Machine Learning has been successfully applied for over a decade in sports analytics \citep{Memmert2025artificial}.
+In this section, we are focusing on application of {\bf unsupervised learning}.
+These approaches are primarily utilized to address the inherent lack of ground-truth labels in professional tracking data, focusing on player archetype discovery, tactical interaction modeling, and game-phase segmentation.
+
+\paragraph{Automated Discovery of Player Roles and Archetypes}
+Unsupervised learning provides a robust mechanism for redefining player positions based on empirical performance rather than traditional categorical labels.
+\cite{muniz_weighted_2022} introduced a novel two-step methodology utilizing k-Means clustering to initialize similarity weights within a weighted network, followed by the Louvain method for community detection. 
+Applied to NBA basketball tracking data (2014–2020), the study identified eight distinct archetypes, such as "Superstar Guards" and "Role Playing Bigs", which explained significantly more variation in team success (Win Shares) than the traditional five-position model.
+While this study relates closely to our archetypes optimization objective, if differs as clusters are different across seasons, when we need comparable clusters to consistently characterize teams' lineups. 
+In soccer, \cite{Bialkowski2014large} utilized minimum entropy data partitioning, an Expectation-Maximization (EM) approach to detect team formation in presence of player permutations.
+By learning roles directly from spatiotemporal data, they found that a dynamic role-based representation allows for accurate formation detection and provides necessary context for analyzing individual player behavior that is lost in static identity models.
+
+\paragraph{Tactical Interactions}
+\cite{Miller2017possession} implemented a hierarchical model involving probabilistic clustering via Bezier curves and Latent Dirichlet Allocation (LDA) to discover an offensive "vocabulary" in the NBA. 
+This unsupervised approach successfully grouped similar possessions, such as "weave" plays or specific tactical sequences leading to corner three-pointers, enabling efficient search and exploration of vast tracking databases.
+\cite{Knauf2015SpatiotemporalCK} developed a novel class of Spatio-Temporal Convolution Kernels (STCKs) applied through kernelized k-medoids and spectral clustering. 
+Utilizing Bundesliga soccer data, they demonstrated that these kernels effectively identify recurring movement patterns such as "game initiations" and "scoring opportunities". 
+Their findings highlight that STCKs are capable of distinguishing between multifaceted team philosophies, such as the rehearsed short moves of one team versus the linear, long-ball strategies of another, more effectively than baseline Hausdorff distance or bag-of-words methods.
+In handball, \cite{Schrapf2017TacticalIO} employed self-organizing maps (specifically the DyCoN neural network) to cluster offensive and defensive constellations. 
+They found that specific defensive patterns were significantly more successful (measured via odds ratios) against certain offensive behaviors, providing an objective framework for preparation against opponents.
+\cite{Leser2019FindingES} applied spectral clustering following Laplacian Score-based feature reduction to analyze youth soccer 3-vs-2 games. 
+This unsupervised mining identified "hidden" tactical strategies, revealing that offensive efficiency is maximized when attacks are initiated via the wings and concluded with a backward "through-ball" pass against the playing direction.
+\cite{Fewell2012basketball} treated NBA teams as dynamic networks, using clustering coefficients and network entropy to quantify offensive strategies. 
+They found that team-level success was positively correlated with higher network entropy (unpredictability) and lower degree centrality, suggesting that elite teams tend to distribute decision-making across multiple players rather than relying on a single dominant ball-handler.
+
+
+\paragraph{Game Phase Segmentation}
+\cite{Pervse2009trajectory} utilized Gaussian Mixture Models (GMM) and the EM algorithm to segment basketball trajectories into game phases (offense, defense, and timeouts) with approximately 90\% accuracy. 
+Furthermore, they used k-means clustering to partition the court into semantic regions, enabling the automatic recognition of organized play types using Levenstein distance between observed actions and database templates.
+\cite{Montoliu2015TeamAR} proposed a Bag-of-Words (BoW) strategy to recognize activities in Association Football without requiring individual player tracking. 
+By extracting "motion words" from Optical Flow data, they achieved high classification accuracy (up to 92.8\%) for team activities such as Ball Possession, Quick Attack, and Set Pieces.
+
+\subsection{Roster Optimization}
+
+The application of machine learning and mathematical optimization has become a cornerstone of modern sports analytics, shifting the focus from individual talent to the synergistic effects of player combinations. 
+In soccer, \cite{Abidin2021ACS} implemented several to evaluate players based on training data and coach assessments. 
+The study demonstrated that Random Forest models could select optimal player combinations with 93.9\% reliability, producing lineup suggestions that were 97.2\% similar to a professional coach's ideal team.
+In Basketball, \cite{ke_unified_2024}\footnote{\ob{On le cite alors que c'est le papier avec erreur, comment gérer ?}} developed a unified framework for the NBA and WNBA (United States' professional women basketball league) that combined unsupervised clustering (K-Means and Hierarchical Agglomerative Clustering) for player categorization with supervised neural networks to predict the winning probability of specific rosters based on playing time proportions. 
+Similarly, \cite{Penner2025player} moved toward positionless basketball by using K-means clustering to identify nine distinct player archetypes across 110 global leagues, subsequently utilizing multiple linear regression to rank athletes by "points per minute" to optimize championship roster construction.
+In the specialized context of wheelchair basketball, \cite{calvo_selecting_2025} combined Bayesian longitudinal modeling with stochastic integer linear programming to identify optimal lineups while strictly adhering to the Player Classification Points System (PCPS) constraints. 
+This methodology allows coaches to incorporate uncertainty into the selection process, effectively estimating the probability that a five-player configuration will yield the highest team performance.
+Beyond traditional field sports, \cite{Sapienza2019deep} explored team composition in the Multiplayer Online Battle Arena games Dota 2, employing deep neural autoencoders to recommend teammates who maximize an individual's "TrueSkill" score gain. 
+Their model achieved a 19.5\% improvement in recommendation accuracy over traditional graph factorization methods. 
+Such approaches are supported by theoretical frameworks like those proposed in \cite{Liemhetcharat2012ModelingAL}, which utilize synergy graphs and simulated annealing to model how task-based distances between heterogeneous agents affect overall team capability.

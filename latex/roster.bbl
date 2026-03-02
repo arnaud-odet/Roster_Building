@@ -1,5 +1,10 @@
 \begin{thebibliography}{}
 
+\bibitem[Abidin, 2021]{Abidin2021ACS}
+Abidin, D. (2021).
+\newblock A case study on player selection and team formation in football with machine learning.
+\newblock {\em Turkish J. Electr. Eng. Comput. Sci.}, 29:1672--1691.
+
 \bibitem[Bialkowski et~al., 2014]{Bialkowski2014large}
 Bialkowski, A., Lucey, P., Carr, P., Yue, Y., Sridharan, S., and Matthews, I. (2014).
 \newblock Large-scale analysis of soccer matches using spatiotemporal tracking data.
@@ -9,11 +14,6 @@ Bialkowski, A., Lucey, P., Carr, P., Yue, Y., Sridharan, S., and Matthews, I. (2
 Calvo, G., Armero, C., Grimm, B., and Ley, C. (2025).
 \newblock Selecting the {Best} {Compositions} of a {Wheelchair} {Basketball} {Team}: {A} {Data}-{Driven} {Approach}.
 \newblock {\em The American Statistician}, 79(2):212--220.
-
-\bibitem[Duarte et~al., 2012]{Duarte2012sports}
-Duarte, R., Ara{\'u}jo, D., Correia, V., and Davids, K. (2012).
-\newblock Sports teams as superorganisms: Implications of sociobiological models of behaviour for research and practice in team sports performance analysis.
-\newblock {\em Sports medicine}, 42(8):633--642.
 
 \bibitem[Fewell et~al., 2012]{Fewell2012basketball}
 Fewell, J.~H., Armbruster, D., Ingraham, J., Petersen, A., and Waters, J.~S. (2012).
@@ -29,10 +29,35 @@ Ke, Y., Bian, R., and Chandra, R. (2024).
 \newblock A unified machine learning framework for basketball team roster construction: {NBA} and {WNBA}.
 \newblock {\em Applied Soft Computing}, 153:111298.
 
+\bibitem[Knauf et~al., 2015]{Knauf2015SpatiotemporalCK}
+Knauf, K., Memmert, D., and Brefeld, U. (2015).
+\newblock Spatio-temporal convolution kernels.
+\newblock {\em Machine Learning}, 102:247 -- 273.
+
+\bibitem[Leser et~al., 2019]{Leser2019FindingES}
+Leser, R., Hoch, T., Tan, X., Moser, B., Kellermayr, G., and Baca, A. (2019).
+\newblock Finding efficient strategies in 3-versus-2 small-sided games of youth soccer players.
+\newblock {\em Kinesiology}.
+
+\bibitem[Liemhetcharat and Veloso, 2012]{Liemhetcharat2012ModelingAL}
+Liemhetcharat, S. and Veloso, M.~M. (2012).
+\newblock Modeling and learning synergy for team formation with heterogeneous agents.
+\newblock In {\em Adaptive Agents and Multi-Agent Systems}.
+
+\bibitem[Memmert, 2025]{Memmert2025artificial}
+Memmert, D. (2025).
+\newblock {\em Artificial Intelligence and Machine Learning in Sports Science}.
+\newblock Springer Verlag GmbH, DE.
+
 \bibitem[Miller and Bornn, 2017]{Miller2017possession}
 Miller, A.~C. and Bornn, L. (2017).
 \newblock Possession sketches: Mapping nba strategies.
 \newblock In {\em Proceedings of the 2017 MIT Sloan Sports Analytics Conference}, volume~1. IEEE.
+
+\bibitem[Montoliu et~al., 2015]{Montoliu2015TeamAR}
+Montoliu, R., Martin-Felez, R., Torres-Sospedra, J., and Martinez-Uso, A. (2015).
+\newblock Team activity recognition in association football using a bag-of-words-based method.
+\newblock {\em Human movement science}, 41:165--78.
 
 \bibitem[Muniz and Flamand, 2022]{muniz_weighted_2022}
 Muniz, M. and Flamand, T. (2022).
@@ -58,5 +83,10 @@ Per{\v{s}}e, M., Kristan, M., Kova{\v{c}}i{\v{c}}, S., Vu{\v{c}}kovi{\v{c}}, G.,
 Sapienza, A., Goyal, P., and Ferrara, E. (2019).
 \newblock Deep neural networks for optimal team composition.
 \newblock {\em Frontiers in big Data}, 2:14.
+
+\bibitem[Schrapf et~al., 2017]{Schrapf2017TacticalIO}
+Schrapf, N., Alsaied, S., and Tilp, M. (2017).
+\newblock Tactical interaction of offensive and defensive teams in team handball analysed by artificial neural networks.
+\newblock {\em Mathematical and Computer Modelling of Dynamical Systems}, 23:363 -- 371.
 
 \end{thebibliography}

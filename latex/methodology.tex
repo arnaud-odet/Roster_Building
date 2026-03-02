@@ -3,14 +3,21 @@
 
 \subsection{Data}
 
-\ob{To do}
-
 We relied on three data sources in this paper: (i) a tracking-improved box-score dataset for identifying players' archetypes (see paragraph \ref{sec:data_trbs}), (ii) play-by-play data to retrieve lineups used by teams \ob{and their relative +/- statistics} (see paragraph \ref{sec:data_pbp}) and (iii) team performance metrics to assess success of teams (see paragraph \ref{sec:data_success}).
 We only retain in our analysis complete seasons where these three sources are available, and considered only regular season games. 
 Playoff games were discarded, as we believe they could bring a distortion to the analysis.
 Indeed, only the best performing teams of a season qualify to the playoffs, facing stronger adversity, which could deteriorate their performance.
 Moreover, this choice allows to have exactly the same number of games for all NBA teams, and therefore not over represent good performing teams.
 Our dataset covers 5 NBA seasons, from 2015/16 to 2019/20, representing a total of 5 980 games (1 230 per season from 2015/16 to 2018/19 and 1 060 for the 2019/20 season, due to the modification of the season's schedule incurred by the Covid-19 pandemic).
+An overview of the datasets can be found in Table \ref{tab:data_stats}.
+
+\begin{table}[htbp]
+  \caption{Datasets overview}
+  \centering
+  \label{tab:data_stats}
+  \input{tables/data_stats} \newline
+  {\raggedright \small * Note: the total number of player does not correspond to unique players as players can play several seasons.}
+\end{table}
 
 \subsubsection{Tracking-improved box-score data}
 \label{sec:data_trbs}
@@ -36,12 +43,17 @@ In total, the concatenated dataset contains 2 519 entries (player's season) dist
 
 \subsubsection{Play-by-play data}
 \label{sec:data_pbp}
+
 The dataset presented in this section is publicly available \href{https://www.kaggle.com/datasets/schmadam97/nba-playbyplay-data-20182019}{Kaggle}\footnote{Consulted on February 25\textsuperscript{th}, 2026}.
+Play-by-play data record timestamp-indexed of event in a game. 
+Recorded event encompasses traditional box-scores events (e.g. shot attempts, rebounds, assists, etc.) and the identity of the players credited for the corresponding events, as well as game-related information (start of period, end of period, player substitutions, etc.).
+From the identity of players credited for event and the changes log, we were able to identify for all timestamps the composition of both team participating in a game. 
+\ob{Plus de détails sur le process ?}
 
 \subsubsection{Team performance data}
 \label{sec:data_success}
 We collected from \href{https://www.nba.com/}{nba.com} two indicators of teams' success:
-\begin{enumerate}
+\begin{enumerate}[i]
   \item Teams' Win Rate (number of games won / number of games played), ranging from 0.122 to 0.890.
   \item A binary indicator worth 1 if the considered team reached the conference semi-finals in the playoffs and 0 otherwise, as suggested in \ob{quote}. 
   The NBA is split into two conferences (East and West), both having their own playoff competition.
