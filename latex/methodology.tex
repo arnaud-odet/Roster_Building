@@ -8,7 +8,7 @@ We only retain in our analysis complete seasons where these three sources are av
 Playoff games were discarded, as we believe they could bring a distortion to the analysis.
 Indeed, only the best performing teams of a season qualify to the playoffs, facing stronger adversity, which could deteriorate their performance.
 Moreover, this choice allows to have exactly the same number of games for all NBA teams, and therefore not over represent good performing teams.
-Our dataset covers 5 NBA seasons, from 2015/16 to 2019/20, representing a total of 5 980 games (1 230 per season from 2015/16 to 2018/19 and 1 060 for the 2019/20 season, due to the modification of the season's schedule incurred by the Covid-19 pandemic).
+Our dataset covers 5 NBA seasons, from 2015/16 to 2019/20, representing a total of 5,980 games (1,230 per season from 2015/16 to 2018/19 and 1,060 for the 2019/20 season, due to the modification of the season's schedule incurred by the Covid-19 pandemic).
 An overview of the datasets can be found in Table \ref{tab:data_stats}.
 
 \begin{table}[htbp]
@@ -16,7 +16,7 @@ An overview of the datasets can be found in Table \ref{tab:data_stats}.
   \centering
   \label{tab:data_stats}
   \input{tables/data_stats} \newline
-  {\raggedright \small * Note: the total number of player does not correspond to unique players as players can play several seasons.}
+  {\raggedright \small * Notes: (i) the total number of player does not correspond to unique players as players can play several seasons, (ii) we discarded players that were missing in one or more datasets. None of them play more than 10 minutes per game on average.}
 \end{table}
 
 \subsubsection{Tracking-improved box-score data}
@@ -38,7 +38,7 @@ Tracking improved box-score statistics as it (i) brought higher granularity to e
 
 In these datasets, every entry corresponds to a player's average statistics over a season. 
 We concatenated seasons and datasets and removed of duplicated columns (minutes and number of games played are recorded in each dataset).
-In total, the concatenated dataset contains 2 519 entries (player's season) distributed into 30 NBA teams, and has 129 dimensions (performance indicators).
+In total, the concatenated dataset contains 2,519 entries (player's season) distributed into 30 NBA teams, and has 129 dimensions (performance indicators).
 
 
 \subsubsection{Play-by-play data}
@@ -49,13 +49,15 @@ Play-by-play data record timestamp-indexed of event in a game.
 Recorded event encompasses traditional box-scores events (e.g. shot attempts, rebounds, assists, etc.) and the identity of the players credited for the corresponding events, as well as game-related information (start of period, end of period, player substitutions, etc.).
 From the identity of players credited for event and the changes log, we were able to identify for all timestamps the composition of both team participating in a game. 
 \ob{Plus de détails sur le process ?}
+In total, we identified between 12,759 and 14.761 unique lineups per season.
+Teams aligned between 187 and 794 different lineups over the course of a season ($\mu = 454.4, \sigma = 114.7$).  
 
 \subsubsection{Team performance data}
 \label{sec:data_success}
 We collected from \href{https://www.nba.com/}{nba.com} two indicators of teams' success:
 \begin{enumerate}[i]
-  \item Teams' Win Rate (number of games won / number of games played), ranging from 0.122 to 0.890.
-  \item A binary indicator worth 1 if the considered team reached the conference semi-finals in the playoffs and 0 otherwise, as suggested in \ob{quote}. 
+  \item Teams' Win Rate (number of games won / number of games played), ranging from 0.122 to 0.890 ($\mu = 0.500, \sigma = 0.152$).
+  \item A binary indicator worth 1 if the considered team reached the conference semi-finals in the playoffs and 0 otherwise, as suggested in \cite{ke_unified_2024}. 
   The NBA is split into two conferences (East and West), both having their own playoff competition.
   The NBA champion is the winner of the best-of-seven series between East and West champions.
   Reaching the conference semi-finals is therefore equivalent to being within the last 8 contenders for the NBA title, which corresponds to the top 26.7\%. 
@@ -66,15 +68,46 @@ Top performing teams appear to be the Golden State Warriors 2015, 2016, 2017 and
 Atlanta Hawks 2017 and 2019, and Memphis Grizzlies 2017 and 2018 aligned over 700 different lineups during the season, and Minnesota Timberwolves 2017, Orlando Magic 2018 and Detroit Pistons 2015 less than 240. None of these teams reached the Conference semi-finals.  
 
 \begin{figure}[h]
-  \includegraphics{success.png}   
-  \caption{Distribution of teams according to their number of lineups aligned during the season (x-axis) and win rate (y-axis). Red dots indicate teams reaching the Conference semi-finals, and blue dots the opposite.}
+  \includegraphics[width=\textwidth]{success.png}   
+  \caption{Distribution of teams according to their number of lineups aligned during the season (x-axis) and win rate (y-axis). Red dots indicate teams reaching the Conference semi-finals, and blue dots the opposite, Crosses correspond to Western Conference teams and dots to Eastern Conference teams.}
   \label{fig:success}
 \end{figure}
 
 \subsection{Clustering of NBA players}
 
-\ob{To do}
+From the tracking-improved boxscore dataset (see \ref{sec:data_trbs}), we aim at identifying players' archetypes.
+To do so, we need to create a partition of our dataset.
+We benchmarked various approaches, including centroid-based, hierachical agglomerative, density-based and gaussian models, with a hyperparameters search. 
 
+Among partition-based approaches, the centroid-based k-means algorithm partitions observations into k  groups by minimizing within-cluster dispersion, typically defined as the sum of squared Euclidean distances between observations and their corresponding cluster centroids. 
+Hierarchical clustering methods provide an alternative framework by constructing nested partitions without directly optimizing a global objective. 
+In particular, agglomerative hierarchical clustering proceeds iteratively by merging pairs of clusters according to a linkage criterion (single, complete, average, or Ward's minimum-variance linkage). 
+The resulting dendrogram encodes a multi-scale representation of the data, allowing cluster structure to be examined at different levels of granularity.
+Density-based approaches define clusters as connected regions of high sample density. HDBSCAN extends the DBSCAN framework by building a hierarchy based on mutual reachability distances and extracting clusters according to their stability across density levels. 
+This formulation enables the identification of clusters with varying densities while treating low-density regions as noise, which is particularly relevant in high-dimensional and irregularly distributed datasets. 
+However, in our case, we allocated "noisy" players to the nearest cluster (based on distance to cluster's centroid), as (i) we see no reason to discard outliers and (ii) there is a significant risk high performing (and therefore highly represented) players would be considered as outliers. 
+Finally, model-based clustering relies on probabilistic generative assumptions. 
+Gaussian Mixture Models (GMMs) assume that observations arise from a finite mixture of Gaussian distributions, each parameterized by a mean vector and covariance matrix. Model parameters are typically estimated via the EM algorithm, yielding soft probabilistic assignments of observations to latent components. 
+
+Details about the methods, hyperparameters searched and hyperparameters values can be found in Table \ref{tab:cl_hpo}.
+
+\begin{table}[htbp]
+  \centering
+  \small
+  \caption{Algorithms and Hyperparameters tested}
+  \label{tab:cl_hpo}
+  \input{tables/hpo}
+\end{table}
+
+\paragraph{Comparison metric}
+To determine which clustering algorithm yields the best results on our dataset, we need to compare them.
+Contrary to supervised learning, where a form of consensus emerges around some key metrics (e.g. Accuracy, F1 score and ROC-AUC for classification tasks, RMSE and its variants for regression tasks), Clusteri Validity Indices (CVIs) are still subject to discussion within the academic community. 
+\cite{Arbelaitz2013AnEC} compared 30 CVIs and concluded three groups of indices emerge, and the first of them contains indices that "behave better", with "the differences being statistically significant". 
+Well know metrics such as Silhouette Score, Davies-Bouldin, Calinski-Harabasz, etc. are listed as part of this well performing group.
+On the other hand, \cite{Gagolewski_2021} stated it is better "not to treat them as objective functions for identifying good partitions", and specified this is particularly the case for Silhouette and Davies-Boulin. 
+We therefore chose to rely on the Calinski-Harabasz index to compare different methods.
+ob{Revoir}
+Moreover, we will (i) use a visual "elbow method" to select our optimal hyperparameters, favoring a higher number of clusters in case of close performances and (ii) perform a manual "coherence check" to verify clusters relevance 
 
 \subsection{Lineups analysis}
 

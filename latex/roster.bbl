@@ -5,6 +5,11 @@ Abidin, D. (2021).
 \newblock A case study on player selection and team formation in football with machine learning.
 \newblock {\em Turkish J. Electr. Eng. Comput. Sci.}, 29:1672--1691.
 
+\bibitem[Arbelaitz et~al., 2013]{Arbelaitz2013AnEC}
+Arbelaitz, O., Gurrutxaga, I., Muguerza, J., P{\'e}rez, J.~M., and Perona, I. (2013).
+\newblock An extensive comparative study of cluster validity indices.
+\newblock {\em Pattern Recognit.}, 46:243--256.
+
 \bibitem[Bialkowski et~al., 2014]{Bialkowski2014large}
 Bialkowski, A., Lucey, P., Carr, P., Yue, Y., Sridharan, S., and Matthews, I. (2014).
 \newblock Large-scale analysis of soccer matches using spatiotemporal tracking data.
@@ -19,6 +24,11 @@ Calvo, G., Armero, C., Grimm, B., and Ley, C. (2025).
 Fewell, J.~H., Armbruster, D., Ingraham, J., Petersen, A., and Waters, J.~S. (2012).
 \newblock Basketball teams as strategic networks.
 \newblock {\em PloS one}, 7(11):e47445.
+
+\bibitem[Gagolewski et~al., 2021]{Gagolewski_2021}
+Gagolewski, M., Bartoszuk, M., and Cena, A. (2021).
+\newblock Are cluster validity measures (in) valid?
+\newblock {\em Information Sciences}, 581:620--636.
 
 \bibitem[James, 1984]{James1984TheBJ}
 James, B. (1984).

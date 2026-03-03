@@ -1,0 +1,23 @@
+\begin{tabular}{p{3cm}p{5cm}p{5cm}}
+  \toprule
+  Algorithm & Hyperparameters & Range \\
+  \midrule
+  \multirow{2}{*}{K-Means} 
+      & Number of clusters & [2-12] \\
+      & Type & \ob{Basis}, Spherical \\
+  \midrule
+  \multirow{2}{*}{Agglomerative}
+      & Number of clusters & [2-12] \\
+      & Linkage function & Ward, Average, Complete \\
+  \midrule
+  \multirow{4}{*}{{HDBSCAN}} 
+      & Minimum Cluster Size & [4-50] \\
+      & Minimum Samples & [3-15] \\
+      & \ob{Cluster Selection Epsilon} & 0 \\
+      & Maximum Cluster Size & [0, 400, 800] \\
+  \midrule
+  \multirow{2}{*}{{GMMs}} 
+      & Covariance Type & Spherical, Diagonal, Full, Tied \\
+      & Number of components & [2-12] \\
+  \bottomrule
+  \end{tabular}

@@ -7,7 +7,7 @@ Machine Learning has been successfully applied for over a decade in sports analy
 In this section, we are focusing on application of {\bf unsupervised learning}.
 These approaches are primarily utilized to address the inherent lack of ground-truth labels in professional tracking data, focusing on player archetype discovery, tactical interaction modeling, and game-phase segmentation.
 
-\paragraph{Automated Discovery of Player Roles and Archetypes}
+\paragraph{Discovery of Player Roles and Archetypes}
 Unsupervised learning provides a robust mechanism for redefining player positions based on empirical performance rather than traditional categorical labels.
 \cite{muniz_weighted_2022} introduced a novel two-step methodology utilizing k-Means clustering to initialize similarity weights within a weighted network, followed by the Louvain method for community detection. 
 Applied to NBA basketball tracking data (2014–2020), the study identified eight distinct archetypes, such as "Superstar Guards" and "Role Playing Bigs", which explained significantly more variation in team success (Win Shares) than the traditional five-position model.
@@ -32,8 +32,8 @@ They found that team-level success was positively correlated with higher network
 \paragraph{Game Phase Segmentation}
 \cite{Pervse2009trajectory} utilized Gaussian Mixture Models (GMM) and the EM algorithm to segment basketball trajectories into game phases (offense, defense, and timeouts) with approximately 90\% accuracy. 
 Furthermore, they used k-means clustering to partition the court into semantic regions, enabling the automatic recognition of organized play types using Levenstein distance between observed actions and database templates.
-\cite{Montoliu2015TeamAR} proposed a Bag-of-Words (BoW) strategy to recognize activities in Association Football without requiring individual player tracking. 
-By extracting "motion words" from Optical Flow data, they achieved high classification accuracy (up to 92.8\%) for team activities such as Ball Possession, Quick Attack, and Set Pieces.
+\cite{Montoliu2015TeamAR} proposed a Bag-of-Words (BoW) strategy to recognize activities in soccer without requiring individual player tracking. 
+By extracting "motion words" from optical data, they achieved high classification accuracy (up to 92.8\%) for team activities such as Ball Possession, Quick Attack, and Set Pieces.
 
 \subsection{Roster Optimization}
 

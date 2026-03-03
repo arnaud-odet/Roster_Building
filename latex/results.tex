@@ -1,4 +1,24 @@
 \section{Results}
 \label{sec:results}
 
+\subsection{Clustering}
+
+
+The Calinski-Harabasz indices of the compared method are presented in Figure \ref{fig:cl_ch}.
+Please note that the number of clusters if for some algorithms (e.g. K-Means, GMM) an input hyperparameter, but for some others (e.g. Partition - HDBSCAN), it is a consequence of other hyperparameters.
+A clear hierarchy emerges between algorithm : K-Means systematically outperforms other algorithms, while Agglomerative with Complete and Average linkage emerge as worst performers.
+Agglomerative with Ward linkage and GMM complete the top 3, the former performing better with few clusters and the latter with more clusters.
+Partition HDBSCAN and Spherical K-Means relative performance deteriorates with higher number of clusters, the former achieving a local maxima with 5 clusters, with a score comparable to GMM.    
+Interestingly, performances of all methods decrease with the number of clusters, consistently for most algorithms, and with the presence of some local maxima for others (Partition HDBSCAN, Agglomearative with Average and Complete linkage).
+
+\ob{To do: visual inspection}
+
+\begin{figure}[h]
+  \includegraphics[width=\textwidth]{clustering_ch.png}  
+  \caption{Comparison of clustering algorithm.}
+  \label{fig:cl_ch}
+\end{figure}
+
+\subsection{Roster Constitution}
+
 \ob{To do}

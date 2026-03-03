@@ -196,9 +196,18 @@ class Clusterer :
                         method:str = 'kmeans',
                         scaling:str = 'standard',
                         feature_selection:str = 'incl',
+                        minimim_min_per_game:int = 0,
+                        minimum_n_games:int = 0,
                         verbose:bool = True, 
                         return_data:bool = False):  
-            X_proj, labels = self.customized_clustering(evr, n_clust, method, scaling, feature_selection, verbose)
+            X_proj, labels = self.customized_clustering(evr = evr, 
+                                                        n_clust = n_clust,
+                                                        min_min_per_game= minimim_min_per_game,
+                                                        min_n_games= minimum_n_games, 
+                                                        method = method, 
+                                                        scaling = scaling, 
+                                                        feature_selection= feature_selection, 
+                                                        verbose= verbose)
             _, counts = np.unique(labels, return_counts= True)
             counts[::-1].sort()
             cluster_ids = [int(i+1) for i in range(counts.shape[0])]
@@ -231,7 +240,7 @@ class Clusterer :
             axs[2].set(ylabel='Metric value', title='Clustering metrics', ylim=(0, 1))
             axs[2].bar_label(bar_container, fmt='{:,.3f}')
             
-            cluster_df = self.feature_handler.df.copy()
+            cluster_df = self.feature_handler.get_data(feature_selection= feature_selection, minimum_minutes_per_game= minimim_min_per_game, minimum_n_games= minimum_n_games)
             cluster_df['id'] = [int(x.split('_')[0]) for x in cluster_df.index]
             cluster_df['name'] = cluster_df['id'].map(pid2name)
             cluster_df['Position'] = cluster_df.index.map(pid2pos_bref)
