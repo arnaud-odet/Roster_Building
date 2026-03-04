@@ -486,6 +486,7 @@ INPUT /usr/local/texlive/2023/texmf-dist/fonts/vf/public/txfonts/txmi.vf
 INPUT /usr/local/texlive/2023/texmf-dist/fonts/tfm/public/txfonts/rtxmi.tfm
 INPUT /usr/local/texlive/2023/texmf-dist/fonts/tfm/public/txfonts/rtxptmri.tfm
 INPUT /usr/local/texlive/2023/texmf-dist/fonts/vf/public/txfonts/txr.vf
+INPUT /usr/local/texlive/2023/texmf-dist/fonts/vf/public/txfonts/txr.vf
 INPUT ./tables/hpo.tex
 INPUT ./tables/hpo.tex
 INPUT ./tables/hpo.tex
@@ -496,7 +497,6 @@ INPUT ./results.tex
 INPUT ./results.tex
 INPUT ./results.tex
 INPUT results.tex
-INPUT /usr/local/texlive/2023/texmf-dist/fonts/vf/public/txfonts/txr.vf
 INPUT ./figures/clustering_ch.png
 INPUT ./figures/clustering_ch.png
 INPUT ./figures/clustering_ch.png

@@ -50,6 +50,9 @@ Play-by-play data record timestamp-indexed of event in a game.
 Recorded event encompasses traditional box-scores events (e.g. shot attempts, rebounds, assists, etc.) and the identity of the players credited for the corresponding events, as well as game-related information (start of period, end of period, player substitutions, etc.).
 From the identity of players credited for event and the changes log, we were able to identify for all timestamps the composition of both team participating in a game. 
 \ob{Plus de détails sur le process ?}
+A composition is a combination of 5 players from the pool of available players.
+In the NBA, teams are allowed to register 12 players for a given game, corresponding to $\binom{12}{5} = 792$ possible combinations.
+In practice, 
 In total, we identified between 12,759 and 14.761 unique lineups per season.
 Teams aligned between 187 and 794 different lineups over the course of a season ($\mu = 454.4, \sigma = 114.7$).  
 

@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex roster"] 1772615964 "roster.aux" "roster.bbl" "roster" 1772615966 0
+["bibtex roster"] 1772624844 "roster.aux" "roster.bbl" "roster" 1772639428 0
   "./bibliography.bib" 1772550076 70366 95341cf6add9974ab091b221986b2bd3 ""
   "/usr/local/texlive/2023/texmf-dist/bibtex/bst/base/apalike.bst" 1292289607 24635 604dafcc79f521a11ea73e506e1fbd98 ""
-  "roster.aux" 1772615965 7245 3089768af58c04f9040091e281103e59 "pdflatex"
+  "roster.aux" 1772639428 7247 809ceff2bba7ab1b19de3b8ffa78ec16 "pdflatex"
   (generated)
   "roster.bbl"
   "roster.blg"
   (rewritten before read)
-["pdflatex"] 1772615965 "/home/admin/code/arnaud-odet/7_PhD/Roster/latex/roster.tex" "roster.pdf" "roster" 1772615966 0
+["pdflatex"] 1772639427 "/home/admin/code/arnaud-odet/7_PhD/Roster/latex/roster.tex" "roster.pdf" "roster" 1772639428 0
   "/home/admin/code/arnaud-odet/7_PhD/Roster/latex/roster.tex" 1772465984 1669 7e512f0eeabba898cabe12f0e4b127a9 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/local/texlive/2023/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
@@ -213,16 +213,16 @@
   "/usr/local/texlive/2023/texmf.cnf" 1703072217 455 5b996dcaa0eb4ef14a83b026bc0a008c ""
   "conclusion.tex" 1772036796 48 954f5373059a4fc98ce04c84484ddbeb ""
   "discussion.tex" 1772036784 52 767936ac607d6637178c53e23d07cb8b ""
-  "figures/clustering_ch.png" 1772551980 347421 6a82bd9167e3e3d4aa57f4dd4c857e8b ""
-  "figures/clustering_inspection.png" 1772615819 193872 62e78c9ddf94b052e7a7e39e0d36e7cf ""
+  "figures/clustering_ch.png" 1772624842 358903 5963f10a6700e67ee5f2f88507dae06f ""
+  "figures/clustering_inspection.png" 1772639426 191611 c13f70d5469e7c4fd860941eddd849e2 ""
   "figures/success.png" 1772534922 169560 fe5d1c6b77133ad4c9f0d5b15408dae1 ""
   "introduction.tex" 1772100558 5827 1382042d04c3afd0af89101cfeceb176 ""
-  "methodology.tex" 1772615188 11855 d48981177de34c81dcdb188fe4c74468 ""
+  "methodology.tex" 1772624843 12082 64cd83b6969791c85aa7d120976c789c ""
   "related_work.tex" 1772528950 7367 d28bb7515f603ba00716eeebe869d412 ""
   "results.tex" 1772615963 1632 a8cb46d14e4636b6f4bd9427a2532440 ""
-  "roster.aux" 1772615965 7245 3089768af58c04f9040091e281103e59 "pdflatex"
-  "roster.bbl" 1772615965 4812 b98e78b5ec4380bafc9f2560d00dfd3b "bibtex roster"
-  "roster.out" 1772615965 2190 8bf1353e9308c82877fcbf044d5ee4c6 "pdflatex"
+  "roster.aux" 1772639428 7247 809ceff2bba7ab1b19de3b8ffa78ec16 "pdflatex"
+  "roster.bbl" 1772624844 4812 b98e78b5ec4380bafc9f2560d00dfd3b "bibtex roster"
+  "roster.out" 1772639428 2190 8bf1353e9308c82877fcbf044d5ee4c6 "pdflatex"
   "roster.tex" 1772465984 1669 7e512f0eeabba898cabe12f0e4b127a9 ""
   "tables/data_stats.tex" 1772452498 451 7b1fbf12c464b80c9372595ceeaf8b98 ""
   "tables/datasets.tex" 1772114203 1785 fca939e9c5ac1a6728d4b5830c6c6fb3 ""
