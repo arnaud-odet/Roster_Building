@@ -215,16 +215,15 @@ class Clusterer :
             if axs == None :
                 fig, axs = plt.subplots(1,4,figsize = (24,5));
             # print(X_proj.shape)
-            sns.scatterplot(x = X_proj[:,0], y = X_proj[:,1], hue = labels, alpha = 0.4, palette='bright', ax=axs[0], legend=False);
+            sns.scatterplot(x = X_proj[:,0], y = X_proj[:,1], hue = labels, alpha = 0.4, palette='tab10', ax=axs[0], legend=False);
             axs[0].set_xlabel("PC1");
             axs[0].set_ylabel("PC2");
             axs[0].set_title("Visual inspection of clustering along 2 first PCs");
             
-            sns.barplot(data = counts, ax = axs[1]);
+            sns.barplot(data = pd.DataFrame(counts, index= cluster_ids, columns =['count']).reset_index().rename(columns={"index":'cluster'}),
+                    ax = axs[1], x = 'cluster', hue = 'cluster', y = 'count',palette = 'tab10', legend = False);
             axs[1].set_title("Cluster population histogram");
             axs[1].set_xlabel("Cluster");
-            axs[1].set_xticks(range(len(cluster_ids)))
-            axs[1].set_xticklabels(cluster_ids);
             axs[1].set_ylabel("Count");
 
             _metrics = self._compute_metrics(X_proj, labels)

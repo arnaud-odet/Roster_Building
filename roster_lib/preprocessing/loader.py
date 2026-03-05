@@ -109,7 +109,7 @@ class Loader :
         self._filter_data()
         if self.time_norm:
             for col in VOLUME_FEATURES:
-                self.df[col] =  self.df[col] / self.df['MIN']
+                self.df[col] =  self.df[col] / self.df['MIN'] * 48
         self.df.to_csv(self.preproc_data_filepath)
     
     def _load_raw_data(self):   
