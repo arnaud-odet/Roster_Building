@@ -42,7 +42,7 @@ class GMM_Custom_GridSearch:
             try :
                 self.version = max([int(f.split('_')[-1][1:-4]) for f in os.listdir(self.preproc_path) if 'gmm' in f]) +1 
             except :
-                self.version = 0
+                self.version = 1
             self.filepath = self.preproc_path / f'gmm_v{self.version}.csv'
             
             self.clusterer = Clusterer(time_norm= time_norm, 

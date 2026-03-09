@@ -2,12 +2,12 @@ from roster_lib.clustering.clusterer import Clusterer
 from roster_lib.clustering.partition_hdbscan import P_HDB_GridSearch
 from roster_lib.clustering.gmm import GMM_Custom_GridSearch
 
-FS = ['incl','excl']
+FS = ['incl']
 SC = ['standard','minmax']
-EVRS = [0.9]
+EVRS = [0.8]
 N_CLS = list(range(2,21))
 
-for time_norm in [True, False]:
+for time_norm in [True]:
     for min_minute_per_g in [0,4,8]:
         print("===============================================================================")
         print(f"======== Processing Agg & K-Means with {min_minute_per_g} min minutes, time_norm = {time_norm} ========")
@@ -29,8 +29,8 @@ for time_norm in [True, False]:
             feature_selection= FS,
             minimum_min_per_game= min_minute_per_g,
             target_evrs= EVRS,
-            min_cluster_sizes= [4, 10, 20],
-            min_samples= [3,5,10,15],
+            min_cluster_sizes= [4, 6, 8, 10, 15, 20, 30, 40],
+            min_samples= [4,6,10,20],
             cluster_selection_epsilons= [0, 0.2, 0.5, 1, 2],
             max_cluster_sizes= [None,400, 800]
             )

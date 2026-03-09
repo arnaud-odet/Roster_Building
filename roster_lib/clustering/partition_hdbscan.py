@@ -109,7 +109,10 @@ class P_HDB_GridSearch:
             n_max_sizes = len(max_cluster_sizes)
             self.n_exps = n_scalings * n_fs * n_te * n_min_sizes * n_min_samples * n_cluster_eps * n_max_sizes
             self.preproc_path = PREPROC_DATA_PATH / 'clustering' 
-            self.version = max([int(f.split('_')[-1][1:-4]) for f in os.listdir(self.preproc_path) if 'partition_hdbscan' in f]) +1 
+            try :
+                self.version = max([int(f.split('_')[-1][1:-4]) for f in os.listdir(self.preproc_path) if 'partition_hdbscan' in f]) +1 
+            except :
+                self.version = 1
             self.filepath = self.preproc_path / f'partition_hdbscan_v{self.version}.csv'
             
             self.clusterer = Clusterer(time_norm= time_norm, 
