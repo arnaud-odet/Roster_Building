@@ -208,14 +208,16 @@ class Clusterer :
                                                         scaling = scaling, 
                                                         feature_selection= feature_selection, 
                                                         verbose= verbose)
-            _, counts = np.unique(labels, return_counts= True)
+            _u_lab, counts = np.unique(labels, return_counts= True)
+            map = { i: len(_u_lab) - np.argwhere((counts + np.arange(0, len(counts)) / 1000).argsort() == i)[0][0] for i in range(len(_u_lab))}
+            _rest_labels = np.array([map[lab] for lab in labels])
             counts[::-1].sort()
             cluster_ids = [int(i+1) for i in range(counts.shape[0])]
 
             if axs == None :
                 fig, axs = plt.subplots(1,4,figsize = (24,5));
-            # print(X_proj.shape)
-            sns.scatterplot(x = X_proj[:,0], y = X_proj[:,1], hue = labels, alpha = 0.4, palette='tab10', ax=axs[0], legend=False);
+            sns.scatterplot(x = X_proj[:,0], y = X_proj[:,1], hue = _rest_labels, 
+                            alpha = 0.4, palette='tab10', ax=axs[0], legend=False);
             axs[0].set_xlabel("PC1");
             axs[0].set_ylabel("PC2");
             axs[0].set_title("Visual inspection of clustering along 2 first PCs");
@@ -243,15 +245,14 @@ class Clusterer :
             cluster_df['id'] = [int(x.split('_')[0]) for x in cluster_df.index]
             cluster_df['name'] = cluster_df['id'].map(pid2name)
             cluster_df['Position'] = cluster_df.index.map(pid2pos_bref)
-            cluster_df['Cluster'] = labels 
-            cluster_df['Cluster'] = cluster_df['Cluster'].map( (cluster_df['Cluster'].value_counts() + cluster_df['Cluster'].value_counts().index / 1000 ).rank(ascending=False)) # re-ordering clusters ID, and adding a small delta to diffeentiate equailities 
+            cluster_df['Cluster'] = _rest_labels 
             sns.heatmap(cluster_df.pivot_table(index = 'Cluster', columns = ['Position'], values = 'id', aggfunc= 'count').fillna(0).astype(int)[['PG','SG','SF','PF','C']],
                 annot= True, fmt = 'd', cmap = 'coolwarm', cbar=False, ax = axs[3]);
             axs[3].set_title("Cluster repartition vs positions");
             axs[3].set_yticklabels(cluster_ids)
             
             if return_data:
-                return X_proj, labels
+                return X_proj, _rest_labels
             
     def _compute_metrics(self, X, labels):
         _metrics = {k : v['function'](X, labels) for k,v in self.metrics.items()}

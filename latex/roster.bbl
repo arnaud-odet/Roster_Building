@@ -99,4 +99,9 @@ Schrapf, N., Alsaied, S., and Tilp, M. (2017).
 \newblock Tactical interaction of offensive and defensive teams in team handball analysed by artificial neural networks.
 \newblock {\em Mathematical and Computer Modelling of Dynamical Systems}, 23:363 -- 371.
 
+\bibitem[Tibshirani et~al., 2001]{Tibshirani2001EstimatingTN}
+Tibshirani, R., Walther, G., and Hastie, T. (2001).
+\newblock Estimating the number of clusters in a data set via the gap statistic.
+\newblock {\em Journal of the Royal Statistical Society: Series B (Statistical Methodology)}, 63.
+
 \end{thebibliography}

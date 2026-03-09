@@ -119,8 +119,9 @@ CH = \frac{n-k}{k-1} \times \frac{ \sum_{1}^{n}{||\mu - \mu_{C(i)}||^{2}}}{ \sum
 
 where $n$ is the population size, $k$ the number of clusters, $C(i)$ is the clusters in which point $x_i, i \in \{1, ..., n\}$ is allocated, $\mu$ and $\mu_{C(i)}$ are the centroids of the population and of cluster $C(i)$ respectively, and $|| a - b ||$ represents the Euclidian distance between points $a$ and $b$. 
  
-\ob{Revoir}
-Moreover, we will (i) use a visual "elbow method" to select our optimal hyperparameters, favoring a higher number of clusters in case of close performances and (ii) perform a manual "coherence check" to verify clusters relevance 
+Once an optimal method is identified, we rely on the Gap Statistic \citep{Tibshirani2001EstimatingTN} to find the optimal number of clusters.
+It compares the total within intra-cluster variation for different number of clusters with their expected values under null reference distribution of the data. 
+The estimate of the optimal clusters will be value maximizing the gap statistic (equivalently, yielding the largest gap statistic), corresponding to the clustering structure the farthest away from the random uniform distribution of points.
 
 \subsection{Lineups analysis}
 
