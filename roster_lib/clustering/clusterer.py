@@ -61,14 +61,16 @@ class Clusterer :
                 beta:float = DEFAULT_BETA):
         self.time_norm = time_norm
         self.preproc_path = PREPROC_DATA_PATH / 'clustering'
-        self.last_version = max([int(f.split('_')[-1][1:-4]) for f in os.listdir(self.preproc_path) if 'clustering' in f])
+        try :
+            self.last_version = max([int(f.split('_')[-1][1:-4]) for f in os.listdir(self.preproc_path) if 'clustering' in f])
+        except : 
+            self.last_version = 0
         self.use_positions = use_positions
         self.load_feature_version = load_feature_version
         self.start_season = start_season
         self.end_season = end_season
         self.alpha = alpha
         self.beta = beta
-        self.rdf = self.load_results()
         self.metrics = {
             'silhouette': {'function': silhouette_score, 'ascending' : False},
             'silhouetteW': {'function': silhouetteW, 'ascending' : False},
@@ -86,6 +88,7 @@ class Clusterer :
         entr_col = 'entropy' if not 'normalized_entropy' in df.columns else 'normalized_entropy'
         df['e_w_silhouette'] = df['silhouette'] * df[entr_col] ** self.alpha
         df['evr_e_w_silhouette'] = df['e_w_silhouette'] * df['evr'] ** self.beta
+        self.rdf = df
         return df
 
     def run_comparison(self,
