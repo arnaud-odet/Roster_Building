@@ -405,6 +405,8 @@ def gapstat(X, clusterer=None, max_k=10, B1=10, B2=1, calcStats=False):
         if (gap[k] < 0):
             gap[k] = 0
 
+        # print(f'{k:>2}: {gap[k]:.3f}')
+        
         # determine whether the previous value of k is the estimated optimal
         # number of clusters
         # -- (1) make sure the optimal has not been found

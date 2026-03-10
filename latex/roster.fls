@@ -502,11 +502,6 @@ INPUT ./tables/pca.tex
 INPUT ./tables/pca.tex
 INPUT ./tables/pca.tex
 INPUT tables/pca.tex
-INPUT ./tables/pca_new.tex
-INPUT ./tables/pca_new.tex
-INPUT ./tables/pca_new.tex
-INPUT ./tables/pca_new.tex
-INPUT tables/pca_new.tex
 INPUT ./figures/clustering_ch.png
 INPUT ./figures/clustering_ch.png
 INPUT ./figures/clustering_ch.png

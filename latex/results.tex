@@ -7,6 +7,7 @@
 
 As specified in Section \ref{sec:data_trbs}, we performed a PCA to reduce the dimensionality of our dataset. 
 We set an explained variance threshold target of 80\%, which corresponds to 14 principal components.
+This thresholds returns a number of principal components 
 Please refer to Table \ref{tab:pca} for further details about the principal components.
 
 \begin{table}[htbp]
@@ -17,21 +18,13 @@ Please refer to Table \ref{tab:pca} for further details about the principal comp
   {\raggedright \small $\uparrow$ (respectively $\downarrow$) indicates feature positively (resp. negatively) correlated with the corresponding PC.}
 \end{table}
 
-\begin{table}[htbp]
-  \footnotesize
-  \caption{Principal Component details}
-  \label{tab:pca2}
-  \input{tables/pca_new}
-  {\raggedright \small $\uparrow$ (respectively $\downarrow$) indicates feature positively (resp. negatively) correlated with the corresponding PC.}
-\end{table}
-
 
 \subsubsection{Clustering algorithms}
 
 The Calinski-Harabasz indices of the compared method are presented in Figure \ref{fig:cl_ch}.
 Please note that the number of clusters if for some algorithms (e.g. K-Means, GMM) an input hyperparameter, but for some others (e.g. Partition - HDBSCAN), it is a consequence of other hyperparameters.
-A clear hierarchy emerges between algorithm : K-Means, GMM and Spherical K-Means consistently achieve top performance, while Agglomerative with Complete and Average linkage emerge as worst performers.
-Agglomerative with Ward linkage and Partition HDBSCAN fall below the top three performers, the former appearing more constant (and better in most cluster sizes) than the latter.
+\hl{A clear hierarchy emerges between algorithm : K-Means, GMM and Spherical K-Means consistently achieve top performance, while Agglomerative with Complete and Average linkage emerge as worst performers.
+Agglomerative with Ward linkage and Partition HDBSCAN fall below the top three performers, the former appearing more constant (and better in most cluster sizes) than the latter.}
 From this analysis, we will use K-Means as partition algorithm for the remaining of the paper.
 
 \ob{Choose nb of clusters}
