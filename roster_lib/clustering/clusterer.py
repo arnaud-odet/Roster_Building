@@ -351,24 +351,26 @@ class Clusterer :
                 min_n_games:int = 0,
                 scaling:str = None,
                 feature_selection:str = None,
+                x_PC:int = 1,
+                y_PC:int =2,
                 ax=None):
         W = self.get_ACP_matrix(minimum_min_per_game= min_minutes_per_game,
                                 minimum_n_games= min_n_games,
                                 scaling=scaling, 
                                 feature_selection=feature_selection)
-        W = W[['PC_1','PC_2']]
-        W['norm'] = W['PC_1'] **2 + W['PC_2']**2
+        W = W[[f'PC_{x_PC}',f'PC_{y_PC}']]
+        W['norm'] = W[f'PC_{x_PC}'] **2 + W[f'PC_{y_PC}']**2
         W.sort_values(by = 'norm', ascending=False, inplace=True)
         W = W.reset_index().loc[:n_features]
         if ax ==None:
             fig, ax = plt.subplots(1,1,figsize = (8,6))   
-        sns.scatterplot(data = W, x = 'PC_1', y = 'PC_2', ax = ax);
+        sns.scatterplot(data = W, x = f'PC_{x_PC}', y = f'PC_{y_PC}', ax = ax);
         bottom_x, top_x = ax.get_xlim()  
         bottom_y, top_y = ax.get_ylim()
         ax.plot([min(bottom_x,0),max(top_x,0)],[0,0], c = 'black');
         ax.plot([0,0],[min(bottom_y,0),max(top_y,0)], c = 'black');
         for index, row in W.iterrows():
-            ax.annotate(row['index'], xy = (row['PC_1'], row['PC_2']));
+            ax.annotate(row['index'], xy = (row[f'PC_{x_PC}'], row[f'PC_{y_PC}']));
                  
 
     # Features handling

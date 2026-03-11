@@ -41,7 +41,7 @@ where $\mu_{C_i}$ represents the centroid of the clusters containing $x$, and $k
 For the latter, we ran 100 iterations of Algorithm \ref{alg:gs} with $B = 10$.
 Figure \ref{fig:cl_ncl} displays the results for both approaches.
 From the elbow method, the optimal number of clusters is between 6 and 13 and from the gapstat algorithms, it appears between 9 and 11.
-We therefore chose 10 clusters.  
+We therefore chose 10 clusters for the selected partition, as 10 is the mode of our gapstat optimal number of clusters and falls within the Elbow method range.  
 Figure \ref{fig:cl_viz} presents a visual inspection of the selected partition, and Table \ref{tab:clust} a description of the clusters as well as notable players. 
 
 \begin{figure}[h]
@@ -59,7 +59,7 @@ Figure \ref{fig:cl_viz} presents a visual inspection of the selected partition, 
 
 \begin{table}[htbp]
   \centering
-  \small
+  \footnotesize
   \caption{Clusters presentation}
   \label{tab:clust}
   \input{tables/clusters}
