@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex roster"] 1773229006 "roster.aux" "roster.bbl" "roster" 1773247715 0
+["bibtex roster"] 1773264586 "roster.aux" "roster.bbl" "roster" 1773266999 0
   "./bibliography.bib" 1773219758 71396 b104bd99947c4b74848c387084210f13 ""
   "/usr/local/texlive/2023/texmf-dist/bibtex/bst/base/apalike.bst" 1292289607 24635 604dafcc79f521a11ea73e506e1fbd98 ""
-  "roster.aux" 1773247715 9911 1a44a640ce57dc4abc6e4e35c9c9e7b6 "pdflatex"
+  "roster.aux" 1773266998 9909 ff57f67e51d4e822cbed403228611d69 "pdflatex"
   (generated)
   "roster.bbl"
   "roster.blg"
   (rewritten before read)
-["pdflatex"] 1773247713 "/home/admin/code/arnaud-odet/7_PhD/Roster/latex/roster.tex" "roster.pdf" "roster" 1773247715 0
+["pdflatex"] 1773266997 "/home/admin/code/arnaud-odet/7_PhD/Roster/latex/roster.tex" "roster.pdf" "roster" 1773266999 0
   "/home/admin/code/arnaud-odet/7_PhD/Roster/latex/roster.tex" 1773219758 1720 e3eaeb694ddfabd4f1132ea9f243108b ""
   "/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/local/texlive/2023/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
@@ -43,6 +43,7 @@
   "/usr/local/texlive/2023/texmf-dist/fonts/tfm/public/txfonts/txsya.tfm" 1136768653 972 2c9ffac4bbd20f91c01aaef9bf3f8710 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/tfm/public/txfonts/txsyb.tfm" 1136768653 988 098ca7e8cc5647b9ac21b82dbdce1f01 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/tfm/public/txfonts/txsyc.tfm" 1136768653 1084 75e807e9e71f7a312e4e1187dce5e93b ""
+  "/usr/local/texlive/2023/texmf-dist/fonts/type1/public/txfonts/rtxb.pfb" 1136849748 6330 bdd610a36762742dd8a518bf9f97b968 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/type1/public/txfonts/rtxmi.pfb" 1232065820 13806 49b888f4605a088e66b9eb4fee320a6e ""
   "/usr/local/texlive/2023/texmf-dist/fonts/type1/public/txfonts/rtxr.pfb" 1136849748 6339 e2b78706efdc360ee6aec9b6e20211a7 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/type1/public/txfonts/t1xtt.pfb" 1136849748 26301 f08b3c26ea42c3177a262c2ac37d6a91 ""
@@ -224,16 +225,16 @@
   "introduction.tex" 1772100558 5827 1382042d04c3afd0af89101cfeceb176 ""
   "methodology.tex" 1773227699 14590 eed901bd7a6dc422458a1340c342cf39 ""
   "related_work.tex" 1772528950 7367 d28bb7515f603ba00716eeebe869d412 ""
-  "results.tex" 1773247713 3930 de82ece6fc0594c8b5079da60880130d ""
-  "roster.aux" 1773247715 9911 1a44a640ce57dc4abc6e4e35c9c9e7b6 "pdflatex"
-  "roster.bbl" 1773229006 5508 cc30f9ed14a42cb2c8c4fa54683deef6 "bibtex roster"
-  "roster.out" 1773247715 2580 20c1665fedc79ff55b8b43a1da0c5a0a "pdflatex"
+  "results.tex" 1773264584 4040 5caee11aaa00b4a4db74e70513970f8b ""
+  "roster.aux" 1773266998 9909 ff57f67e51d4e822cbed403228611d69 "pdflatex"
+  "roster.bbl" 1773264586 5508 cc30f9ed14a42cb2c8c4fa54683deef6 "bibtex roster"
+  "roster.out" 1773266998 2580 20c1665fedc79ff55b8b43a1da0c5a0a "pdflatex"
   "roster.tex" 1773219758 1720 e3eaeb694ddfabd4f1132ea9f243108b ""
-  "tables/clusters.tex" 1773247664 815 302fd52ebe9ce8a1855cf53d1a0c8c93 ""
+  "tables/clusters.tex" 1773266997 1075 a11c91d85feb86b1be90d94dd0a535ac ""
   "tables/data_stats.tex" 1772452498 451 7b1fbf12c464b80c9372595ceeaf8b98 ""
   "tables/datasets.tex" 1772114203 1785 fca939e9c5ac1a6728d4b5830c6c6fb3 ""
   "tables/hpo.tex" 1773141768 803 ad5c207d85a297330c7d478fb905a60d ""
-  "tables/pca.tex" 1773245581 3007 4be741afd942c6b53cf8350d704b8918 ""
+  "tables/pca_cat.tex" 1773264753 3583 76057436aabb5df5df16d60038eb012c ""
   (generated)
   "roster.aux"
   "roster.log"

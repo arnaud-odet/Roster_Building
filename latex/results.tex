@@ -11,11 +11,14 @@ This threshold returns a number of principal components
 Please refer to Table \ref{tab:pca} for further details about the principal components.
 
 \begin{table}[htbp]
-  \scriptsize
+  \tiny
   \caption{Principal Component details}
   \label{tab:pca}
-  \input{tables/pca}
-  {\raggedright \small $\uparrow$ (respectively $\downarrow$) indicates feature positively (resp. negatively) correlated with the corresponding PC.}
+  \input{tables/pca_cat}
+  {\raggedright \small $\uparrow$ (respectively $\downarrow$) indicates feature positively (resp. negatively) correlated with the corresponding PC. 
+  
+  EV\% = Explained Variance Ratio.  
+  Features in bold indicate the most relevant for the corresponding PC.}
 \end{table}
 
 
@@ -46,7 +49,7 @@ Figure \ref{fig:cl_viz} presents a visual inspection of the selected partition, 
 
 \begin{figure}[h]
   \includegraphics[width=\textwidth]{n_clust.png}  
-  \caption{Determination of the optimal number of clusters. The left panel displays the inertia value of K-Means and its evolution and the right panel an histogram of the best number of clusters determined from the gap statistic method, over 100 repetitions.}
+  \caption{Determination of the optimal number of clusters. The left panel displays the inertia value of K-Means and its evolution and the right panel a histogram of the best number of clusters determined from the gap statistic method, over 100 repetitions.}
   \label{fig:cl_ncl}
 \end{figure}
 
