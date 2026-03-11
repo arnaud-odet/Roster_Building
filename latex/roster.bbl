@@ -79,6 +79,11 @@ Oliver, D. (2004).
 \newblock {\em Basketball on paper: rules and tools for performance analysis}.
 \newblock U of Nebraska Press.
 
+\bibitem[Pedregosa et~al., 2011]{scikit-learn}
+Pedregosa, F., Varoquaux, G., Gramfort, A., Michel, V., Thirion, B., Grisel, O., Blondel, M., Prettenhofer, P., Weiss, R., Dubourg, V., Vanderplas, J., Passos, A., Cournapeau, D., Brucher, M., Perrot, M., and Duchesnay, E. (2011).
+\newblock Scikit-learn: Machine learning in {P}ython.
+\newblock {\em Journal of Machine Learning Research}, 12:2825--2830.
+
 \bibitem[Penner, 2025]{Penner2025player}
 Penner, L.~S. (2025).
 \newblock Player archetypes within basketball: optimizing roster composition to create a championship team.

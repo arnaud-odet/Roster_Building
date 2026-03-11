@@ -7,11 +7,11 @@
 
 As specified in Section \ref{sec:data_trbs}, we performed a PCA to reduce the dimensionality of our dataset. 
 We set an explained variance threshold target of 80\%, which corresponds to 14 principal components.
-This thresholds returns a number of principal components 
+This threshold returns a number of principal components 
 Please refer to Table \ref{tab:pca} for further details about the principal components.
 
 \begin{table}[htbp]
-  \footnotesize
+  \scriptsize
   \caption{Principal Component details}
   \label{tab:pca}
   \input{tables/pca}
@@ -23,11 +23,9 @@ Please refer to Table \ref{tab:pca} for further details about the principal comp
 
 The Calinski-Harabasz indices of the compared method are presented in Figure \ref{fig:cl_ch}.
 Please note that the number of clusters if for some algorithms (e.g. K-Means, GMM) an input hyperparameter, but for some others (e.g. Partition - HDBSCAN), it is a consequence of other hyperparameters.
-\hl{A clear hierarchy emerges between algorithm : K-Means, GMM and Spherical K-Means consistently achieve top performance, while Agglomerative with Complete and Average linkage emerge as worst performers.
-Agglomerative with Ward linkage and Partition HDBSCAN fall below the top three performers, the former appearing more constant (and better in most cluster sizes) than the latter.}
+A clear hierarchy emerges between algorithm : K-Means, Spherical K-Means and GMM consistently achieve top performance, while Agglomerative with Complete and Average linkage emerge as worst performers.
+Agglomerative with Ward linkage consistently falls below the top three performers and Partition HDBSCAN present more variations with cluster sizes, performing at the same level as GMM for the number of clusters for which it ranks best, and as bad as Agglomerative with complete linkage for the others.
 From this analysis, we will use K-Means as partition algorithm for the remaining of the paper.
-
-\ob{Choose nb of clusters}
 
 \begin{figure}[h]
   \includegraphics[width=\textwidth]{clustering_ch.png}  
@@ -35,14 +33,39 @@ From this analysis, we will use K-Means as partition algorithm for the remaining
   \label{fig:cl_ch}
 \end{figure}
 
-Figure \ref{fig:cl_viz} presents a visual inspection of the selected partition. 
+For determining the optimal number of clusters, we relied on (i) an elbow method based on the value of K-Means inertia defined as 
+\begin{equation}
+  Inertia = \sum_{i=1}^{k} \sum_{x \in C_i}||x - \mu_{C_i}||^{2} 
+\end{equation}
+where $\mu_{C_i}$ represents the centroid of the clusters containing $x$, and $k$ the number of clusters,  and (ii) the gap statistic method \citep{Tibshirani2001EstimatingTN}.
+For the latter, we ran 100 iterations of Algorithm \ref{alg:gs} with $B = 10$.
+Figure \ref{fig:cl_ncl} displays the results for both approaches.
+From the elbow method, the optimal number of clusters is between 6 and 13 and from the gapstat algorithms, it appears between 9 and 11.
+We therefore chose 10 clusters.  
+Figure \ref{fig:cl_viz} presents a visual inspection of the selected partition, and Table \ref{tab:clust} a description of the clusters as well as notable players. 
 
 \begin{figure}[h]
-  \includegraphics[width=\textwidth]{clustering_inspection.png}  
-  \caption{Visualization of the selected partition. The left panel represents players in a 2D space determined by the two first principal components and the right panel a histogram of cluster populations.}
+  \includegraphics[width=\textwidth]{n_clust.png}  
+  \caption{Determination of the optimal number of clusters. The left panel displays the inertia value of K-Means and its evolution and the right panel an histogram of the best number of clusters determined from the gap statistic method, over 100 repetitions.}
+  \label{fig:cl_ncl}
+\end{figure}
+
+
+\begin{figure}[h]
+  \includegraphics[width=\textwidth]{clustering_inspection_cropped.png}  
+  \caption{Visualization of the selected partition. The left panel represents players in a 2D space determined by the two first principal components, the middle panel a histogram of cluster populations and the right panel clusters' centroid positions along the principal components space.}
   \label{fig:cl_viz}
 \end{figure}
 
+\begin{table}[htbp]
+  \centering
+  \small
+  \caption{Clusters presentation}
+  \label{tab:clust}
+  \input{tables/clusters}
+  {\raggedright \small PG: Point Guard, SG: Shooting Guard, SF: Small Forward, PF: Power Forward, C: Center.}
+
+\end{table}
 
 \subsection{Roster Constitution}
 

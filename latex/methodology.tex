@@ -40,7 +40,7 @@ In these datasets, every entry corresponds to a player's average statistics over
 We concatenated seasons and datasets and removed of duplicated columns (minutes and number of games played are recorded in each dataset).
 In total, the concatenated dataset contains 2,519 entries (player's season) distributed into 30 NBA teams, and has 129 dimensions (performance indicators).
 We manually excluded features being collinear by design (e.g. $TS_{PCT}$, the True Shooting Percentage, is obtained from other shooting statistics, $AST$ and $TOV$, the total number of assists and turnovers is the sum of the number of assists and turnovers by locations, etc.), which reduced the number of features to 116.
-We subsequently (i) filtered out players with less than \ob{TBD minutes per game}, (ii) transformed statistics expressed in volumes in per 48 minutes statistics so players can be compared, (iii) scaled our dataset using a \ob{TBD} scaler and (iv) further reduced the dimensionality of our dataset by applying a Principal Component Analysis (PCA) and retaining 80\% of explained variance.
+We subsequently (i) transformed statistics expressed in volumes in per 48 minutes statistics so players can be compared, (ii) scaled our dataset using a minmax scaler and (iii) further reduced the dimensionality of our dataset by applying a Principal Component Analysis (PCA) and retaining 80\% of explained variance.
 
 \subsubsection{Play-by-play data}
 \label{sec:data_pbp}
@@ -79,10 +79,12 @@ Atlanta Hawks 2017 and 2019, and Memphis Grizzlies 2017 and 2018 aligned over 70
 \end{figure}
 
 \subsection{Clustering of NBA players}
+\label{sec:clustering}
 
 From the tracking-improved boxscore dataset (see \ref{sec:data_trbs}), we aim at identifying players' archetypes.
 To do so, we need to create a partition of our dataset.
 We benchmarked various approaches, including centroid-based, hierachical agglomerative, density-based and gaussian models, with a hyperparameters search. 
+We implemented these approaches with the scikit-learn Python library \citep{scikit-learn}.
 
 Among partition-based approaches, the centroid-based k-means algorithm partitions observations into k  groups by minimizing within-cluster dispersion, typically defined as the sum of squared Euclidean distances between observations and their corresponding cluster centroids. 
 Hierarchical clustering methods provide an alternative framework by constructing nested partitions without directly optimizing a global objective. 
@@ -124,8 +126,46 @@ Once an optimal method is identified, we investigated several criterions to iden
   \item Clustering method specific indicators (e.g. K-Means inertia)
   \item Gap Statistic \citep{Tibshirani2001EstimatingTN}, which compares the total within intra-cluster variation for different number of clusters with their expected values under null reference distribution of the data. 
   The estimate of the optimal clusters will be value maximizing the gap statistic (equivalently, yielding the largest gap statistic), corresponding to the clustering structure the farthest away from the random uniform distribution of points.
+  Algorithm \ref{alg:gs} summarizes this approach.
 \end{enumerate}
+
+
+\begin{algorithm}
+\caption{Gap Statistic (from \citeauth{Tibshirani2001EstimatingTN})}
+\small
+\label{alg:gs}
+\begin{algorithmic}
+
+  \Statex \textbf{Input:} Data matrix $\{x_{ij}\}$, $i = 1, \ldots, n$, $j = 1, \ldots, p$; 
+  \Statex \hspace{3em} Maximum number of clusters $k_{\max}$; 
+  \Statex \hspace{3em} Number of reference data sets $B$.
+  \Statex \textbf{Output:} Optimal number of clusters $\hat{k}$.
+
+\State $\hat{k} \gets None $
+\For{$k = 1, \ldots, k_{\max}$}
+  \While{$\hat{k} = None$}
+    \State Cluster the observed data and compute the within-cluster dispersion:
+
+    $W_k = \sum_{r=1}^{k} \frac{1}{2n_r} D_r \quad \text{where } D_r = \sum_{a,b' \in C_r} ||a - b||$
+    \For{$b = 1, \ldots, B$}
+        \State Generate a reference data set $X^*$ from a uniform null distribution.
+        \State Cluster $X^*$ and compute $W_{kb}^*$.
+        \EndFor
+      \State Compute the Gap statistic and its corrected standard deviation:
+      $$\mathrm{Gap}(k) = \frac{1}{B} \sum_{b=1}^{B} \log(W_{kb}^*) - \log(W_k), 
+      \qquad s_k = \sqrt{1 + \frac{1}{B}} \cdot \mathrm{sd}(k)$$
+      \If{$\mathrm{Gap}(k) \geq \mathrm{Gap}(k+1) - s_{k+1}$}
+        \State $\hat{k} = k$ 
+      \EndIf
+  \EndWhile
+\EndFor
+
+\end{algorithmic}
+\end{algorithm}
+
 
 \subsection{Lineups analysis}
 
-\ob{To do}
+From the lineups identified (see Section \ref{sec:data_pbp}) and the partition of NBA players performed (see Section \ref{sec:clustering}), we characterize each lineup by its composition in terms of clusters.
+Each lineup can be expressed as $L_C = \{k : \text{count}(C(p_i) = k), i \in \{1, 2, 3, 4 , 5\} \forall k \in \{1, ..., n_k\}\}$ where $L_C$ is the lineups characterized in terms of clusters, $C(p_i)$ indicates the clusters in which belongs player $p_i$ and $n_k$ the number of clusters of the selected partition. 
+\ob{To be completed}
