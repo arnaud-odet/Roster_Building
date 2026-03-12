@@ -167,8 +167,17 @@ Once an optimal method is identified, we investigated several criterions to iden
 \subsection{Lineups analysis}
 
 From the lineups identified (see Section \ref{sec:data_pbp}), we retain for further analysis only those aligned more than 24 minutes (which corresponds to half the duration of a NBA game).
-Applying this filter corresponds to keeping 56,368 lineups out of the 60,608 lineups identified (filtering out the bottom 7\% in terms of playtime). 
+Applying this filter corresponds to keeping 4,266 lineups out of the 68,160 lineups identified (6.3\%), representing 51.3\% of playtime.
+A brief description of lineups and their usage in terms of playtime can be found in Table \ref{tab:lus}.
 From the partition of NBA players performed (see Section \ref{sec:clustering}), we characterize each lineup by its composition in terms of clusters.
 Each lineup can be expressed as $L_C = \{k : \text{count}(C(p_i) = k), i \in L_P \forall k \in \{1, ..., n_k\}\}$ where $L_C$ (respectively $L_P$) is the lineups characterized in terms of clusters (respectively players), $C(p_i)$ indicates the clusters in which belongs player $p_i$ and $n_k$ the number of clusters of the selected partition. 
+
+\begin{table}
+  \small
+  \centering
+  \caption{Lineup description}
+  \label{tab:lus}
+  \input{tables/lineup_brackets}
+\end{table} 
 
 \ob{To be completed ?}
