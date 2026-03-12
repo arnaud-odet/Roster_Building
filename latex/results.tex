@@ -10,7 +10,7 @@ We set an explained variance threshold target of 80\%, which corresponds to 14 p
 This threshold returns a number of principal components 
 Please refer to Table \ref{tab:pca} for further details about the principal components.
 
-\begin{table}[htbp]
+\begin{table}
   \tiny
   \caption{Principal Component details}
   \label{tab:pca}
@@ -30,7 +30,7 @@ A clear hierarchy emerges between algorithm : K-Means, Spherical K-Means and GMM
 Agglomerative with Ward linkage consistently falls below the top three performers and Partition HDBSCAN present more variations with cluster sizes, performing at the same level as GMM for the number of clusters for which it ranks best, and as bad as Agglomerative with complete linkage for the others.
 From this analysis, we will use K-Means as partition algorithm for the remaining of the paper.
 
-\begin{figure}[h]
+\begin{figure}
   \includegraphics[width=\textwidth]{clustering_ch.png}  
   \caption{Comparison of clustering algorithm.}
   \label{fig:cl_ch}
@@ -45,28 +45,43 @@ For the latter, we ran 100 iterations of Algorithm \ref{alg:gs} with $B = 10$.
 Figure \ref{fig:cl_ncl} displays the results for both approaches.
 From the elbow method, the optimal number of clusters is between 6 and 13 and from the gapstat algorithms, it appears between 9 and 11.
 We therefore chose 10 clusters for the selected partition, as 10 is the mode of our gapstat optimal number of clusters and falls within the Elbow method range.  
-Figure \ref{fig:cl_viz} presents a visual inspection of the selected partition, and Table \ref{tab:clust} a description of the clusters as well as notable players. 
 
-\begin{figure}[h]
+\begin{figure}
   \includegraphics[width=\textwidth]{n_clust.png}  
   \caption{Determination of the optimal number of clusters. The left panel displays the inertia value of K-Means and its evolution and the right panel a histogram of the best number of clusters determined from the gap statistic method, over 100 repetitions.}
   \label{fig:cl_ncl}
 \end{figure}
 
+\subsubsection{Selected partition}
 
-\begin{figure}[h]
+Figure \ref{fig:cl_viz} presents a visual inspection of the selected partition, and Table \ref{tab:clust} a description of the clusters as well as notable players. 
+From Table \ref{tab:clust}, we can detect two clusters of "star" players: cluster 5 with star guards / small forwards, with high shooting statistics and playmaking, high usage rate, but relatively low rebounding and defensive impact, and cluster 10 with two-ways impacting "bigs" (Power Forward - PF and Centers - C), presenting the highest playmaking characteristics among clusters containing PFs and Cs, good rebounding and defensive impact (even if player 4 and 9 outperform them in the latter).
+The remaining clusters contain players who could be regarded as "supporting cast".
+Cluster 1 players display high shooting percentages and touch the ball less often. 
+They play a rather high number of minutes, and participate in the rebounding tasks.
+Cluster 2 contains players with predilection shooting position (Elbow and 3 pointers), with low ball handling and playmaking statistics.
+Cluster 3 players participate in the game creation with ball handling, assists, and passes, display good own-shoot (drive and pull-ups) capacity, but little rebounding.*
+Players of cluster 4 present very high rebounding and defense statistics, participate in play development with screens and touches / assists from the paint, and display rather good shooting statistics from specific location (post and paint).
+Cluster 6 players shoot from the 3 point range, are average in terms of defense and rebounding, and low in terms of ball possession and playmaking.
+Players from cluster 7 dribble more than the average player, display low shooting, defensive and rebounding statistics.
+Cluster 8 contains big men with good shooting capacity from the post, the paint and the elbow, but bad percentages on own-shoot creation. 
+They participate in playmaking with assists from the post and the elbow, and display good rebounding capacity.
+Compared to cluster 8's, players from cluster 9 are big men with higher defensive impact, who participate in the play development with their screens. 
+They also display good rebounding statistics. 
+
+\begin{figure}
   \includegraphics[width=\textwidth]{clustering_inspection_cropped.png}  
   \caption{Visualization of the selected partition. The left panel represents players in a 2D space determined by the two first principal components, the middle panel a histogram of cluster populations and the right panel clusters' centroid positions along the principal components space.}
   \label{fig:cl_viz}
 \end{figure}
 
-\begin{table}[htbp]
-  \centering
+\begin{table}
   \footnotesize
   \caption{Clusters presentation}
   \label{tab:clust}
   \input{tables/clusters}
-  {\raggedright \small PG: Point Guard, SG: Shooting Guard, SF: Small Forward, PF: Power Forward, C: Center.}
+  {\raggedright \small Note *: The "position" columns contains the most represented listed positions of players present in the cluster, ordered by frequence. 
+  PG: Point Guard, SG: Shooting Guard, SF: Small Forward, PF: Power Forward, C: Center.}
 
 \end{table}
 
