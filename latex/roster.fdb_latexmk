@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex roster"] 1773306678 "roster.aux" "roster.bbl" "roster" 1773306774 0
+["bibtex roster"] 1773312606 "roster.aux" "roster.bbl" "roster" 1773312656 0
   "./bibliography.bib" 1773219758 71396 b104bd99947c4b74848c387084210f13 ""
   "/usr/local/texlive/2023/texmf-dist/bibtex/bst/base/apalike.bst" 1292289607 24635 604dafcc79f521a11ea73e506e1fbd98 ""
-  "roster.aux" 1773306774 10045 47f518bfa0129c6ce33b1e6298d1d02b "pdflatex"
+  "roster.aux" 1773312656 10169 fe4d92641531d3fe83e579e8f8a97f67 "pdflatex"
   (generated)
   "roster.bbl"
   "roster.blg"
   (rewritten before read)
-["pdflatex"] 1773306773 "/home/admin/code/arnaud-odet/7_PhD/Roster/latex/roster.tex" "roster.pdf" "roster" 1773306774 0
+["pdflatex"] 1773312655 "/home/admin/code/arnaud-odet/7_PhD/Roster/latex/roster.tex" "roster.pdf" "roster" 1773312656 0
   "/home/admin/code/arnaud-odet/7_PhD/Roster/latex/roster.tex" 1773219758 1720 e3eaeb694ddfabd4f1132ea9f243108b ""
   "/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/local/texlive/2023/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
@@ -223,12 +223,12 @@
   "figures/n_clust.png" 1773217021 57457 f647b7a4aaf7ce1179aafdccfa0cd69e ""
   "figures/success.png" 1772534922 169560 fe5d1c6b77133ad4c9f0d5b15408dae1 ""
   "introduction.tex" 1772100558 5827 1382042d04c3afd0af89101cfeceb176 ""
-  "methodology.tex" 1773303393 14575 f2a56b3ef0d977ed1a8e8cc1de4cd2e3 ""
+  "methodology.tex" 1773312604 14886 c4230f51dc2480beb98dab3276db799d ""
   "related_work.tex" 1772528950 7367 d28bb7515f603ba00716eeebe869d412 ""
-  "results.tex" 1773306773 6195 f1829089c87974452ac8bc198a0a8d56 ""
-  "roster.aux" 1773306774 10045 47f518bfa0129c6ce33b1e6298d1d02b "pdflatex"
-  "roster.bbl" 1773306679 5508 cc30f9ed14a42cb2c8c4fa54683deef6 "bibtex roster"
-  "roster.out" 1773306774 2741 8666266636e051790411b17e79faac0c "pdflatex"
+  "results.tex" 1773312655 6432 9aca397c2ca4c9442c91b460602d9341 ""
+  "roster.aux" 1773312656 10169 fe4d92641531d3fe83e579e8f8a97f67 "pdflatex"
+  "roster.bbl" 1773312606 5508 cc30f9ed14a42cb2c8c4fa54683deef6 "bibtex roster"
+  "roster.out" 1773312656 2882 c0e076c9e3c88e7bf9c98d91263a7fec "pdflatex"
   "roster.tex" 1773219758 1720 e3eaeb694ddfabd4f1132ea9f243108b ""
   "tables/clusters.tex" 1773305584 1053 9513c613384db33e2c1ab61e79000272 ""
   "tables/data_stats.tex" 1772452498 451 7b1fbf12c464b80c9372595ceeaf8b98 ""
