@@ -14,6 +14,7 @@ An overview of the datasets can be found in Table \ref{tab:data_stats}.
 \begin{table}[htbp]
   \caption{Datasets overview}
   \centering
+  \small
   \label{tab:data_stats}
   \input{tables/data_stats} \newline
   {\raggedright \small * Notes: (i) the total number of player does not correspond to unique players as players can play several seasons, (ii) we discarded players that were missing in one or more datasets. None of them play more than 10 minutes per game on average.}
@@ -39,7 +40,7 @@ Tracking improved box-score statistics as it (i) brought higher granularity to e
 In these datasets, every entry corresponds to a player's average statistics over a season. 
 We concatenated seasons and datasets and removed of duplicated columns (minutes and number of games played are recorded in each dataset).
 In total, the concatenated dataset contains 2,519 entries (player's season) distributed into 30 NBA teams, and has 129 dimensions (performance indicators).
-We manually excluded features being collinear by design (e.g. $TS_{PCT}$, the True Shooting Percentage, is obtained from other shooting statistics, $AST$ and $TOV$, the total number of assists and turnovers is the sum of the number of assists and turnovers by locations, etc.), which reduced the number of features to 116.
+We manually excluded features being collinear by design (e.g. $TS_{PCT}$, the True Shooting Percentage, is obtained from other shooting statistics, $AST$ and $TOV$, the total number of assists and turnovers is the sum of the number of assists and turnovers by locations, etc.), and we discarded some ratio features, which reduced the number of features to 74.
 We subsequently (i) transformed statistics expressed in volumes in per 48 minutes statistics so players can be compared, (ii) scaled our dataset using a minmax scaler and (iii) further reduced the dimensionality of our dataset by applying a Principal Component Analysis (PCA) and retaining 80\% of explained variance.
 
 \subsubsection{Play-by-play data}
@@ -132,7 +133,7 @@ Once an optimal method is identified, we investigated several criterions to iden
 
 \begin{algorithm}
 \caption{Gap Statistic (from \citeauth{Tibshirani2001EstimatingTN})}
-\small
+\footnotesize
 \label{alg:gs}
 \begin{algorithmic}
 
@@ -169,15 +170,21 @@ Once an optimal method is identified, we investigated several criterions to iden
 From the lineups identified (see Section \ref{sec:data_pbp}), we retain for further analysis only those aligned more than 24 minutes (which corresponds to half the duration of a NBA game).
 Applying this filter corresponds to keeping 4,266 lineups out of the 68,160 lineups identified (6.3\%), representing 51.3\% of playtime.
 A brief description of lineups and their usage in terms of playtime can be found in Table \ref{tab:lus}.
+We computed for all lineups (i) the time they have played and (ii) their +/- statistics.
+The +/- statistic corresponds to the difference of points vs opponents when the analyzed lineup in on the floor, a positive value indicating the lineup outscores its opponent and a negative value the opposite. 
+We subsequently computed the average +/- per 48 minutes.
 From the partition of NBA players performed (see Section \ref{sec:clustering}), we characterize each lineup by its composition in terms of clusters.
 Each lineup can be expressed as $L_C = \{k : \text{count}(C(p_i) = k), i \in L_P \forall k \in \{1, ..., n_k\}\}$ where $L_C$ (respectively $L_P$) is the lineups characterized in terms of clusters (respectively players), $C(p_i)$ indicates the clusters in which belongs player $p_i$ and $n_k$ the number of clusters of the selected partition. 
+\ob{Missing players} Players who have not been clustered (\ob{to explain}) are grouped in cluster 0.
 
 \begin{table}
   \small
   \centering
-  \caption{Lineup description}
+  \caption{Lineup distribution}
   \label{tab:lus}
   \input{tables/lineup_brackets}
 \end{table} 
 
+First, for all clusters $C_i, i \in \{1, ..., n_k\}$ taken individually, we computed the percentage of time in which at least one player from $C_i$ is playing.
+Then, we perform a non-parametric Mann-Whitney U-test to evaluate the impact of a cluster's presence or absence on the +/- per 48 minutes statistic.
 \ob{To be completed ?}
