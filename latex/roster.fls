@@ -588,6 +588,11 @@ INPUT ./tables/app_clust.tex
 INPUT ./tables/app_clust.tex
 INPUT ./tables/app_clust.tex
 INPUT tables/app_clust.tex
+INPUT ./tables/clusters_to_features.tex
+INPUT ./tables/clusters_to_features.tex
+INPUT ./tables/clusters_to_features.tex
+INPUT ./tables/clusters_to_features.tex
+INPUT tables/clusters_to_features.tex
 INPUT roster.aux
 INPUT ./roster.out
 INPUT ./roster.out

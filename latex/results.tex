@@ -55,7 +55,7 @@ We therefore chose 10 clusters for the selected partition, as 10 is the mode of 
 \subsubsection{Selected partition}
 
 Figure \ref{fig:cl_viz} presents a visual inspection of the selected partition, and Table \ref{tab:clust} a description of the clusters as well as notable players. 
-For an extensive clusters' centroid position in Principal Component space, please refer to Table \ref{tab:app_clust} in appendix.
+For an extensive clusters' centroid position in Principal Component space (respectively, feature space), please refer to Table \ref{tab:app_clust} (respectively Table \ref{tab:app_cl_ft}) in appendix.
 From Table \ref{tab:clust}, we can detect two clusters of "superstar" players: cluster 5 with star guards / small forwards, with high shooting statistics and playmaking, high usage rate, but relatively low rebounding and defensive impact, and cluster 10 with two-ways impacting "bigs" (Power Forward - PF and Centers - C), presenting the highest playmaking characteristics among clusters containing PFs and Cs, good rebounding and defensive impact (even if player 4 and 9 outperform them in the latter).
 The remaining clusters contain players who could be regarded as "supporting cast".
 Cluster 1 players display high shooting percentages and touch the ball less often. 
@@ -90,13 +90,24 @@ They also display good rebounding statistics.
 
 From the clustering of players and the subsequent characterization of lineups, we identified 459 unique lineups (from 4,266 when players were considered instead of clusters).
 Figure \ref{fig:cl_mwu} displays the +/- per 48 minutes statistic depending on the presence or absence of clusters, as well as the Mann-Whitney U-test p-values.
+We observe a disparity in terms of clusters' use: Clusters 1 and 5 are highly represented, appearing in respectively 86\% and 70\% of playtime.
+On the other hand, Clusters 7 and 9 only appear 1\% and 3\% of the time.
+For most clusters, no statistically significant differences in +/- per 48 minutes can be found between lineups containing and lineups without players from the analyzed cluster.
+However, we note the following exceptions:
+\begin{enumerate}[i]
+  \item Lineups with superstar players (both guard and bigs, clusters 5 and 10) significantly outperforms lineups without these superstars,
+  \item Lineups with players from cluster 3 (playmakers who display low rebounding abilities) and 4 (rim protectors) significantly underperform.
+\end{enumerate}
 
 
 \ob{To be completed}
 
 \begin{figure}
   \includegraphics[width=\textwidth]{cl_wmu_cropped.png}  
-  \caption{Time share and +/- per 48 minutes statistics decomposed by clusters' presence or absence \ob{to do}.}
+  \caption{Boxplots of +/- per 48 minutes statistics decomposed by clusters' presence (orange) or absence (blue). 
+  p-values correspond to Mann-Whitney U-test, with the following significance levels: * = p<0.05, ** = p<0.001, *** = p<0.0001, **** = p<0.0001.
+  (+) indicates significant over-performance and (-) indicates significant under-performance.  
+  Time shares indicate the percentage of time with at least one player of the corresponding cluster playing.}
   \label{fig:cl_mwu}
 \end{figure}
 

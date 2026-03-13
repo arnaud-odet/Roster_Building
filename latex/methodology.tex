@@ -3,7 +3,7 @@
 
 \subsection{Data}
 
-We relied on three data sources in this paper: (i) a tracking-improved box-score dataset for identifying players' archetypes (see paragraph \ref{sec:data_trbs}), (ii) play-by-play data to retrieve lineups used by teams \ob{and their relative +/- statistics} (see paragraph \ref{sec:data_pbp}) and (iii) team performance metrics to assess success of teams (see paragraph \ref{sec:data_success}).
+We relied on three data sources in this paper: (i) a tracking-improved box-score dataset for identifying players' archetypes (see paragraph \ref{sec:data_trbs}), (ii) play-by-play data to retrieve lineups used by teams and their relative +/- statistics (see paragraph \ref{sec:data_pbp}) and (iii) team performance metrics to assess success of teams (see paragraph \ref{sec:data_success}).
 We only retain in our analysis complete seasons where these three sources are available, and considered only regular season games. 
 Playoff games were discarded, as we believe they could bring a distortion to the analysis.
 Indeed, only the best performing teams of a season qualify to the playoffs, facing stronger adversity, which could deteriorate their performance.
@@ -56,6 +56,9 @@ In the NBA, teams are allowed to register 12 players for a given game, correspon
 In practice, 
 In total, we identified between 12,759 and 14.761 unique lineups per season.
 Teams aligned between 187 and 794 different lineups over the course of a season ($\mu = 454.4, \sigma = 114.7$).  
+For each lineup, we computed (i) the time it has played and (ii) its +/- statistics.
+The +/- statistic corresponds to the difference of points vs opponents when the analyzed lineup in on the floor, a positive value indicating the lineup outscores its opponent and a negative value the opposite. 
+It is a well-used indicator on how much difference makes a player or a combination of players. 
 
 \subsubsection{Team performance data}
 \label{sec:data_success}
@@ -171,7 +174,6 @@ From the lineups identified (see Section \ref{sec:data_pbp}), we retain for furt
 Applying this filter corresponds to keeping 4,266 lineups out of the 68,160 lineups identified (6.3\%), representing 51.3\% of playtime.
 A brief description of lineups and their usage in terms of playtime can be found in Table \ref{tab:lus}.
 We computed for all lineups (i) the time they have played and (ii) their +/- statistics.
-The +/- statistic corresponds to the difference of points vs opponents when the analyzed lineup in on the floor, a positive value indicating the lineup outscores its opponent and a negative value the opposite. 
 We subsequently computed the average +/- per 48 minutes.
 From the partition of NBA players performed (see Section \ref{sec:clustering}), we characterize each lineup by its composition in terms of clusters.
 Each lineup can be expressed as $L_C = \{k : \text{count}(C(p_i) = k), i \in L_P \forall k \in \{1, ..., n_k\}\}$ where $L_C$ (respectively $L_P$) is the lineups characterized in terms of clusters (respectively players), $C(p_i)$ indicates the clusters in which belongs player $p_i$ and $n_k$ the number of clusters of the selected partition. 
