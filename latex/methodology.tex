@@ -3,13 +3,13 @@
 
 \subsection{Data}
 
-We relied on three data sources in this paper: (i) a tracking-improved box-score dataset for identifying players' archetypes (see paragraph \ref{sec:data_trbs}), (ii) play-by-play data to retrieve lineups used by teams and their relative +/- statistics (see paragraph \ref{sec:data_pbp}) and (iii) team performance metrics to assess success of teams (see paragraph \ref{sec:data_success}).
+We relied on three data sources in this paper: (i) a tracking-improved box-score dataset for identifying players' archetypes (see paragraph~\ref{sec:data_trbs}), (ii) play-by-play data to retrieve lineups used by teams and their relative +/- statistics (see paragraph~\ref{sec:data_pbp}) and (iii) team performance metrics to assess success of teams (see paragraph~\ref{sec:data_success}).
 We only retain in our analysis complete seasons where these three sources are available, and considered only regular season games. 
 Playoff games were discarded, as we believe they could bring a distortion to the analysis.
 Indeed, only the best performing teams of a season qualify to the playoffs, facing stronger adversity, which could deteriorate their performance.
 Moreover, this choice allows to have exactly the same number of games for all NBA teams, and therefore not over represent good performing teams.
 Our dataset covers 5 NBA seasons, from 2015/16 to 2019/20, representing a total of 5,980 games (1,230 per season from 2015/16 to 2018/19 and 1,060 for the 2019/20 season, due to the modification of the season's schedule incurred by the Covid-19 pandemic).
-An overview of the datasets can be found in Table \ref{tab:data_stats}.
+An overview of the datasets can be found in Table~\ref{tab:data_stats}.
 
 \begin{table}[htbp]
   \caption{Datasets overview}
@@ -24,7 +24,7 @@ An overview of the datasets can be found in Table \ref{tab:data_stats}.
 \label{sec:data_trbs}
 
 The dataset presented in this paragraph has been referenced in \cite{muniz_weighted_2022} and is publicly available on their \href{https://github.com/meganlynn12/jsa-cdkm?tab=readme-ov-file}{github repository}\footnote{Consulted on February 25\textsuperscript{th}, 2026}.
-It consists in data obtained from the website \href{https://www.nba.com/}{nba.com}, initially split in 21 raw datasets and reorganized by the authors of \cite{muniz_weighted_2022} in 6 datasets as described in Table \ref{tab:datasets}.
+It consists in data obtained from the website \href{https://www.nba.com/}{nba.com}, initially split in 21 raw datasets and reorganized by the authors of \cite{muniz_weighted_2022} in 6 datasets as described in Table~\ref{tab:datasets}.
 Please note that contrarily to \citeauthor{muniz_weighted_2022}, we did not consider the "Clutch" dataset as it contains data from particular part of games (less than 5 points difference in the last 5 minutes), and therefore overlaps with other datasets. 
 These data contains traditional basketball box-score statistics (e.g. shot attempted, shot made, rebound, assists, etc.) augmented from Sports VU tracking system (introduced in NBA arenas in 2014).
 Tracking improved box-score statistics as it (i) brought higher granularity to existing indicators (for instance, categorizing shots by areas on the pitch rather than sole value, identifying if a rebound or a shot is contested or not, etc.) and (ii) created new indicators (by recording for instance the number of boxouts\footnote{A boxout is a situation where a player manages to position himself between the basket and his opponent in a shooting situation, to achieve higher probability of securing the rebound.}).
@@ -51,13 +51,14 @@ Play-by-play data record timestamp-indexed of event in a game.
 Recorded event encompasses traditional box-scores events (e.g. shot attempts, rebounds, assists, etc.) and the identity of the players credited for the corresponding events, as well as game-related information (start of period, end of period, player substitutions, etc.).
 From the identity of players credited for event and the changes log, we were able to identify for all timestamps the composition of both team participating in a game. 
 \ob{Plus de détails sur le process ?}
-A composition is a combination of 5 players from the pool of available players.
+A composition (also referred to as lineup) is a combination of 5 players from the pool of available players.
 In the NBA, teams are allowed to register 12 players for a given game, corresponding to $\binom{12}{5} = 792$ possible combinations.
-In practice, 
+In practice, teams often have more than 12 players in their roster, and the selection of the 12 registered for a game is already a one-out-of-many choices, and teams can also sign players for short-duration contracts, trade them in the course of a season, etc.
+Therefore, the figure of 792 possible combinations is no theoretical maximum of the number of lineups.
 In total, we identified between 12,759 and 14.761 unique lineups per season.
 Teams aligned between 187 and 794 different lineups over the course of a season ($\mu = 454.4, \sigma = 114.7$).  
 For each lineup, we computed (i) the time it has played and (ii) its +/- statistics.
-The +/- statistic corresponds to the difference of points vs opponents when the analyzed lineup in on the floor, a positive value indicating the lineup outscores its opponent and a negative value the opposite. 
+The +/- statistic corresponds to the difference of points vs opponents when the analyzed lineup is on the floor, a positive value indicating the lineup outscores its opponent and a negative value the opposite. 
 It is a well-used indicator on how much difference makes a player or a combination of players. 
 
 \subsubsection{Team performance data}
@@ -71,7 +72,7 @@ We collected from \href{https://www.nba.com/}{nba.com} two indicators of teams' 
   Reaching the conference semi-finals is therefore equivalent to being within the last 8 contenders for the NBA title, which corresponds to the top 26.7\%. 
 \end{enumerate} 
 
-An illustration of the distribution of success can be found in Figure \ref{fig:success}. 
+An illustration of the distribution of success can be found in Figure~\ref{fig:success}. 
 Top performing teams appear to be the Golden State Warriors 2015, 2016, 2017 and the San Antonio Spurs 2016, achieving win rates above 80\% and reaching Conference semi-finals, while Minnesota Timberwolves 2015 and Philadelphia 76ers 2016 emerge as low performers with win rate below 20\%. 
 Atlanta Hawks 2017 and 2019, and Memphis Grizzlies 2017 and 2018 aligned over 700 different lineups during the season, and Minnesota Timberwolves 2017, Orlando Magic 2018 and Detroit Pistons 2015 less than 240. None of these teams reached the Conference semi-finals.  
 
@@ -85,7 +86,7 @@ Atlanta Hawks 2017 and 2019, and Memphis Grizzlies 2017 and 2018 aligned over 70
 \subsection{Clustering of NBA players}
 \label{sec:clustering}
 
-From the tracking-improved boxscore dataset (see \ref{sec:data_trbs}), we aim at identifying players' archetypes.
+From the tracking-improved boxscore dataset (see~\ref{sec:data_trbs}), we aim at identifying players' archetypes.
 To do so, we need to create a partition of our dataset.
 We benchmarked various approaches, including centroid-based, hierachical agglomerative, density-based and gaussian models, with a hyperparameters search. 
 We implemented these approaches with the scikit-learn Python library \citep{scikit-learn}.
@@ -100,7 +101,7 @@ However, in our case, we allocated "noisy" players to the nearest cluster (based
 Finally, model-based clustering relies on probabilistic generative assumptions. 
 Gaussian Mixture Models (GMMs) assume that observations arise from a finite mixture of Gaussian distributions, each parameterized by a mean vector and covariance matrix. Model parameters are typically estimated via the EM algorithm, yielding soft probabilistic assignments of observations to latent components. 
 
-Details about the methods, hyperparameters searched and hyperparameters values can be found in Table \ref{tab:cl_hpo}.
+Details about the methods, hyperparameters searched and hyperparameters values can be found in Table~\ref{tab:cl_hpo}.
 
 \begin{table}
   \centering
@@ -111,7 +112,7 @@ Details about the methods, hyperparameters searched and hyperparameters values c
 \end{table}
 
 \paragraph{Comparison metric}
-To determine which clustering algorithm yields the best results on our dataset, we need to compare them.
+We compared different clustering algorithms to determine which yields the best results on our dataset.
 Contrary to supervised learning, where a form of consensus emerges around some key metrics (e.g. Accuracy, F1 score and ROC-AUC for classification tasks, RMSE and its variants for regression tasks), Clustering Validity Indices (CVIs) are still subject to discussion within the academic community. 
 \cite{Arbelaitz2013AnEC} compared 30 CVIs and concluded three groups of indices emerge, and the first of them contains indices that "behave better", with "the differences being statistically significant". 
 Well know metrics such as Silhouette Score, Davies-Bouldin, Calinski-Harabasz, etc. are listed as part of this well performing group.
@@ -130,7 +131,7 @@ Once an optimal method is identified, we investigated several criterions to iden
   \item Clustering method specific indicators (e.g. K-Means inertia)
   \item Gap Statistic \citep{Tibshirani2001EstimatingTN}, which compares the total within intra-cluster variation for different number of clusters with their expected values under null reference distribution of the data. 
   The estimate of the optimal clusters will be value maximizing the gap statistic (equivalently, yielding the largest gap statistic), corresponding to the clustering structure the farthest away from the random uniform distribution of points.
-  Algorithm \ref{alg:gs} summarizes this approach.
+  Algorithm~\ref{alg:gs} summarizes this approach.
 \end{enumerate}
 
 
@@ -170,12 +171,12 @@ Once an optimal method is identified, we investigated several criterions to iden
 
 \subsection{Lineups analysis}
 
-From the lineups identified (see Section \ref{sec:data_pbp}), we retain for further analysis only those aligned more than 24 minutes (which corresponds to half the duration of a NBA game).
+From the lineups identified (see Section~\ref{sec:data_pbp}), we retain for further analysis only those aligned more than 24 minutes (which corresponds to half the duration of a NBA game).
 Applying this filter corresponds to keeping 4,266 lineups out of the 68,160 lineups identified (6.3\%), representing 51.3\% of playtime.
-A brief description of lineups and their usage in terms of playtime can be found in Table \ref{tab:lus}.
+A brief description of lineups and their usage in terms of playtime can be found in Table~\ref{tab:lus}.
 We computed for all lineups (i) the time they have played and (ii) their +/- statistics.
 We subsequently computed the average +/- per 48 minutes.
-From the partition of NBA players performed (see Section \ref{sec:clustering}), we characterize each lineup by its composition in terms of clusters.
+From the partition of NBA players performed (see Section~\ref{sec:clustering}), we characterize each lineup by its composition in terms of clusters.
 Each lineup can be expressed as $L_C = \{k : \text{count}(C(p_i) = k), i \in L_P \forall k \in \{1, ..., n_k\}\}$ where $L_C$ (respectively $L_P$) is the lineups characterized in terms of clusters (respectively players), $C(p_i)$ indicates the clusters in which belongs player $p_i$ and $n_k$ the number of clusters of the selected partition. 
 \ob{Missing players} Players who have not been clustered (\ob{to explain}) are grouped in cluster 0.
 
@@ -188,5 +189,6 @@ Each lineup can be expressed as $L_C = \{k : \text{count}(C(p_i) = k), i \in L_P
 \end{table} 
 
 First, for all clusters $C_i, i \in \{1, ..., n_k\}$ taken individually, we computed the percentage of time in which at least one player from $C_i$ is playing.
-Then, we perform a non-parametric Mann-Whitney U-test to evaluate the impact of a cluster's presence or absence on the +/- per 48 minutes statistic.
+We then extracted $L_{C_i}$ and $L_{\bar{C_i}}$, the +/- per 48 minutes of the ensemble of lineups containing at least one player from cluster $C_i$ and the ensemble of lineups without any player from cluster $C_i$ 
+Then, we perform a non-parametric Mann-Whitney U-test on $L_{C_i}$ and $L_{\bar{C_i}}$ to evaluate the impact of a cluster's presence or absence on the +/- per 48 minutes statistic.
 \ob{To be completed ?}

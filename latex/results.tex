@@ -5,10 +5,11 @@
 
 \subsubsection{Principal Component Analysis}
 
-As specified in Section \ref{sec:data_trbs}, we performed a PCA to reduce the dimensionality of our dataset. 
+As specified in Section~\ref{sec:data_trbs}, we performed a PCA to reduce the dimensionality of our dataset. 
 We set an explained variance threshold target of 80\%, which corresponds to 14 principal components.
-This threshold returns a number of principal components 
-Please refer to Table \ref{tab:pca} for an overview of principal components, and to Table \ref{tab:app_pca} in appendix for detailed coordinates of Principal Components in feature space.
+\hl{This threshold returns a number of principal components close to the Kaiser criterion, which returns 16.}
+\citep{Kaiser1960TheAO}.
+Please refer to Table~\ref{tab:pca} for an overview of principal components, and to Table~\ref{tab:app_pca} in appendix for detailed coordinates of Principal Components in feature space.
 
 \begin{table}
   \tiny
@@ -24,8 +25,8 @@ Please refer to Table \ref{tab:pca} for an overview of principal components, and
 
 \subsubsection{Clustering algorithms}
 
-The Calinski-Harabasz indices of the compared method are presented in Figure \ref{fig:cl_ch}.
-Please note that the number of clusters if for some algorithms (e.g. K-Means, GMM) an input hyperparameter, but for some others (e.g. Partition - HDBSCAN), it is a consequence of other hyperparameters.
+The Calinski-Harabasz indices of the compared method are presented in Figure~\ref{fig:cl_ch}.
+Please note that the number of clusters of for some algorithms (e.g. K-Means, GMM) an input hyperparameter, but for some others (e.g. Partition - HDBSCAN), it is a consequence of other hyperparameters.
 A clear hierarchy emerges between algorithm : K-Means, Spherical K-Means and GMM consistently achieve top performance, while Agglomerative with Complete and Average linkage emerge as worst performers.
 Agglomerative with Ward linkage consistently falls below the top three performers and Partition HDBSCAN present more variations with cluster sizes, performing at the same level as GMM for the number of clusters for which it ranks best, and as bad as Agglomerative with complete linkage for the others.
 From this analysis, we will use K-Means as partition algorithm for the remaining of the paper.
@@ -41,8 +42,8 @@ For determining the optimal number of clusters, we relied on (i) an elbow method
   Inertia = \sum_{i=1}^{k} \sum_{x \in C_i}||x - \mu_{C_i}||^{2} 
 \end{equation}
 where $\mu_{C_i}$ represents the centroid of the clusters containing $x$, and $k$ the number of clusters,  and (ii) the gap statistic method \citep{Tibshirani2001EstimatingTN}.
-For the latter, we ran 100 iterations of Algorithm \ref{alg:gs} with $B = 10$.
-Figure \ref{fig:cl_ncl} displays the results for both approaches.
+For the latter, we ran 100 iterations of Algorithm~\ref{alg:gs} with $B = 10$.
+Figure~\ref{fig:cl_ncl} displays the results for both approaches.
 From the elbow method, the optimal number of clusters is between 6 and 13 and from the gapstat algorithms, it appears between 9 and 11.
 We therefore chose 10 clusters for the selected partition, as 10 is the mode of our gapstat optimal number of clusters and falls within the Elbow method range.  
 
@@ -54,9 +55,9 @@ We therefore chose 10 clusters for the selected partition, as 10 is the mode of 
 
 \subsubsection{Selected partition}
 
-Figure \ref{fig:cl_viz} presents a visual inspection of the selected partition, and Table \ref{tab:clust} a description of the clusters as well as notable players. 
-For an extensive clusters' centroid position in Principal Component space (respectively, feature space), please refer to Table \ref{tab:app_clust} (respectively Table \ref{tab:app_cl_ft}) in appendix.
-From Table \ref{tab:clust}, we can detect two clusters of "superstar" players: cluster 5 with star guards / small forwards, with high shooting statistics and playmaking, high usage rate, but relatively low rebounding and defensive impact, and cluster 10 with two-ways impacting "bigs" (Power Forward - PF and Centers - C), presenting the highest playmaking characteristics among clusters containing PFs and Cs, good rebounding and defensive impact (even if player 4 and 9 outperform them in the latter).
+Figure~\ref{fig:cl_viz} presents a graphical display of the selected partition, and Table~\ref{tab:clust} a description of the clusters as well as notable players. 
+For an extensive clusters' centroid position in Principal Component space (respectively, feature space), please refer to Table~\ref{tab:app_clust} (respectively Table~\ref{tab:app_cl_ft}) in appendix.
+From Table~\ref{tab:clust}, we can detect two clusters of "superstar" players: cluster 5 with star guards / small forwards, with high shooting statistics and playmaking, high usage rate, but relatively low rebounding and defensive impact, and cluster 10 with two-ways impacting "bigs" (Power Forward - PF and Centers - C), presenting the highest playmaking characteristics among clusters containing PFs and Cs, good rebounding and defensive impact (even if player 4 and 9 outperform them in the latter).
 The remaining clusters contain players who could be regarded as "supporting cast".
 Cluster 1 players display high shooting percentages and touch the ball less often. 
 They play a rather high number of minutes, and participate in the rebounding tasks.
@@ -89,10 +90,10 @@ They also display good rebounding statistics.
 \subsection{Lineups analysis}
 
 From the clustering of players and the subsequent characterization of lineups, we identified 459 unique lineups (from 4,266 when players were considered instead of clusters).
-Figure \ref{fig:cl_mwu} displays the +/- per 48 minutes statistic depending on the presence or absence of clusters, as well as the Mann-Whitney U-test p-values.
+Figure~\ref{fig:cl_mwu} displays the +/- per 48 minutes statistic depending on the presence or absence of clusters, as well as the Mann-Whitney U-test p-values.
 We observe a disparity in terms of clusters' use: Clusters 1 and 5 are highly represented, appearing in respectively 86\% and 70\% of playtime.
 On the other hand, Clusters 7 and 9 only appear 1\% and 3\% of the time.
-For most clusters, no statistically significant differences in +/- per 48 minutes can be found between lineups containing and lineups without players from the analyzed cluster.
+For most 6 out of 10 clusters, no statistically significant differences in +/- per 48 minutes can be found between lineups containing and lineups without players from the analyzed cluster.
 However, we note the following exceptions:
 \begin{enumerate}[i]
   \item Lineups with superstar players (both guard and bigs, clusters 5 and 10) significantly outperforms lineups without these superstars,

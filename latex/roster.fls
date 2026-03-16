@@ -540,13 +540,13 @@ INPUT ./figures/clustering_ch.png
 INPUT ./figures/clustering_ch.png
 INPUT ./figures/clustering_ch.png
 INPUT ./figures/clustering_ch.png
+INPUT ./figures/n_clust.png
+INPUT ./figures/n_clust.png
+INPUT ./figures/n_clust.png
+INPUT ./figures/n_clust.png
 INPUT /usr/local/texlive/2023/texmf-dist/fonts/vf/public/txfonts/t1xb.vf
 INPUT /usr/local/texlive/2023/texmf-dist/fonts/tfm/public/txfonts/rtxptmb.tfm
 INPUT /usr/local/texlive/2023/texmf-dist/fonts/tfm/public/txfonts/rtxb.tfm
-INPUT ./figures/n_clust.png
-INPUT ./figures/n_clust.png
-INPUT ./figures/n_clust.png
-INPUT ./figures/n_clust.png
 INPUT ./figures/clustering_inspection_cropped.png
 INPUT ./figures/clustering_inspection_cropped.png
 INPUT ./figures/clustering_inspection_cropped.png
