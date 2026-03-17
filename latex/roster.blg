@@ -4,45 +4,45 @@ The top-level auxiliary file: roster.aux
 The style file: apalike.bst
 Database file #1: bibliography.bib
 Warning--empty booktitle in James1984TheBJ
-You've used 23 entries,
+You've used 24 entries,
             1935 wiz_defined-function locations,
-            632 strings with 8411 characters,
-and the built_in function-call counts, 9712 in all, are:
-= -- 914
-> -- 468
-< -- 11
-+ -- 176
-- -- 162
-* -- 846
-:= -- 1713
-add.period$ -- 70
-call.type$ -- 23
-change.case$ -- 194
-chr.to.int$ -- 23
-cite$ -- 24
-duplicate$ -- 344
-empty$ -- 655
-format.name$ -- 191
-if$ -- 1873
+            638 strings with 8689 characters,
+and the built_in function-call counts, 10184 in all, are:
+= -- 961
+> -- 486
+< -- 12
++ -- 182
+- -- 168
+* -- 881
+:= -- 1789
+add.period$ -- 73
+call.type$ -- 24
+change.case$ -- 202
+chr.to.int$ -- 24
+cite$ -- 25
+duplicate$ -- 365
+empty$ -- 687
+format.name$ -- 198
+if$ -- 1974
 int.to.chr$ -- 1
 int.to.str$ -- 0
-missing$ -- 25
-newline$ -- 117
-num.names$ -- 69
-pop$ -- 178
+missing$ -- 26
+newline$ -- 122
+num.names$ -- 72
+pop$ -- 186
 preamble$ -- 1
-purify$ -- 196
+purify$ -- 204
 quote$ -- 0
-skip$ -- 246
+skip$ -- 265
 stack$ -- 0
-substring$ -- 659
-swap$ -- 32
-text.length$ -- 2
+substring$ -- 691
+swap$ -- 40
+text.length$ -- 3
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 134
+type$ -- 140
 warning$ -- 1
-while$ -- 68
+while$ -- 72
 width$ -- 0
-write$ -- 296
+write$ -- 309
 (There was 1 warning)

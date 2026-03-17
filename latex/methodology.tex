@@ -3,7 +3,7 @@
 
 \subsection{Data}
 
-We relied on three data sources in this paper: (i) a tracking-improved box-score dataset for identifying players' archetypes (see paragraph~\ref{sec:data_trbs}), (ii) play-by-play data to retrieve lineups used by teams and their relative +/- statistics (see paragraph~\ref{sec:data_pbp}) and (iii) team performance metrics to assess success of teams (see paragraph~\ref{sec:data_success}).
+We relied on three data sources in this work: (i) a tracking-improved box-score dataset for identifying players' archetypes (see paragraph~\ref{sec:data_trbs}), (ii) play-by-play data to retrieve lineups used by teams and their relative +/- statistics (see paragraph~\ref{sec:data_pbp}) and (iii) team performance metrics to assess success of teams (see paragraph~\ref{sec:data_success}).
 We only retain in our analysis complete seasons where these three sources are available, and considered only regular season games. 
 Playoff games were discarded, as we believe they could bring a distortion to the analysis.
 Indeed, only the best performing teams of a season qualify to the playoffs, facing stronger adversity, which could deteriorate their performance.
@@ -189,6 +189,23 @@ Each lineup can be expressed as $L_C = \{k : \text{count}(C(p_i) = k), i \in L_P
 \end{table} 
 
 First, for all clusters $C_i, i \in \{1, ..., n_k\}$ taken individually, we computed the percentage of time in which at least one player from $C_i$ is playing.
-We then extracted $L_{C_i}$ and $L_{\bar{C_i}}$, the +/- per 48 minutes of the ensemble of lineups containing at least one player from cluster $C_i$ and the ensemble of lineups without any player from cluster $C_i$ 
-Then, we perform a non-parametric Mann-Whitney U-test on $L_{C_i}$ and $L_{\bar{C_i}}$ to evaluate the impact of a cluster's presence or absence on the +/- per 48 minutes statistic.
+We then extracted $L_{C_k}$ and $L_{\bar{C_k}}$, the +/- per 48 minutes of the ensemble of lineups containing at least one player from cluster $C_k$ and the ensemble of lineups without any player from cluster $C_k$ 
+Then, we perform a non-parametric Mann-Whitney U-test on $L_{C_k}$ and $L_{\bar{C_k}}$ to evaluate the impact of a cluster's presence or absence on the +/- per 48 minutes statistic. 
+\ob{A peut être supprimer si on l'inclut dans un cadre plus global}
 \ob{To be completed ?}
+
+Our objective is to find the best compositions in terms of clusters, $L^*_C$.
+We note $S(L)$ the performance of lineup $L$ and define the performance of a given lineup as \hl{its +/- per 48 minutes}.
+We want $L^*_C$ to be the solution of Equation~\ref{eq:opt} given constraint presented in Equation~\ref{eq:contraints}. 
+
+\begin{equation}
+  \label{eq:opt}
+  S(L^*_C) = \max_{L \in \Omega_L} S(L)  
+\end{equation}
+
+\begin{equation}
+  \label{eq:contraints}
+  L = \{k : c_k, k \in \{1, ..., n_k\}\}\quad \text{with} \quad \sum_{k = 1}^{n_k} c_k = 5
+\end{equation}
+
+where $\Omega_L$ is the universe of possible compositions and $c_k$ represents the number of players.
