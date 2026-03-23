@@ -50,7 +50,6 @@ The dataset presented in this section is publicly available \href{https://www.ka
 Play-by-play data record timestamp-indexed of event in a game. 
 Recorded event encompasses traditional box-scores events (e.g. shot attempts, rebounds, assists, etc.) and the identity of the players credited for the corresponding events, as well as game-related information (start of period, end of period, player substitutions, etc.).
 From the identity of players credited for event and the changes log, we were able to identify for all timestamps the composition of both team participating in a game. 
-\ob{Plus de détails sur le process ?}
 A composition (also referred to as lineup) is a combination of 5 players from the pool of available players.
 In the NBA, teams are allowed to register 12 players for a given game, corresponding to $\binom{12}{5} = 792$ possible combinations.
 In practice, teams often have more than 12 players in their roster, and the selection of the 12 registered for a game is already a one-out-of-many choices, and teams can also sign players for short-duration contracts, trade them in the course of a season, etc.
@@ -66,7 +65,7 @@ It is a well-used indicator on how much difference makes a player or a combinati
 We collected from \href{https://www.nba.com/}{nba.com} two indicators of teams' success:
 \begin{enumerate}[i]
   \item Teams' Win Rate (number of games won / number of games played), ranging from 0.122 to 0.890 ($\mu = 0.500, \sigma = 0.152$).
-  \item A binary indicator worth 1 if the considered team reached the conference semi-finals in the playoffs and 0 otherwise, as suggested in \cite{ke_unified_2024}. 
+  \item A binary indicator worth 1 if the considered team reached the conference semi-finals in the playoffs and 0 otherwise. 
   The NBA is split into two conferences (East and West), both having their own playoff competition.
   The NBA champion is the winner of the best-of-seven series between East and West champions.
   Reaching the conference semi-finals is therefore equivalent to being within the last 8 contenders for the NBA title, which corresponds to the top 26.7\%. 
@@ -79,7 +78,7 @@ Atlanta Hawks 2017 and 2019, and Memphis Grizzlies 2017 and 2018 aligned over 70
 \begin{figure}
   \centering
   \includegraphics[width=0.8\textwidth]{success.png}   
-  \caption{Distribution of teams according to their number of lineups aligned during the season (x-axis) and win rate (y-axis). Red dots indicate teams reaching the Conference semi-finals, and blue dots the opposite, Crosses correspond to Western Conference teams and dots to Eastern Conference teams.}
+  \caption{Distribution of teams according to their number of lineups aligned during each season (x-axis) and win rate (y-axis). Red dots indicate teams reaching the Conference semi-finals, and blue dots the opposite, Crosses correspond to Western Conference teams and dots to Eastern Conference teams.}
   \label{fig:success}
 \end{figure}
 
@@ -178,7 +177,6 @@ We computed for all lineups (i) the time they have played and (ii) their +/- sta
 We subsequently computed the average +/- per 48 minutes.
 From the partition of NBA players performed (see Section~\ref{sec:clustering}), we characterize each lineup by its composition in terms of clusters.
 Each lineup can be expressed as $L_C = \{k : \text{count}(C(p_i) = k), i \in L_P \forall k \in \{1, ..., n_k\}\}$ where $L_C$ (respectively $L_P$) is the lineups characterized in terms of clusters (respectively players), $C(p_i)$ indicates the clusters in which belongs player $p_i$ and $n_k$ the number of clusters of the selected partition. 
-\ob{Missing players} Players who have not been clustered (\ob{to explain}) are grouped in cluster 0.
 
 \begin{table}
   \small

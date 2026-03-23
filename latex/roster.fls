@@ -488,6 +488,10 @@ INPUT /usr/local/texlive/2023/texmf-dist/fonts/tfm/public/txfonts/rtxr.tfm
 INPUT /usr/local/texlive/2023/texmf-dist/fonts/vf/public/txfonts/t1xb.vf
 INPUT /usr/local/texlive/2023/texmf-dist/fonts/tfm/public/txfonts/rtxptmb.tfm
 INPUT /usr/local/texlive/2023/texmf-dist/fonts/tfm/public/txfonts/rtxb.tfm
+INPUT ./figures/success.png
+INPUT ./figures/success.png
+INPUT ./figures/success.png
+INPUT ./figures/success.png
 INPUT /usr/local/texlive/2023/texmf-dist/fonts/vf/public/txfonts/txmi.vf
 INPUT /usr/local/texlive/2023/texmf-dist/fonts/tfm/public/txfonts/rtxmi.tfm
 INPUT /usr/local/texlive/2023/texmf-dist/fonts/vf/public/txfonts/txmi.vf
@@ -495,10 +499,6 @@ INPUT /usr/local/texlive/2023/texmf-dist/fonts/tfm/public/txfonts/rtxmi.tfm
 INPUT /usr/local/texlive/2023/texmf-dist/fonts/tfm/public/txfonts/rtxptmri.tfm
 INPUT /usr/local/texlive/2023/texmf-dist/fonts/vf/public/txfonts/txr.vf
 INPUT /usr/local/texlive/2023/texmf-dist/fonts/vf/public/txfonts/txr.vf
-INPUT ./figures/success.png
-INPUT ./figures/success.png
-INPUT ./figures/success.png
-INPUT ./figures/success.png
 INPUT ./tables/hpo.tex
 INPUT ./tables/hpo.tex
 INPUT ./tables/hpo.tex
@@ -511,6 +511,11 @@ INPUT ./tables/lineup_brackets.tex
 INPUT ./tables/lineup_brackets.tex
 INPUT ./tables/lineup_brackets.tex
 INPUT tables/lineup_brackets.tex
+INPUT ./results.tex
+INPUT ./results.tex
+INPUT ./results.tex
+INPUT ./results.tex
+INPUT results.tex
 INPUT /usr/local/texlive/2023/texmf-dist/fonts/vf/public/txfonts/t1xb.vf
 INPUT /usr/local/texlive/2023/texmf-dist/fonts/tfm/public/txfonts/rtxptmb.tfm
 INPUT /usr/local/texlive/2023/texmf-dist/fonts/tfm/public/txfonts/rtxb.tfm
@@ -525,11 +530,6 @@ INPUT /usr/local/texlive/2023/texmf-dist/fonts/vf/public/txfonts/txr.vf
 INPUT /usr/local/texlive/2023/texmf-dist/fonts/vf/public/txfonts/txmi.vf
 INPUT /usr/local/texlive/2023/texmf-dist/fonts/tfm/public/txfonts/rtxmi.tfm
 INPUT /usr/local/texlive/2023/texmf-dist/fonts/tfm/public/txfonts/rtxptmri.tfm
-INPUT ./results.tex
-INPUT ./results.tex
-INPUT ./results.tex
-INPUT ./results.tex
-INPUT results.tex
 INPUT ./tables/pca_cat.tex
 INPUT ./tables/pca_cat.tex
 INPUT ./tables/pca_cat.tex
