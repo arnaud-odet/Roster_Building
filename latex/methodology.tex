@@ -169,9 +169,10 @@ Once an optimal method is identified, we investigated several criterions to iden
 
 
 \subsection{Lineups analysis}
+\label{sec:lineup_analysis}
 
-From the lineups identified (see Section~\ref{sec:data_pbp}), we retain for further analysis only those aligned more than 24 minutes (which corresponds to half the duration of a NBA game).
-Applying this filter corresponds to keeping 4,266 lineups out of the 68,160 lineups identified (6.3\%), representing 51.3\% of playtime.
+From the lineups identified (see Section~\ref{sec:data_pbp}), we retain for further analysis \hl{only those aligned more than 24 minutes (which corresponds to half the duration of a NBA game)}.
+\hl{Applying this filter corresponds to keeping 4,266 lineups out of the 68,160 lineups identified (6.3\%), representing 51.3\% of playtime.}
 A brief description of lineups and their usage in terms of playtime can be found in Table~\ref{tab:lus}.
 We computed for all lineups (i) the time they have played and (ii) their +/- statistics.
 We subsequently computed the average +/- per 48 minutes.
@@ -206,4 +207,29 @@ We want $L^*_C$ to be the solution of Equation~\ref{eq:opt} given constraint pre
   L = \{k : c_k, k \in \{1, ..., n_k\}\}\quad \text{with} \quad \sum_{k = 1}^{n_k} c_k = 5
 \end{equation}
 
-where $\Omega_L$ is the universe of possible compositions and $c_k$ represents the number of players.
+where $\Omega_L$ is the universe of possible compositions and $c_k$ represents the number of players of cluster $k$ present in the lineup.
+
+\nb{
+
+We decompose the performance of a lineup as follows:
+\begin{equation}
+  \label{eq:lineup_value}
+  S(L) = \sum_{i = 1}^{5} \sum_{\{P_1, ... P_i\} \in L} S(\bigcap (C(P_1), ... C(P_i)))
+\end{equation}
+where $C: \Omega_P \mapsto \Omega_C$ is the function associating player $P$ to the cluster $c$ it belongs to, $\bigcap (C(P_1), ... C(P_i))$ represents the possible combinations up to $i$ players $P$ belonging to lineup $L$.
+$\Omega_P$ and $\Omega_C$ represents respectively the universe of players and clusters. 
+For instance, $\bigcap (C(P_1))$ represents the performance associated with the presence of cluster $C(P_1)$ in a lineup and $\bigcap (C(P_1), C(P_4), C(P_5))$ represents the performance associated with the combined presence of clusters $C(P_1)$, $C(P_4)$ and $C(P_5)$.
+
+For each lineup $L$ and for $i \in \{1, ... , 5\}$, we assessed $S(\bigcap (C(P_1), ... C(P_i))), \{P_1, ... P_i\} \in L$ as follows:
+\begin{enumerate}[i]
+  \item We split our dataset $D$ in two: $D_w$ where the condition (combined presence of $(C(P_1), ... C(P_i))$) is met and $D_{\bar{w}}$ where it is not. We note $n$ the number of observations in $D_w$
+  \item We create a biased distribution of $D_w$ and $D_{\bar{w}}$ where all observation are weighted by time spent playing,
+  \item We bootstrapped $q$ observations from the biased distribution. \ob{Necessary ?}
+  \item We compute $\bar{D_w}$ and $s$, the mean and standard deviation of $D_w$ and $\mu$ the mean of $D_{\bar{w}}$
+  \item We compute Student's $T$-statistic, $T = \frac{\bar{D_w} - \mu}{s / \sqrt{n}}$ and perform a Student T test with a significance level of $\alpha = 0.05$.
+  \item If the test is positive (p-value < $\alpha$), we set $S(\bigcap (C(P_1), ... C(P_i))) = \bar{D_w} - \mu$. Else we set $S(\bigcap (C(P_1), ... C(P_i))) = 0$
+\end{enumerate}
+In practice, we determine a threshold $n_0 = \min (30, N * 0.1)$ below which steps (ii) to \ob{(vi)} are not performed, and $S(\bigcap (C(P_1), ... C(P_i))) = 0$.
+To mitigate the impact of such limitation, and maintain comparability over lineups, we limit the summation of Equation~\ref{eq:lineup_value} according to the share of lineups not reaching the threshold of $n_0$. 
+
+}
