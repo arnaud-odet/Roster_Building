@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex roster"] 1774457133 "roster.aux" "roster.bbl" "roster" 1774457282 0
+["bibtex roster"] 1774469180 "roster.aux" "roster.bbl" "roster" 1774469365 0
   "./bibliography.bib" 1773742477 71733 bad4d677970921fd601cef5358b82ef5 ""
   "/usr/local/texlive/2023/texmf-dist/bibtex/bst/base/apalike.bst" 1292289607 24635 604dafcc79f521a11ea73e506e1fbd98 ""
-  "roster.aux" 1774457282 12814 bac8a579473c0b333c9d0fc11e7c1f43 "pdflatex"
+  "roster.aux" 1774469365 12814 6ae37c01eb69dd544c31f595cec60b11 "pdflatex"
   (generated)
   "roster.bbl"
   "roster.blg"
   (rewritten before read)
-["pdflatex"] 1774457280 "/home/admin/code/arnaud-odet/7_PhD/Roster/latex/roster.tex" "roster.pdf" "roster" 1774457282 0
+["pdflatex"] 1774469364 "/home/admin/code/arnaud-odet/7_PhD/Roster/latex/roster.tex" "roster.pdf" "roster" 1774469365 0
   "/home/admin/code/arnaud-odet/7_PhD/Roster/latex/roster.tex" 1773675155 1772 6e12477795b44df13d62e208b578827b ""
   "/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/local/texlive/2023/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
@@ -225,12 +225,12 @@
   "figures/n_clust.png" 1773217021 57457 f647b7a4aaf7ce1179aafdccfa0cd69e ""
   "figures/success.png" 1773671560 208482 12e27093c5b2f19a0cb735864902e283 ""
   "introduction.tex" 1773677281 5914 bab3c028a0ccb0aebbbd535288ff683c ""
-  "methodology.tex" 1774457101 19562 a8f339f15628f928bc8920ac39a79810 ""
+  "methodology.tex" 1774469178 19468 19e9240cccf3cae0af4057ae74ea7e00 ""
   "related_work.tex" 1774263011 7391 55304b0aaf7bc03635c40ddadf929079 ""
-  "results.tex" 1774457280 8745 c7677dba592fe1ea2b44c740e1ac5674 ""
-  "roster.aux" 1774457282 12814 bac8a579473c0b333c9d0fc11e7c1f43 "pdflatex"
-  "roster.bbl" 1774457134 5595 1857e999a28532e00a0ea56edf7f7c02 "bibtex roster"
-  "roster.out" 1774457282 2882 c0e076c9e3c88e7bf9c98d91263a7fec "pdflatex"
+  "results.tex" 1774469364 8818 98ebfc1d26620f0e247ceab311a63004 ""
+  "roster.aux" 1774469365 12814 6ae37c01eb69dd544c31f595cec60b11 "pdflatex"
+  "roster.bbl" 1774469180 5595 1857e999a28532e00a0ea56edf7f7c02 "bibtex roster"
+  "roster.out" 1774469365 2882 c0e076c9e3c88e7bf9c98d91263a7fec "pdflatex"
   "roster.tex" 1773675155 1772 6e12477795b44df13d62e208b578827b ""
   "tables/app_clust.tex" 1773389713 1294 c162a826c30288abca5e681b5b2eaa66 ""
   "tables/app_pca.tex" 1773390274 10204 0adeb34204ed24f2b2e9296d5cbd20f8 ""
@@ -240,7 +240,7 @@
   "tables/datasets.tex" 1772114203 1785 fca939e9c5ac1a6728d4b5830c6c6fb3 ""
   "tables/hpo.tex" 1774017839 801 39ef47cf57381b55acc43e762f5082ff ""
   "tables/lineup_brackets.tex" 1773334308 344 7e4165881485e5598f465163037e36cf ""
-  "tables/lineup_combinations.tex" 1774457155 236 7607eab01ee94feb2a9522d5939229a6 ""
+  "tables/lineup_combinations.tex" 1774468287 329 1da54bbe54efc1e56a26dd8a2ecd5a92 ""
   "tables/pca_cat.tex" 1773264753 3583 76057436aabb5df5df16d60038eb012c ""
   (generated)
   "roster.aux"

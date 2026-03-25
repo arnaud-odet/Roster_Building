@@ -224,12 +224,11 @@ For each lineup $L$ and for $i \in \{1, ... , 5\}$, we assessed $S(\bigcap (C(P_
 \begin{enumerate}[i]
   \item We split our dataset $D$ in two: $D_w$ where the condition (combined presence of $(C(P_1), ... C(P_i))$) is met and $D_{\bar{w}}$ where it is not. We note $n$ the number of observations in $D_w$
   \item We create a biased distribution of $D_w$ and $D_{\bar{w}}$ where all observation are weighted by time spent playing,
-  \item We bootstrapped $q$ observations from the biased distribution. \ob{Necessary ?}
   \item We compute $\bar{D_w}$ and $s$, the mean and standard deviation of $D_w$ and $\mu$ the mean of $D_{\bar{w}}$
   \item We compute Student's $T$-statistic, $T = \frac{\bar{D_w} - \mu}{s / \sqrt{n}}$ and perform a Student T test with a significance level of $\alpha = 0.05$.
   \item If the test is positive (p-value < $\alpha$), we set $S(\bigcap (C(P_1), ... C(P_i))) = \bar{D_w} - \mu$. Else we set $S(\bigcap (C(P_1), ... C(P_i))) = 0$
 \end{enumerate}
-In practice, we determine a threshold $n_0 = \min (30, N * 0.1)$ below which steps (ii) to \ob{(vi)} are not performed, and $S(\bigcap (C(P_1), ... C(P_i))) = 0$.
+In practice, we determine a threshold $n_0 = \min (30, N * 0.1)$ below which steps (ii) to (v) are not performed, and $S(\bigcap (C(P_1), ... C(P_i))) = 0$.
 To mitigate the impact of such limitation, and maintain comparability over lineups, we limit the summation of Equation~\ref{eq:lineup_value} according to the share of lineups not reaching the threshold of $n_0$. 
 
 }
