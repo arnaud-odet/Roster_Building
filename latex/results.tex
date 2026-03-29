@@ -1,4 +1,4 @@
-\section{Results}
+\section{Results \& Discussions}
 \label{sec:results}
 
 \subsection{Clustering}
@@ -52,6 +52,7 @@ We therefore chose 10 clusters for the selected partition, as 10 is the mode of 
 \end{figure}
 
 \subsubsection{Selected partition}
+\label{sec:partition}
 
 Figure~\ref{fig:cl_viz} presents a graphical display of the selected partition, and Table~\ref{tab:clust} a description of the clusters as well as notable players. 
 For an extensive clusters' centroid position in Principal Component space (respectively, feature space), please refer to Table~\ref{tab:app_clust} (respectively Table~\ref{tab:app_cl_ft}) in appendix.
@@ -80,7 +81,7 @@ They also display good rebounding statistics.
   \caption{Clusters presentation}
   \label{tab:clust}
   \input{tables/clusters}
-  {\raggedright \small Note *: The "position" columns contains the most represented listed positions of players present in the cluster, ordered by frequence. 
+  {\raggedright \small Note *: The "position" columns contains the most represented listed positions of players present in the cluster, ordered by frequency. 
   PG: Point Guard, SG: Shooting Guard, SF: Small Forward, PF: Power Forward, C: Center.}
 
 \end{table}
@@ -89,6 +90,10 @@ They also display good rebounding statistics.
 
 From the clustering of players and the subsequent characterization of lineups, we identified 556 unique lineups (from 9,666 when players were considered instead of clusters).
 Table~\ref{tab:lineup_comb} displays the number of possible combinations of clusters and the number of valid possibilities in our dataset (where a candidate lineup is considered as valid when $n \geq n_0$, $n$ being the sample size associated with the lineup and $n_0$ the threshold defined in Section~\ref{sec:lineup_analysis}).
+Intuitively, as the combination size increases, the percentage of valid lineups decreases, starting for 100\% for combination of one player to 4\% for combination of five players.
+In total, we identified 140 combinations statistically significant and valid. 
+We also reported the number of statistically significant combinations, without consideration of their validity, for further analysis.  
+We do not comment those results in this section, as bootstrapping results are not reliable when sample sizes are too small.
 
 \begin{table}
   \small
@@ -101,17 +106,29 @@ Table~\ref{tab:lineup_comb} displays the number of possible combinations of clus
 \end{table}
 
 
+Figure~\ref{fig:cl_l1-2} displays the +/- per 48 minutes statistic depending on the presence or absence of clusters and pairs of clusters (i.e. combinations size 1 and 2).
+\paragraph{Presence or absence of clusters:}
+We identified two clusters from which lineups containing these clusters significantly outperform lineup without: cluster 5 and cluster 10, the two described as "superstars" clusters in Section~\ref{sec:partition}.
+Cluster 5 brings a +3.5~pts per 48 minutes improvement vs lineups without cluster 5, and this statistic for cluster 10 is +2.2~pts per 48 minutes. 
+On the other hand, four clusters significantly decrease lineups +/- per 48 minutes: cluster 7 by -3.5~pts, cluster 3 by -2.2~pts, cluster 8 by -1.0~pts and cluster 4 by -0.8~pts.
+Interestingly, cluster 9 (-1.1~pts) and cluster 1 (-0.9~pts) display mean difference lower than cluster 4 but are not statistically significant.
 
-
-Figure~\ref{fig:cl_l1-2} displays the +/- per 48 minutes statistic depending on the presence or absence of clusters and pairs of clusters, 
-\ob{to do}
-
+\paragraph{Presence or absence of cluster pairs:}
+We identified 20 combinations of players as valid and significant.
+Unsurprisingly, cluster 5 and cluster 10 appear in more statistically significant positive impact combination, with six for cluster 5 and four for cluster 10.
+Interestingly, no combinations involving cluster 5 and another cluster display a higher mean difference than cluster 5 alone.
+Indeed, as indicated previously, lineups with at least one cluster 5 players outperform lineups without by +3.5~pts while the highest mean difference of pairs of clusters involving cluster 5 is +3.4~pts (for two cluster 5 players and one cluster 5 plus one cluster 10).
+However, the cluster 9 and cluster 10 pair lineups significantly outperform lineups where this pair is not present by +7.8~pts, the highest score displayed.
+Cluster 9 and 10 both are clusters with a majority of "bigs" (Center and Power Forwards), and while cluster 10 regroups "superstar" bigs, cluster 9 is more a cluster of role player bigs, impacting the game with their defense, rebounding and ability to play with screens.
+This result highlight the importance of compatibility in the paint (the area located close to the basket, where the bigs usually play) over superstar associations (lineups with two players from cluster 10's results are close to zero and non-significant).
+However, cluster 9 players are \ob{To Be Continued}
 
 \begin{figure}
   \includegraphics[width=\textwidth]{cl_levels_1-2.png}  
-  \caption{\ob{to do}.}
+  \caption{Green (respectively red) color indicate positive (resp. negative) impact. 
+  For the right panel, * and bold font indicate significant result, while small and italic results are not statistically significant}
   \label{fig:cl_l1-2}
 \end{figure}
 
-
+\paragraph{Five players lineups:}
 \ob{To be completed}
