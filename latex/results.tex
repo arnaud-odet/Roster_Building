@@ -81,8 +81,10 @@ They also display good rebounding statistics.
   \caption{Clusters presentation}
   \label{tab:clust}
   \input{tables/clusters}
-  {\raggedright \small Note *: The "position" columns contains the most represented listed positions of players present in the cluster, ordered by frequency. 
-  PG: Point Guard, SG: Shooting Guard, SF: Small Forward, PF: Power Forward, C: Center.}
+  {\raggedright \small Notes *: The "position" columns contains the most represented listed positions of players present in the cluster, ordered by frequency. 
+  PG: Point Guard, SG: Shooting Guard, SF: Small Forward, PF: Power Forward, C: Center.
+
+  **: Time corresponds to the percentage of time in which the playing lineup contains at least one player of the corresponding cluster.}
 
 \end{table}
 
@@ -107,6 +109,9 @@ We do not comment those results in this section, as bootstrapping results are no
 
 
 Figure~\ref{fig:cl_l1-2} displays the +/- per 48 minutes statistic depending on the presence or absence of clusters and pairs of clusters (i.e. combinations size 1 and 2).
+Table~\ref{tab:app_comb_3}, Table~\ref{tab:app_comb_4} and Table~\ref{tab:app_comb_5} in Appendix list the valid and statistically significant combination of three, four and five player respectively.
+
+
 \paragraph{Presence or absence of clusters:}
 We identified two clusters from which lineups containing these clusters significantly outperform lineup without: cluster 5 and cluster 10, the two described as "superstars" clusters in Section~\ref{sec:partition}.
 Cluster 5 brings a +3.5~pts per 48 minutes improvement vs lineups without cluster 5, and this statistic for cluster 10 is +2.2~pts per 48 minutes. 
@@ -114,21 +119,39 @@ On the other hand, four clusters significantly decrease lineups +/- per 48 minut
 Interestingly, cluster 9 (-1.1~pts) and cluster 1 (-0.9~pts) display mean difference lower than cluster 4 but are not statistically significant.
 
 \paragraph{Presence or absence of cluster pairs:}
-We identified 20 combinations of players as valid and significant.
+We identified 19 combinations of players as valid and significant.
 Unsurprisingly, cluster 5 and cluster 10 appear in more statistically significant positive impact combination, with six for cluster 5 and four for cluster 10.
 Interestingly, no combinations involving cluster 5 and another cluster display a higher mean difference than cluster 5 alone.
 Indeed, as indicated previously, lineups with at least one cluster 5 players outperform lineups without by +3.5~pts while the highest mean difference of pairs of clusters involving cluster 5 is +3.4~pts (for two cluster 5 players and one cluster 5 plus one cluster 10).
 However, the cluster 9 and cluster 10 pair lineups significantly outperform lineups where this pair is not present by +7.8~pts, the highest score displayed.
 Cluster 9 and 10 both are clusters with a majority of "bigs" (Center and Power Forwards), and while cluster 10 regroups "superstar" bigs, cluster 9 is more a cluster of role player bigs, impacting the game with their defense, rebounding and ability to play with screens.
 This result highlight the importance of compatibility in the paint (the area located close to the basket, where the bigs usually play) over superstar associations (lineups with two players from cluster 10's results are close to zero and non-significant).
-However, cluster 9 players are \ob{To Be Continued}
+
 
 \begin{figure}
   \includegraphics[width=\textwidth]{cl_levels_1-2.png}  
   \caption{Green (respectively red) color indicate positive (resp. negative) impact. 
-  For the right panel, * and bold font indicate significant result, while small and italic results are not statistically significant}
+  For the right panel, * and bold font indicate significant result, while small and italic results are not statistically significant.
+  Blank cells correspond to non-valid ($n_w < n_0$) pairs.}
   \label{fig:cl_l1-2}
 \end{figure}
 
+\paragraph{Three players combinations:}
+Comprehensive results for three players combinations are displayed in Appendix, Table~\ref{tab:app_comb_3}.
+We identified 41 triplets significantly underperforming (20) or overperforming (21) others.
+In line with our two players combination findings, the cluster 9 - cluster 10 pair appears in the top two triplets (with cluster 5 for a +10.3~pts per 48 minutes gap and with cluster 1 for a +9.8~pts difference.)
+Notably, five triplets including a pair of cluster 5 players appear in positive impact triplets (completed with cluster 3, 10, 2, 1 and 4).
+We also observe that only one triplet without player for cluster 5 or 10 is listed in the good performing triplets (3-3-4 with +2.7~pts). 
+In the low performing combination, only three contain a superstar cluster player (3-8-10 with a -2.9~pts per 48 minutes difference, 5-8-8 with -3.2~pts and 4-4-5 with -3.7~pts).
+This analysis confirms the dominance of superstar clusters.
+
+\paragraph{Four players combinations:}
+Comprehensive results for three players combinations are displayed in Appendix, Table~\ref{tab:app_comb_4}.
+We identified 47 combinations significantly underperforming (21) or overperforming (26) others.
+For top performing lineups, the gap between lineups who contain the combination and lineups who do not is reduced compared to combination of three players.
+This is explained by the small sample sizes of top performing triplets (respectively 37 and 34 for triplets including clusters 9 and 10, none of them appear in a valid 4 players combination). 
+\ob{to be continued}
+
 \paragraph{Five players lineups:}
-\ob{To be completed}
+We identified 82 valid combinations of players, of which 26 statistically significantly outperform (13) or underperform (13) other lineups.
+\ob{to be continued}

@@ -50,7 +50,7 @@ class LineupExplorer:
         _sample_without = _sample_df[_mask == False]
         return _sample_with, _sample_without
     
-    def explore_tree(self, compo:dict = {}):
+    def explore_tree(self, compo:dict = {}, relative:bool = True):
         _df = self._create_base_sample_df(compo)
         _tot_time = _df['time'].sum()
         _tree_df = _df[[f'nb_pl_cl_{i}' for i in range(1,11)]].copy()
@@ -59,7 +59,10 @@ class LineupExplorer:
         tree_leaves = {}
         for k in range(1,11):
             if _tree_df[f'nb_pl_cl_{k}'].sum() > 0 :
-                tree_leaves[k] = float(_df[_df[f'nb_pl_cl_{k}'] > compo.get(k,0)]['time'].sum() / _tot_time)
+                if relative :
+                    tree_leaves[k] = float(_df[_df[f'nb_pl_cl_{k}'] > compo.get(k,0)]['time'].sum() / _tot_time)
+                else :
+                    tree_leaves[k] = int(_df[_df[f'nb_pl_cl_{k}'] > compo.get(k,0)].shape[0])
         return tree_leaves    
     
     def find_best_addition(self, 
@@ -112,9 +115,9 @@ class LineupExplorer:
         return (_lw['weight'] * _lw[target]).sum() / _lw['weight'].sum() - (_lwo['weight'] * _lwo[target]).sum() / _lwo['weight'].sum()
     
     @staticmethod
-    def _build_dict_from_tuple(tp:tuple):
+    def _build_dict_from_iterable(iterable):
         _dict = {}
-        for item in tp:
+        for item in iterable:
             _dict[item] = _dict.get(item,0) +1
         return _dict 
     
@@ -135,10 +138,10 @@ class LineupExplorer:
             _candidates_compo = combinations_with_replacement(self.clusters, order)
         for compo in _candidates_compo:
             if marginal_only:
-                base_compo = self._build_dict_from_tuple(compo[:-1])
+                base_compo = self._build_dict_from_iterable(compo[:-1])
                 _df_w, _df_wo = self._create_samples_data(new_addition = compo[-1], base_compo= base_compo)
             else :
-                _compo = self._build_dict_from_tuple(compo)
+                _compo = self._build_dict_from_iterable(compo)
                 _df_w = self._create_base_sample_df(compo = _compo)
                 _df_wo = self.df.drop(index=_df_w.index)
             if bootstrap:
@@ -166,3 +169,8 @@ class LineupExplorer:
                 'n_valid_sign':n_valid_sign }
         return stats, results 
     
+    def count_combinations(self, combination:str):
+        iterable = [int(i) for i in combination.split('_')]
+        compo = self._build_dict_from_iterable(iterable)
+        _df_w = self._create_base_sample_df(compo)
+        return _df_w.shape[0]
