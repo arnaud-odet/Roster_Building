@@ -1,13 +1,36 @@
 \section{Conclusion}
 \label{sec:ccl}
 
+In this work, we adopted a two steps framework to identify the best combinations of players with the aim of forming competitive lineups in basketball.
+First, we benchmarked several unsupervised machine learning algorithms to identify players' archetypes. 
+To do so, we leveraged traditional box-score data augmented with tracking technology. 
+Our analysis reveals 10 players' archetypes.
+Then, we leveraged these archetypes to characterize lineups obtained from play-by-play data.
+We rely on +/- per 48 minutes to evaluate lineups' performance. 
+This indicator intuitively corresponds to the point difference over a full NBA game.
+We bootstrapped from biased distribution to estimate and compare relative performances of lineups containing or not given combinations of players.
+Our findings reveal an overall good performance of superteams, as they often appear in statistically significant positive impact lineups.
+However, the top performing 4 or 5 players combinations cannot be considered as superteams, as they only feature one player from superstars clusters.
+Seeking complementarity appear more efficient as trying to assemble top performing players.
+In that sense, our findings relate with \cite{Fewell2012basketball}, who concluded top performing teams display low levels of centrality, corresponding to a distribution of decision-making across a broader range of players, rather than few dominant playmakers. 
+Our framework allows identifying and quantifying complementarity between clusters, and brings valuable insights for decision-makers in the NBA.  
 
-Limitations : cluster stability, financial consideration, few seasons, bootstrapping issue (non explored space) 
+A key component when building rosters in the NBA is players' salary. 
+In the NBA, franchises are subject to a salary cap, above which they get highly taxed.  
+While this aspect is missing from our study, it is interesting to notice the lineup we highlight as illustrative of the best performing combination of five players we identified leaves a lot of cap space (i.e. margin on salary cap) for the franchise aligning it.
+Indeed, in the 2015/16 season, the salary cap was USD 70.0m, and the sum of salary of the five players composing this lineup is "only" USD 31.7m\footnote{source: \url{https://www.espn.com/nba/salaries/_/year/2016}, consulted on March, 30th, 2026} (while the franchise total salaries were USD 71.6m, and the described lineup does not contain two of the top three salaries of the franchise). 
+We leave the integration of financial data and roster building optimization below this constraint for future work.
 
-Additivity vs symmetry
+Our work could benefit from (i) more and (ii) richer data.
+More observations would increase the number of valid lineups, and help identify the best complement for top performing pairs or triplets.
+Indeed, the pair cluster 9 - cluster 10 emerges as the best performing pair and is part of the two best performing triplets, but it only appears in 47 occurrences, making none of the triplets' descendant pass the validity threshold for four or five players combinations, which truncates the subsequent analysis of combinations with four or five players.
+Being able to consider more combinations would allow to present a Bayesian framework, as in \cite{calvo_selecting_2025} for example, where the process of building a team can be performed sequentially (thanks to conditional probabilities based on the existing) instead of "from scratch" as our framework suggests.
+This would allow to bring our analysis one step closer to real NBA constraints, where franchises can not so easily move players and present a completely new lineup, but deal with long term commitments with players instead, and may want to build around players.
 
+Richer data in terms of features would allow the partitioning algorithm to better consider defensive characteristics, as we see in this study clusters mainly described by offensive abilities.
+When analyzing the selected, we regret not seeing clusters regrouping players with superior defensive abilities together. 
+Instead, they are allocated to clusters based on their offensive game. 
+As an illustration, for each season we identified the top three players in the Defensive Player of the Year (DPoY) votes, arguably the three best defenders of the league of the season of the vote, and they appear in 5 different clusters: cluster 10 (Giannis Antetokounmpo in 2019 and 2019, Anthony Davis in 2017 and 2019, Draymond Green in 2015 and 2016 and Joel Embiid in 2017), cluster 4 (Rudy Gobert in 2016, 2017, 2018, 2019), cluster 5 (Kawhi Leonard in 2016, Paul George in 2018), cluster 1 (Kawhi Leonard in 2015) and cluster 8 (Hassan Whiteside in 2015)
+In comparison, the top three in Most Valuable Players vote only belong to clusters 5 (11 times), cluster 10 (3 times) and cluster 1 (Kawhi Leonard, 2015).
 
-\ob{\cite{Fewell2012basketball}}
-
-
-\ob{To do}
+While this work does not pretend to replace experience and expertise of franchises' front offices, we believe it provides valuable findings to consider when trying to build a roster, and pave the way to various promising directions, including, and not limited to complete roster constitution, optimization with financial constraints, and hierarchical frameworks.
