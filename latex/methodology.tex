@@ -60,28 +60,6 @@ For each lineup, we computed (i) the time it has played and (ii) its +/- statist
 The +/- statistic corresponds to the difference of points vs opponents when the analyzed lineup is on the floor, a positive value indicating the lineup outscores its opponent and a negative value the opposite. 
 It is a well-used indicator on how much difference makes a player or a combination of players. 
 
-% \subsubsection{Team performance data \ob{Non utilisé, à part pour la Figure 1}}
-% \label{sec:data_success}
-% We collected from \href{https://www.nba.com/}{nba.com} two indicators of teams' success:
-% \begin{enumerate}[i]
-%   \item Teams' Win Rate (number of games won / number of games played), ranging from 0.122 to 0.890 ($\mu = 0.500, \sigma = 0.152$).
-%   \item A binary indicator worth 1 if the considered team reached the conference semi-finals in the playoffs and 0 otherwise. 
-%   The NBA is split into two conferences (East and West), both having their own playoff competition.
-%   The NBA champion is the winner of the best-of-seven series between East and West champions.
-%   Reaching the conference semi-finals is therefore equivalent to being within the last 8 contenders for the NBA title, which corresponds to the top 26.7\%. 
-% \end{enumerate} 
-
-% An illustration of the distribution of success can be found in Figure~\ref{fig:success}. 
-% Top performing teams appear to be the Golden State Warriors 2015, 2016, 2017 and the San Antonio Spurs 2016, achieving win rates above 80\% and reaching Conference semi-finals, while Minnesota Timberwolves 2015 and Philadelphia 76ers 2016 emerge as low performers with win rate below 20\%. 
-% Atlanta Hawks 2017 and 2019, and Memphis Grizzlies 2017 and 2018 aligned over 700 different lineups during the season, and Minnesota Timberwolves 2017, Orlando Magic 2018 and Detroit Pistons 2015 less than 240. None of these teams reached the Conference semi-finals.  
-
-% \begin{figure}
-%   \centering
-%   \includegraphics[width=0.8\textwidth]{success.png}   
-%   \caption{Distribution of teams according to their number of lineups aligned during each season (x-axis) and win rate (y-axis). Red dots indicate teams reaching the Conference semi-finals, and blue dots the opposite, Crosses correspond to Western Conference teams and dots to Eastern Conference teams.}
-%   \label{fig:success}
-% \end{figure}
-
 \subsection{Clustering of NBA players}
 \label{sec:clustering}
 
@@ -205,27 +183,6 @@ We want $L^*_C$ to be the solution of Equation~\ref{eq:opt} given constraint pre
 where $\Omega_L$ is the universe of possible compositions and $c_k$ represents the number of players of cluster $k$ present in the lineup.
 
 
-% We decompose the performance of a lineup as follows:
-% \begin{equation}
-%   \label{eq:lineup_value}
-%   S(L) = \sum_{i = 1}^{5} \sum_{\{P_1, ... P_i\} \in L} S\left(\bigcap (C(P_1), ... C(P_i))\right)
-% \end{equation}
-% where $C: \Omega_P \mapsto \Omega_C$ is the function associating player $P$ to the cluster $c$ it belongs to, $\bigcap (C(P_1), ... C(P_i))$ represents the possible combinations up to $i$ players $P$ belonging to lineup $L$.
-% $\Omega_P$ and $\Omega_C$ represents respectively the universe of players and clusters. 
-% For instance, $\bigcap (C(P_1))$ represents the performance associated with the presence of cluster $C(P_1)$ in a lineup and $\bigcap (C(P_1), C(P_4), C(P_5))$ represents the performance associated with the combined presence of clusters $C(P_1)$, $C(P_4)$ and $C(P_5)$.
-
-% For each lineup $L$ and for $i \in \{1, ... , 5\}$, we assessed $S(\bigcap (C(P_1), ... C(P_i))), \{P_1, ... P_i\} \in L$ as follows:
-% \begin{enumerate}[i]
-%   \item We split our dataset $D$ in two: $D_w$ where the condition (combined presence of $(C(P_1), ... C(P_i))$) is met and $D_{\bar{w}}$ where it is not. We note $n$ the number of observations in $D_w$
-%   \item We create a biased distribution of $D_w$ and $D_{\bar{w}}$ where all observation are weighted by time spent playing,
-%   \item We compute $\bar{D_w}$ and $s$, the mean and standard deviation of $D_w$ and $\mu$ the mean of $D_{\bar{w}}$
-%   \item We compute Student's $T$-statistic, $T = \frac{\bar{D_w} - \mu}{s / \sqrt{n}}$ and perform a Student T test with a significance level of $\alpha = 0.05$.
-%   \item If the test is positive (p-value < $\alpha$), we set $S(\bigcap (C(P_1), ... C(P_i))) = \bar{D_w} - \mu$. Else we set $S(\bigcap (C(P_1), ... C(P_i))) = 0$
-% \end{enumerate}
-% In practice, we determine a threshold $n_0 = \min (30, N * 0.1)$ below which steps (ii) to (v) are not performed, and $S(\bigcap (C(P_1), ... C(P_i))) = 0$.
-% To mitigate the impact of such limitation, and maintain comparability over lineups, we limit the summation of Equation~\ref{eq:lineup_value} according to the share of lineups not reaching the threshold of $n_0$. 
-
-
 For every combination of $n_p$ players, $n_p \in \{1, ..., 5\}$, we assessed the performance of the combination $S\left(\bigcap (C(P_1), ... , C(P_{n_p}))\right)$, where $C: \Omega_P \mapsto \Omega_C$ is the function associating player $P$ to the cluster $c$ it belongs to, $\Omega_P$ and $\Omega_C$ represents respectively the universe of players and clusters as described in Algorithm~\ref{alg:bootstrap}.
 
 \begin{algorithm}
@@ -235,23 +192,23 @@ For every combination of $n_p$ players, $n_p \in \{1, ..., 5\}$, we assessed the
   \begin{algorithmic}
   
     \Statex \textbf{Input:} Dataset $D$; 
-    \Statex \hspace{3em} Combinations players $\{C(p_1), ... , C(p_{n_p}) \}$.
+    \Statex \hspace{3em} Combinations players $\{C(p_1), ... , C(p_{n_p}) \}$;
     \Statex \hspace{3em} Validity threshold $n_0$; 
-    \Statex \hspace{3em} Number of bootstrapped dataset $n_B$.
-    \Statex \hspace{3em} Significance level $\alpha$.
+    \Statex \hspace{3em} Number of bootstrapped dataset $n_B$;
+    \Statex \hspace{3em} Significance level $\alpha$;
     \Statex \textbf{Output:} Performance of the combination $\hat{S}$.
   
   \State $\hat{S} \gets None $
   \State Partition $D$ into $D_w$ with lineups containing $\{C(p_1), ... , C(p_{n_p}) \}$ and $D_{\bar{w}}$ without.
   \State $n_w \gets \text{size}(D_w) $
-  \If {$n_w >= n_0$}
-    Create biased distributions $\tilde{D_w}$ and $\tilde{D_{\bar{w}}}$ of $D_w$ and $D_{\bar{w}}$ where all observation are weighted by time spent playing,
-    $\Delta_{observed} = \bar{\tilde{D_w}} - \bar{\tilde{D_{\bar{w}}}}$
+  \If {$n_w \geq n_0$}
+    \State Create biased distributions $\tilde{D}_w$ and $\tilde{D}_{\bar{w}}$ of $D_w$ and $D_{\bar{w}}$ where all observations are weighted by time spent playing,
+    \State $\Delta_{observed} = \overline{\tilde{D}_w} - \overline{\tilde{D}_{\bar{w}}}$
     \For{$k = 1, \ldots, n_B$}
-      \State Generate two bootstrapped datasets $B_w$ from $\tilde{D_w}$ and $B_{\bar{w}}$ from $\tilde{D_{\bar{w}}}$ 
-      \State Compute $\Delta_k = \bar{B_w} - \bar{B_{\bar{w}}}$ 
+      \State Generate two bootstrapped datasets $B_w$ from $\tilde{D}_w$ and $B_{\bar{w}}$ from $\tilde{D}_{\bar{w}}$ 
+      \State Compute $\Delta_{bootstrapped, k} = \overline{B_w} - \overline{B_{\bar{w}}}$ 
     \EndFor
-    \State Compute $p$-value on $\Delta - \Delta_{observed}$
+    \State Compute $p$-value on $\Delta_{bootstrapped} - \Delta_{observed}$
     \If {$p$-value < $\alpha$}
       \State $\hat{S} = \Delta_{observed}$
     \EndIf
