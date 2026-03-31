@@ -69,6 +69,11 @@ Muniz, M. and Flamand, T. (2022).
 \newblock A weighted network clustering approach in the {NBA}.
 \newblock {\em Journal of Sports Analytics}, 8(4):251--275.
 
+\bibitem[Odet et~al., 2025]{Odet2025AML}
+Odet, A., B{\'e}chard, T., Moretto, P., D{\'e}jean, S., and Pasquaretta, C. (2025).
+\newblock A machine learning and explainability-driven methodology for identifying winning strategies in rugby union.
+\newblock {\em Decision Analytics Journal}.
+
 \bibitem[Oliver, 2004]{oliver2004basketball}
 Oliver, D. (2004).
 \newblock {\em Basketball on paper: rules and tools for performance analysis}.

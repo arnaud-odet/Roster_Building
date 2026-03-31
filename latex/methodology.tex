@@ -60,27 +60,27 @@ For each lineup, we computed (i) the time it has played and (ii) its +/- statist
 The +/- statistic corresponds to the difference of points vs opponents when the analyzed lineup is on the floor, a positive value indicating the lineup outscores its opponent and a negative value the opposite. 
 It is a well-used indicator on how much difference makes a player or a combination of players. 
 
-\subsubsection{Team performance data \ob{Non utilisé, à part pour la Figure 1}}
-\label{sec:data_success}
-We collected from \href{https://www.nba.com/}{nba.com} two indicators of teams' success:
-\begin{enumerate}[i]
-  \item Teams' Win Rate (number of games won / number of games played), ranging from 0.122 to 0.890 ($\mu = 0.500, \sigma = 0.152$).
-  \item A binary indicator worth 1 if the considered team reached the conference semi-finals in the playoffs and 0 otherwise. 
-  The NBA is split into two conferences (East and West), both having their own playoff competition.
-  The NBA champion is the winner of the best-of-seven series between East and West champions.
-  Reaching the conference semi-finals is therefore equivalent to being within the last 8 contenders for the NBA title, which corresponds to the top 26.7\%. 
-\end{enumerate} 
+% \subsubsection{Team performance data \ob{Non utilisé, à part pour la Figure 1}}
+% \label{sec:data_success}
+% We collected from \href{https://www.nba.com/}{nba.com} two indicators of teams' success:
+% \begin{enumerate}[i]
+%   \item Teams' Win Rate (number of games won / number of games played), ranging from 0.122 to 0.890 ($\mu = 0.500, \sigma = 0.152$).
+%   \item A binary indicator worth 1 if the considered team reached the conference semi-finals in the playoffs and 0 otherwise. 
+%   The NBA is split into two conferences (East and West), both having their own playoff competition.
+%   The NBA champion is the winner of the best-of-seven series between East and West champions.
+%   Reaching the conference semi-finals is therefore equivalent to being within the last 8 contenders for the NBA title, which corresponds to the top 26.7\%. 
+% \end{enumerate} 
 
-An illustration of the distribution of success can be found in Figure~\ref{fig:success}. 
-Top performing teams appear to be the Golden State Warriors 2015, 2016, 2017 and the San Antonio Spurs 2016, achieving win rates above 80\% and reaching Conference semi-finals, while Minnesota Timberwolves 2015 and Philadelphia 76ers 2016 emerge as low performers with win rate below 20\%. 
-Atlanta Hawks 2017 and 2019, and Memphis Grizzlies 2017 and 2018 aligned over 700 different lineups during the season, and Minnesota Timberwolves 2017, Orlando Magic 2018 and Detroit Pistons 2015 less than 240. None of these teams reached the Conference semi-finals.  
+% An illustration of the distribution of success can be found in Figure~\ref{fig:success}. 
+% Top performing teams appear to be the Golden State Warriors 2015, 2016, 2017 and the San Antonio Spurs 2016, achieving win rates above 80\% and reaching Conference semi-finals, while Minnesota Timberwolves 2015 and Philadelphia 76ers 2016 emerge as low performers with win rate below 20\%. 
+% Atlanta Hawks 2017 and 2019, and Memphis Grizzlies 2017 and 2018 aligned over 700 different lineups during the season, and Minnesota Timberwolves 2017, Orlando Magic 2018 and Detroit Pistons 2015 less than 240. None of these teams reached the Conference semi-finals.  
 
-\begin{figure}
-  \centering
-  \includegraphics[width=0.8\textwidth]{success.png}   
-  \caption{Distribution of teams according to their number of lineups aligned during each season (x-axis) and win rate (y-axis). Red dots indicate teams reaching the Conference semi-finals, and blue dots the opposite, Crosses correspond to Western Conference teams and dots to Eastern Conference teams.}
-  \label{fig:success}
-\end{figure}
+% \begin{figure}
+%   \centering
+%   \includegraphics[width=0.8\textwidth]{success.png}   
+%   \caption{Distribution of teams according to their number of lineups aligned during each season (x-axis) and win rate (y-axis). Red dots indicate teams reaching the Conference semi-finals, and blue dots the opposite, Crosses correspond to Western Conference teams and dots to Eastern Conference teams.}
+%   \label{fig:success}
+% \end{figure}
 
 \subsection{Clustering of NBA players}
 \label{sec:clustering}

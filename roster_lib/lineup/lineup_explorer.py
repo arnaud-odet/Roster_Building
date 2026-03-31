@@ -169,8 +169,11 @@ class LineupExplorer:
                 'n_valid_sign':n_valid_sign }
         return stats, results 
     
-    def count_combinations(self, combination:str):
+    def count_combinations(self, combination:str, statistic:str=None):
         iterable = [int(i) for i in combination.split('_')]
         compo = self._build_dict_from_iterable(iterable)
         _df_w = self._create_base_sample_df(compo)
-        return _df_w.shape[0]
+        if statistic == None :
+            return _df_w.shape[0]
+        else :
+            return _df_w[statistic].sum()

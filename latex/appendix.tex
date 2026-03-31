@@ -29,25 +29,30 @@
 
 
 \begin{table}[!htb]
-  \small
-  \captionsetup{labelformat=empty, list=no} % Remove "Table X:" prefix for main caption
+  \footnotesize
   \caption{Valid and statistically significant combinations of players}
-  \captionsetup{labelformat=default} % Reset to default for subcaptions
-  \begin{minipage}[t]{.33\linewidth}
+  \label{tab:app_comb}
+  \begin{minipage}[t]{.3\linewidth}
     \caption{3 players}
     \centering
     \label{tab:app_comb_3}
     \input{tables/combinations_3.tex}
   \end{minipage}%
   \hfill
-  \begin{minipage}[t]{.33\linewidth}
+  \begin{minipage}[t]{.01\linewidth}
+  \end{minipage}%
+  \hfill\vline\hfill
+  \begin{minipage}[t]{.3\linewidth}
     \centering
       \caption{4 players}
       \label{tab:app_comb_4}
       \input{tables/combinations_4.tex}
   \end{minipage}
   \hfill
-  \begin{minipage}[t]{.33\linewidth}
+  \begin{minipage}[t]{.01\linewidth}
+  \end{minipage}%
+  \hfill\vline\hfill
+  \begin{minipage}[t]{.3\linewidth}
     \centering
     \caption{5 players}
     \label{tab:app_comb_5}
