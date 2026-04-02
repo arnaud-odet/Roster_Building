@@ -24,10 +24,10 @@ Please refer to Table~\ref{tab:pca} for an overview of principal components, and
 \subsubsection{Clustering algorithms}
 
 The Calinski-Harabasz indices of the compared method are presented in Figure~\ref{fig:cl_ch}.
-Please note that the number of clusters of for some algorithms (e.g. K-Means, GMM) an input hyperparameter, but for some others (e.g. Partition - HDBSCAN), it is a consequence of other hyperparameters.
-A clear hierarchy emerges between algorithm : K-Means, Spherical K-Means and GMM consistently achieve top performance, while Agglomerative with Complete and Average linkage emerge as worst performers.
+Please note that while the number of clusters is, for some algorithms (e.g. k-Means, GMM), an input hyperparameter, for some others (e.g. Partition - HDBSCAN), it is a consequence of other hyperparameters.
+A clear hierarchy emerges between algorithm : k-Means, Spherical k-Means and GMM consistently achieve top performance, while Agglomerative with Complete and Average linkage emerge as worst performers.
 Agglomerative with Ward linkage consistently falls below the top three performers and Partition HDBSCAN present more variations with cluster sizes, performing at the same level as GMM for the number of clusters for which it ranks best, and as bad as Agglomerative with complete linkage for the others.
-From this analysis, we will use K-Means as partition algorithm for the remaining of the paper.
+From this analysis, we will use k-Means as partition algorithm for the remaining of the paper.
 
 \begin{figure}
   \includegraphics[width=\textwidth]{clustering_ch.png}  
@@ -35,19 +35,19 @@ From this analysis, we will use K-Means as partition algorithm for the remaining
   \label{fig:cl_ch}
 \end{figure}
 
-For determining the optimal number of clusters, we relied on (i) an elbow method based on the value of K-Means inertia defined as 
+For determining the optimal number of clusters, we relied on (i) an elbow method based on the value of k-Means inertia defined as 
 \begin{equation}
   Inertia = \sum_{i=1}^{k} \sum_{x \in C_i}||x - \mu_{C_i}||^{2} 
 \end{equation}
 where $\mu_{C_i}$ represents the centroid of the clusters containing $x$, and $k$ the number of clusters,  and (ii) the gap statistic method \citep{Tibshirani2001EstimatingTN}.
 For the latter, we ran 100 iterations of Algorithm~\ref{alg:gs} with $B = 10$.
 Figure~\ref{fig:cl_ncl} displays the results for both approaches.
-From the elbow method, the optimal number of clusters is between 6 and 13 and from the gapstat algorithms, it appears between 9 and 11.
-We therefore chose 10 clusters for the selected partition, as 10 is the mode of our gapstat optimal number of clusters and falls within the Elbow method range.  
+From the elbow method, the optimal number of clusters is between 6 and 13 and from the gap-stat algorithm, it appears between 9 and 11.
+We therefore chose 10 clusters for the selected partition, as 10 is the mode of our gap-stat optimal number of clusters and falls within the Elbow method range.  
 
 \begin{figure}
   \includegraphics[width=\textwidth]{n_clust.png}  
-  \caption{Determination of the optimal number of clusters. The left panel displays the inertia value of K-Means and its evolution and the right panel a histogram of the best number of clusters determined from the gap statistic method, over 100 repetitions.}
+  \caption{Determination of the optimal number of clusters. The left panel displays the inertia value of k-Means and its evolution and the right panel a histogram of the best number of clusters determined from the gap statistic method, over 100 repetitions.}
   \label{fig:cl_ncl}
 \end{figure}
 
@@ -61,7 +61,7 @@ The remaining clusters contain players who could be regarded as "supporting cast
 Cluster 1 players display high shooting percentages and touch the ball less often. 
 They play a rather high number of minutes, and participate in the rebounding tasks.
 Cluster 2 contains players with predilection shooting position (Elbow and 3 pointers), with low ball handling and playmaking statistics.
-Cluster 3 players participate in the game creation with ball handling, assists, and passes, display good own-shoot (drive and pull-ups) capacity, but little rebounding.*
+Cluster 3 players participate in the game creation with ball handling, assists, and passes, display good own-shoot (drive and pull-ups) capacity, but little rebounding.
 Players of cluster 4 present very high rebounding and defense statistics, participate in play development with screens and touches / assists from the paint, and display rather good shooting statistics from specific location (post and paint).
 Cluster 6 players shoot from the 3 point range, are average in terms of defense and rebounding, and low in terms of ball possession and playmaking.
 Players from cluster 7 dribble more than the average player, display low shooting, defensive and rebounding statistics.
@@ -72,7 +72,7 @@ They also display good rebounding statistics.
 
 \begin{figure}
   \includegraphics[width=\textwidth]{clustering_inspection_cropped.png}  
-  \caption{Visualization of the selected partition. The left panel represents players in a 2D space determined by the two first principal components, the middle panel a histogram of cluster populations and the right panel clusters' centroid positions along the principal components space.}
+  \caption{Visualization of the selected partition. The left panel represents players in a 2D space determined by the first two principal components, the middle panel a barplot of cluster populations and the right panel clusters' centroid positions along the principal components space.}
   \label{fig:cl_viz}
 \end{figure}
 
@@ -92,7 +92,7 @@ They also display good rebounding statistics.
 
 From the clustering of players and the subsequent characterization of lineups, we identified 556 unique lineups (from 9,666 when players were considered instead of clusters).
 Table~\ref{tab:lineup_comb} displays the number of possible combinations of clusters and the number of valid possibilities in our dataset (where a candidate lineup is considered as valid when $n \geq n_0$, $n$ being the sample size associated with the lineup and $n_0$ the threshold defined in Section~\ref{sec:lineup_analysis}).
-Intuitively, as the combination size increases, the percentage of valid lineups decreases, starting for 100\% for combination of one player to 4\% for combination of five players.
+Intuitively, as the combination size increases, the percentage of valid lineups decreases, starting from 100\% for player singletons to 4\% for combination of five players.
 In total, we identified 140 combinations statistically significant and valid. 
 We also reported the number of statistically significant combinations, without consideration of their validity, for further analysis.  
 We do not comment those results in this section, as bootstrapping results are not reliable when sample sizes are too small.
@@ -108,7 +108,7 @@ We do not comment those results in this section, as bootstrapping results are no
 \end{table}
 
 
-Figure~\ref{fig:cl_l1-2} displays the +/- per 48 minutes statistic depending on the presence or absence of clusters and pairs of clusters (i.e. combinations size 1 and 2), and Table~\ref{tab:app_comb} in Appendix presents the valid and statistically significant combination of three, four and five players.
+Figure~\ref{fig:cl_l1-2} displays the +/- per 48 minutes statistic depending on the presence or absence of clusters and pairs of clusters (i.e. combination sizes 1 and 2), and Table~\ref{tab:app_comb} in Appendix presents the valid and statistically significant combination of three, four and five players.
 Please have in mind that for any combination of $n$ players where $n < 5$, it is possible to find a combination of $n+1$ players from which the conclusion might differ.
 As an illustration, we can see in Figure~\ref{fig:cl_l1-2} lineups with players from cluster~8 significantly underperform lineups without players from cluster~8 (left panel), yet lineups with players from cluster~5 and cluster~8 significantly overperform lineup without this particular cluster pair (right panel).
 In that case, concluding players from cluster~8 are to be avoided when building a lineup would be erroneous.  

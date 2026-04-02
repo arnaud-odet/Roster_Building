@@ -3,7 +3,7 @@
 
 \subsection{Data}
 
-We relied on three data sources in this work: (i) a tracking-improved box-score dataset for identifying players' archetypes (see paragraph~\ref{sec:data_trbs}), (ii) play-by-play data to retrieve lineups used by teams and their relative +/- statistics (see paragraph~\ref{sec:data_pbp}) and (iii) team performance metrics to assess success of teams (see paragraph~\ref{sec:data_success}).
+We relied on two data sources in this work: (i) a tracking-improved box-score dataset for identifying players' archetypes (see paragraph~\ref{sec:data_trbs}) and (ii) play-by-play data to retrieve lineups used by teams and their relative plus/minus (+/-) statistics (see paragraph~\ref{sec:data_pbp}).
 We only retain in our analysis complete seasons where these three sources are available, and considered only regular season games. 
 Playoff games were discarded, as we believe they could bring a distortion to the analysis.
 Indeed, only the best performing teams of a season qualify to the playoffs, facing stronger adversity, which could deteriorate their performance.
@@ -24,9 +24,9 @@ An overview of the datasets can be found in Table~\ref{tab:data_stats}.
 \label{sec:data_trbs}
 
 The dataset presented in this paragraph has been referenced in \cite{muniz_weighted_2022} and is publicly available on their \href{https://github.com/meganlynn12/jsa-cdkm?tab=readme-ov-file}{github repository}\footnote{Consulted on February 25\textsuperscript{th}, 2026}.
-It consists in data obtained from the website \href{https://www.nba.com/}{nba.com}, initially split in 21 raw datasets and reorganized by the authors of \cite{muniz_weighted_2022} in 6 datasets as described in Table~\ref{tab:datasets}.
+It consists in data obtained from the website \href{https://www.nba.com/}{nba.com}, initially split in 21 raw datasets and reorganized by the authors in 6 datasets as described in Table~\ref{tab:datasets}.
 Please note that contrarily to \citeauthor{muniz_weighted_2022}, we did not consider the "Clutch" dataset as it contains data from particular part of games (less than 5 points difference in the last 5 minutes), and therefore overlaps with other datasets. 
-These data contains traditional basketball box-score statistics (e.g. shot attempted, shot made, rebound, assists, etc.) augmented from Sports VU tracking system (introduced in NBA arenas in 2014).
+These data contains traditional basketball box-score statistics (e.g. shot attempted, shot made, rebound, assists, etc.) augmented from SportsVU tracking system (introduced in NBA arenas in 2014).
 Tracking improved box-score statistics as it (i) brought higher granularity to existing indicators (for instance, categorizing shots by areas on the pitch rather than sole value, identifying if a rebound or a shot is contested or not, etc.) and (ii) created new indicators (by recording for instance the number of boxouts\footnote{A boxout is a situation where a player manages to position himself between the basket and his opponent in a shooting situation, to achieve higher probability of securing the rebound.}).
 
 \begin{table}
@@ -46,7 +46,7 @@ We subsequently (i) transformed statistics expressed in volumes in per 48 minute
 \subsubsection{Play-by-play data}
 \label{sec:data_pbp}
 
-The dataset presented in this section is publicly available \href{https://www.kaggle.com/datasets/schmadam97/nba-playbyplay-data-20182019}{Kaggle}\footnote{Consulted on February 25\textsuperscript{th}, 2026}.
+The dataset presented in this section is publicly available on \href{https://www.kaggle.com/datasets/schmadam97/nba-playbyplay-data-20182019}{Kaggle}\footnote{Consulted on February 25\textsuperscript{th}, 2026}.
 Play-by-play data record timestamp-indexed of event in a game. 
 Recorded event encompasses traditional box-scores events (e.g. shot attempts, rebounds, assists, etc.) and the identity of the players credited for the corresponding events, as well as game-related information (start of period, end of period, player substitutions, etc.).
 From the identity of players credited for event and the changes log, we were able to identify for all timestamps the composition of both team participating in a game. 
@@ -54,7 +54,7 @@ A composition (also referred to as lineup) is a combination of 5 players from th
 In the NBA, teams are allowed to register 12 players for a given game, corresponding to $\binom{12}{5} = 792$ possible combinations.
 In practice, teams often have more than 12 players in their roster, and the selection of the 12 registered for a game is already a one-out-of-many choices, and teams can also sign players for short-duration contracts, trade them in the course of a season, etc.
 Therefore, the figure of 792 possible combinations is no theoretical maximum of the number of lineups.
-In total, we identified between 12,759 and 14.761 unique lineups per season.
+In total, we identified between 12,759 and 14,761 unique lineups per season.
 Teams aligned between 187 and 794 different lineups over the course of a season ($\mu = 454.4, \sigma = 114.7$).  
 For each lineup, we computed (i) the time it has played and (ii) its +/- statistics.
 The +/- statistic corresponds to the difference of points vs opponents when the analyzed lineup is on the floor, a positive value indicating the lineup outscores its opponent and a negative value the opposite. 
@@ -68,7 +68,7 @@ To do so, we need to create a partition of our dataset.
 We benchmarked various approaches, including centroid-based, hierachical agglomerative, density-based and gaussian models, with a hyperparameters search. 
 We implemented these approaches with the scikit-learn Python library \citep{scikit-learn}.
 
-Among partition-based approaches, the centroid-based k-means algorithm partitions observations into k  groups by minimizing within-cluster dispersion, typically defined as the sum of squared Euclidean distances between observations and their corresponding cluster centroids. 
+Among partition-based approaches, the centroid-based k-Means algorithm partitions observations into k  groups by minimizing within-cluster dispersion, typically defined as the sum of squared Euclidean distances between observations and their corresponding cluster centroids. 
 Hierarchical clustering methods provide an alternative framework by constructing nested partitions without directly optimizing a global objective. 
 In particular, agglomerative hierarchical clustering proceeds iteratively by merging pairs of clusters according to a linkage criterion (single, complete, average, or Ward's minimum-variance linkage). 
 The resulting dendrogram encodes a multi-scale representation of the data, allowing cluster structure to be examined at different levels of granularity.
@@ -105,8 +105,8 @@ where $n$ is the population size, $k$ the number of clusters, $C(i)$ is the clus
  
 Once an optimal method is identified, we investigated several criterions to identify the best number of clusters:
 \begin{enumerate}[i]
-  \item Clustering method specific indicators (e.g. K-Means inertia)
-  \item Gap Statistic \citep{Tibshirani2001EstimatingTN}, which compares the total within intra-cluster variation for different number of clusters with their expected values under null reference distribution of the data. 
+  \item Clustering method specific indicators (e.g. k-Means inertia)
+  \item Gap Statistic \citep{Tibshirani2001EstimatingTN}, or gap-stat, which compares the total within intra-cluster variation for different number of clusters with their expected values under null reference distribution of the data. 
   The estimate of the optimal clusters will be value maximizing the gap statistic (equivalently, yielding the largest gap statistic), corresponding to the clustering structure the farthest away from the random uniform distribution of points.
   Algorithm~\ref{alg:gs} summarizes this approach.
 \end{enumerate}
@@ -216,4 +216,4 @@ For every combination of $n_p$ players, $n_p \in \{1, ..., 5\}$, we assessed the
   \end{algorithmic}
 \end{algorithm}
 
-In practice, we set $n_B$ to 1000, $\alpha$ to 0.05, $n_0$ to $\min (30, 0.1 \times N)$ where $N$ is our population size.
+In practice, we set $n_B$ to 1000 as a good trade off between sample size and computation time, $\alpha$ to 0.05, $n_0$ to $\min (30, 0.1 \times N)$ where $N$ is our population size.

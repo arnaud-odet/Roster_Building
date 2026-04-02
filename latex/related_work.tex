@@ -4,7 +4,7 @@
 \subsection{Unsupervised Learning in Sports}
 
 Machine Learning has been successfully applied for over a decade in sports analytics \citep{Memmert2025artificial}.
-In this section, we are focusing on application of {\bf unsupervised learning}.
+In this section, we are focusing on application of unsupervised learning.
 These approaches are primarily utilized to address the inherent lack of ground-truth labels in professional tracking data, focusing on player archetype discovery, tactical interaction modeling, and game-phase segmentation.
 
 \paragraph{Discovery of Player Roles and Archetypes}
@@ -31,7 +31,7 @@ They found that team-level success was positively correlated with higher network
 
 \paragraph{Game Phase Segmentation}
 \cite{Pervse2009trajectory} utilized Gaussian Mixture Models (GMM) and the EM algorithm to segment basketball trajectories into game phases (offense, defense, and timeouts) with approximately 90\% accuracy. 
-Furthermore, they used k-means clustering to partition the court into semantic regions, enabling the automatic recognition of organized play types using Levenstein distance between observed actions and database templates.
+Furthermore, they used k-Means clustering to partition the court into semantic regions, enabling the automatic recognition of organized play types using Levenstein distance between observed actions and database templates.
 \cite{Montoliu2015TeamAR} proposed a Bag-of-Words (BoW) strategy to recognize activities in soccer without requiring individual player tracking. 
 By extracting "motion words" from optical data, they achieved high classification accuracy (up to 92.8\%) for team activities such as Ball Possession, Quick Attack, and Set Pieces.
 
@@ -42,7 +42,7 @@ In soccer, \cite{Abidin2021ACS} implemented several machine learning algorithms 
 The study demonstrated that Random Forest models could select optimal player combinations with 93.9\% reliability, producing lineup suggestions that were 97.2\% similar to a professional coach's ideal team.
 In Basketball, \cite{Siddique2025FindingOT} adopted a two steps methods to (i) predict team wins based on players' statistics and (ii) optimize roster composition. 
 They suggest three formulations of a linear programming optimization problem, the first aiming at maximizing the win rate of a hypothetical team, the second minimizing the salary expense given the constraint of a minimum win rate to achieve and the last aiming at maximizing the team's shooting coverage.
-\cite{Penner2025player} moved toward positionless basketball by using K-means clustering to identify nine distinct player archetypes across 110 global leagues, subsequently utilizing multiple linear regression to rank athletes by "points per minute" to optimize championship roster construction.
+\cite{Penner2025player} moved toward positionless basketball by using k-Means clustering to identify nine distinct player archetypes across 110 global leagues, subsequently utilizing multiple linear regression to rank athletes by "points per minute" to optimize championship roster construction.
 In the specialized context of wheelchair basketball, \cite{calvo_selecting_2025} combined Bayesian longitudinal modeling with stochastic integer linear programming to identify optimal lineups while strictly adhering to the Player Classification Points System (PCPS) constraints. 
 This methodology allows coaches to incorporate uncertainty into the selection process, effectively estimating the probability that a five-player configuration will yield the highest team performance.
 Beyond traditional field sports, \cite{Sapienza2019deep} explored team composition in the Multiplayer Online Battle Arena games Dota 2, employing deep neural autoencoders to recommend teammates who maximize an individual's "TrueSkill" score gain. 
